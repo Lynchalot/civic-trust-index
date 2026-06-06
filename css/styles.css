@@ -262,7 +262,6 @@ h1{
 }
 #msvg.zooming .ctry{transition:none}
 #msvg.zooming>g{pointer-events:none}
-#msvg.zooming .map-decor{visibility:hidden}
 .ctry{cursor:pointer;transition:opacity .1s}.ctry:hover{opacity:.72}
 #zctrls{
   position:absolute;top:12px;right:12px;
