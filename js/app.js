@@ -272,7 +272,7 @@ function startGlobeRotation(){
   _startGlobe();
 }
 function stopGlobeRotation(){
-  if(globeRotating){clearInterval(globeRotating);globeRotating=null;}
+  if(globeRotating){cancelAnimationFrame(globeRotating);globeRotating=null;}
 }
 
 function initGlobeMap(){
@@ -401,7 +401,8 @@ function _buildGlobe(){
       }
 
       _startGlobe=()=>{
-        globeRotating=setInterval(()=>{rot[0]+=0.15;redraw();},16);
+        function frame(){rot[0]+=0.15;redraw();globeRotating=requestAnimationFrame(frame);}
+        globeRotating=requestAnimationFrame(frame);
       };
 
       gsvg.call(d3.drag()
@@ -599,10 +600,17 @@ fetch('https://cdn.jsdelivr.net/npm/visionscarto-world-atlas@1/world/50m.json')
     const W=960,H=490;
     const svg=d3.select('#msvg').attr('viewBox',`0 0 ${W} ${H}`).attr('preserveAspectRatio','xMidYMid meet');
     const svgEl=document.getElementById('msvg');
+    let _pendingT=null,_zoomRaf=null;
     const zoom=d3.zoom().scaleExtent([1,12]).translateExtent([[0,0],[W,H]])
       .on('start',()=>{svg.style('cursor','grabbing');svgEl.classList.add('zooming');})
       .on('end',()=>{svg.style('cursor','default');svgEl.classList.remove('zooming');})
-      .on('zoom',(ev)=>g.attr('transform',ev.transform));
+      .on('zoom',(ev)=>{
+        _pendingT=ev.transform;
+        if(!_zoomRaf)_zoomRaf=requestAnimationFrame(()=>{
+          g.attr('transform',_pendingT);
+          _zoomRaf=null;
+        });
+      });
     svg.call(zoom).on('dblclick.zoom',null);
     const g=svg.append('g').style('will-change','transform');
     g.append('rect').attr('width',W).attr('height',H).style('fill','var(--map-ocean)').attr('rx',5);

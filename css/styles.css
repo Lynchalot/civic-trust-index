@@ -245,6 +245,7 @@ h1{
   will-change:transform;
 }
 #msvg.zooming .ctry{transition:none}
+#msvg.zooming>g{pointer-events:none}
 .ctry{cursor:pointer;transition:opacity .1s}.ctry:hover{opacity:.72}
 #zctrls{
   position:absolute;top:12px;right:12px;

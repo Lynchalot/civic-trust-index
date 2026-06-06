@@ -229,6 +229,7 @@ h1{
   will-change:transform;
 }
 #msvg.zooming .ctry{transition:none}
+#msvg.zooming>g{pointer-events:none}
 .ctry{cursor:pointer;transition:opacity .1s}.ctry:hover{opacity:.72;filter:brightness(1.08)}
 #zctrls{
   position:absolute;top:12px;right:12px;
@@ -3679,7 +3680,7 @@ function _buildGlobe(){
       if(grBtn) grBtn.onclick=function(){
         rot=[0,-25]; gProj.scale(R); gsvg.select('circle').attr('r',R); redraw();
         stopGlobeRotation();
-        globeRotating=setInterval(function(){rot[0]+=0.15;redraw();},16);
+        function frame(){rot[0]+=0.15;redraw();globeRotating=requestAnimationFrame(frame);}globeRotating=requestAnimationFrame(frame);
       };
       const gzIn=document.getElementById('globe-zin');
       if(gzIn) gzIn.onclick=function(){
@@ -3690,7 +3691,7 @@ function _buildGlobe(){
         var ns=Math.max(80,gProj.scale()/1.4); gProj.scale(ns); gsvg.select('circle').attr('r',ns); redraw();
       };
 
-      globeRotating=setInterval(()=>{rot[0]+=0.15;redraw();},16);
+      function frame2(){rot[0]+=0.15;redraw();globeRotating=requestAnimationFrame(frame2);}globeRotating=requestAnimationFrame(frame2);
       redraw();
     });
 }
@@ -3700,7 +3701,7 @@ function startGlobeRotation(){
   // rotation resumes from initGlobeMap interval
 }
 function stopGlobeRotation(){
-  if(globeRotating){clearInterval(globeRotating);globeRotating=null;}
+  if(globeRotating){cancelAnimationFrame(globeRotating);globeRotating=null;}
 }
 
 
@@ -3798,10 +3799,18 @@ fetch('https://cdn.jsdelivr.net/npm/visionscarto-world-atlas@1/world/50m.json')
   .then(world=>{
     const W=960,H=490;
     const svg=d3.select('#msvg').attr('viewBox',`0 0 ${W} ${H}`).attr('preserveAspectRatio','xMidYMid meet');
+    const svgEl=document.getElementById('msvg');
+    let _pendingT=null,_zoomRaf=null;
     const zoom=d3.zoom().scaleExtent([1,12]).translateExtent([[0,0],[W,H]])
-      .on('start',()=>svg.style('cursor','grabbing'))
-      .on('end',()=>svg.style('cursor','default'))
-      .on('zoom',(ev)=>g.attr('transform',ev.transform));
+      .on('start',()=>{svg.style('cursor','grabbing');svgEl.classList.add('zooming');})
+      .on('end',()=>{svg.style('cursor','default');svgEl.classList.remove('zooming');})
+      .on('zoom',(ev)=>{
+        _pendingT=ev.transform;
+        if(!_zoomRaf)_zoomRaf=requestAnimationFrame(()=>{
+          g.attr('transform',_pendingT);
+          _zoomRaf=null;
+        });
+      });
     svg.call(zoom).on('dblclick.zoom',null);
     const g=svg.append('g');
     // Ocean
