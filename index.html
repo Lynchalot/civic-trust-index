@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Civic Trust Index</title>
+<link rel="stylesheet" href="css/styles.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/twemoji.min.js" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/topojson/3.0.2/topojson.min.js"></script>
+</head>
+<body>
+<!-- Inline SVG icon sprite -->
+<svg xmlns="http://www.w3.org/2000/svg" style="display:none">
+  <symbol id="ico-bank" viewBox="0 0 16 16"><path d="M2 6v7h2V6zm5 0v7h2V6zm-6 8h14v2H1zm13-8v7h2V6zM8 1 1 5h14z"/></symbol>
+  <symbol id="ico-building" viewBox="0 0 16 16"><path d="M4 2h8v12H4zm1 2v1h2V4zm3 0v1h2V4zM5 7v1h2V7zm3 0v1h2V7zm-3 3v1h2v-1zm3 0v1h2v-1zM6 13h4v1H6z"/></symbol>
+  <symbol id="ico-bridge" viewBox="0 0 16 16"><path d="M1 14V9a7 7 0 0 1 14 0v5h-2v-5a5 5 0 0 0-10 0v5z"/></symbol>
+  <symbol id="ico-eye-slash" viewBox="0 0 16 16"><path d="M13.4 3 3 13.4l1 1 1.8-1.8A7 7 0 0 0 8 13c3.5 0 6.3-2.5 7-6a7 7 0 0 0-2.2-4.4l1.6-1.6zM8 11c-.6 0-1.2-.2-1.7-.4L11.5 5.5c.3.5.5 1.1.5 1.7a3.7 3.7 0 0 1-4 3.8zM1 7c.4-1.8 1.5-3.3 3-4.3L5.5 4A5 5 0 0 0 3 7H1z"/></symbol>
+  <symbol id="ico-skull" viewBox="0 0 16 16"><path d="M8 1a5 5 0 0 0-5 5c0 1.6.7 3 1.8 4 .3.3.5.7.7 1v2h5v-2c.2-.3.4-.7.7-1A5 5 0 0 0 13 6a5 5 0 0 0-5-5zM6 7a1 1 0 1 1 0-2 1 1 0 0 1 0 2zm4 0a1 1 0 1 1 0-2 1 1 0 0 1 0 2zm-3.5 5h3v.5h-3zm.5 1h2v.5H7z"/></symbol>
+  <symbol id="ico-moneybag" viewBox="0 0 16 16"><path d="M8 0a2 2 0 0 0-1.7 3.1C4.7 3.8 4 5.3 4 7v1a4 4 0 0 0 8 0V7c0-1.7-.7-3.2-2.3-3.9A2 2 0 0 0 8 0zm0 5.5c1.4 0 2.5 1.1 2.5 2.5S9.4 10.5 8 10.5 5.5 9.4 5.5 8 6.6 5.5 8 5.5zM7.5 7v.5H7V8h.5v.5h1V8H9v-.5h-.5V7z"/></symbol>
+  <symbol id="ico-shield" viewBox="0 0 16 16"><path d="M5.3 1 2 3v4c0 3 2 5.4 6 6.9 4-1.5 6-3.9 6-6.9V3zm1.7 9-2-2 1-1 1 1 3-3 1 1z"/></symbol>
+  <symbol id="ico-people" viewBox="0 0 16 16"><path d="M7 7a2 2 0 1 0 0-4 2 2 0 0 0 0 4m-4 6v-1a4 4 0 0 1 8 0v1zm9-7a2 2 0 1 0 0-4 2 2 0 0 0 0 4m1 7v-1a5 5 0 0 0-1.5-3.5A4 4 0 0 1 16 12v1z"/></symbol>
+  <symbol id="ico-diagram" viewBox="0 0 16 16"><path d="M6 3.5a1.5 1.5 0 1 1 3 0 1.5 1.5 0 0 1-3 0M1 7.5a1.5 1.5 0 1 1 3 0 1.5 1.5 0 0 1-3 0m10 0a1.5 1.5 0 1 1 3 0 1.5 1.5 0 0 1-3 0M7 5v1a2.5 2.5 0 0 0-2.4 1.8L2.5 8.5a.5.5 0 0 0 0 1l2.1 1A2.5 2.5 0 0 0 7 12.5v-1.3a1.5 1.5 0 0 1-1-1.4H6v-1h4v1h-.5a1.5 1.5 0 0 1-.9 1.3v1.4a2.5 2.5 0 0 0 2.4-1.8l2.1-1.1a.5.5 0 0 0 0-1L11 8.8A2.5 2.5 0 0 0 9 7V5z"/></symbol>
+  <symbol id="ico-wallet" viewBox="0 0 16 16"><path d="M0 3a2 2 0 0 1 2-2h13.5a.5.5 0 0 1 0 1H15v2a1 1 0 0 1 1 1v8.5a1.5 1.5 0 0 1-1.5 1.5h-12A2.5 2.5 0 0 1 0 12.5zm1 1.732V12.5A1.5 1.5 0 0 0 2.5 14h12a.5.5 0 0 0 .5-.5V5H2a1 1 0 0 1-1-.268M11 8a1 1 0 1 0 0 2 1 1 0 0 0 0-2"/></symbol>
+  <symbol id="ico-cash" viewBox="0 0 16 16"><path d="M11 4v2h-1V4zm-1 8h1v-2h-1zM7 9H1V7h6zm8-2h-6v2h6zM1 4h14v1H1zm0 7h14v1H1zM8 6a2 2 0 1 0 0 4 2 2 0 0 0 0-4"/></symbol>
+  <symbol id="ico-danger" viewBox="0 0 16 16"><path d="M7.938 2.016A.13.13 0 0 1 8 2a.13.13 0 0 1 .062.016.15.15 0 0 1 .054.057l6.857 11.667c.036.06.035.124.002.183a.2.2 0 0 1-.054.06.1.1 0 0 1-.066.017H1.146a.1.1 0 0 1-.066-.017.2.2 0 0 1-.054-.06.18.18 0 0 1 .002-.183L7.884 2.073a.15.15 0 0 1 .054-.057m1.044-.45a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767zM7.5 6.5v3a.5.5 0 0 0 1 0v-3a.5.5 0 0 0-1 0m.5 5.5a1 1 0 1 0 0-2 1 1 0 0 0 0 2"/></symbol>
+  <symbol id="ico-car" viewBox="0 0 16 16"><path d="M2.52 3.515A2.5 2.5 0 0 1 4.82 2h6.362c1 0 1.904.596 2.298 1.515l.792 1.848c.075.175.21.319.38.404.5.25.855.715.965 1.262l.335 1.679q.05.242.049.49v.413c0 .814-.39 1.543-1 1.997V13.5a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1-.5-.5v-1.338c-1.292.048-2.745.088-4 .088s-2.708-.04-4-.088V13.5a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1-.5-.5v-1.892c-.61-.454-1-1.183-1-1.997v-.413a2.5 2.5 0 0 1 .049-.49l.335-1.68c.11-.546.465-1.012.964-1.261a.8.8 0 0 0 .381-.404zM3 10a1 1 0 1 0 2 0 1 1 0 0 0-2 0m10 0a1 1 0 1 0-2 0 1 1 0 0 0 2 0m-9-5 .93-2.171A1.5 1.5 0 0 1 6.33 2h3.34a1.5 1.5 0 0 1 1.4.829L12 7H4z"/></symbol>
+  <symbol id="ico-recycle" viewBox="0 0 16 16"><path d="M9.302 1.256a1.5 1.5 0 0 0-2.604 0l-1.704 2.98.026.017A4.6 4.6 0 0 1 6.5 4c.67 0 1.218.337 1.5.5.282-.163.83-.5 1.5-.5.426 0 .836.07 1.21.205l.02-.012zm1.514 5.296a4.6 4.6 0 0 0-.998-.15c-.39 0-.72.104-.96.205L8 6.99 6.142 6.61a4.6 4.6 0 0 0-.96-.205 4.6 4.6 0 0 0-.998.15L2.47 10.5h11.06zM1 11.5v.5a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-.5z"/></symbol>
+  <symbol id="ico-fire" viewBox="0 0 16 16"><path d="M8 16c3.314 0 6-2 6-5.5 0-1.5-.5-4-2.5-6 .25 1.5-1.25 2-1.25 2C11 4 9 .5 6 0c.357 2 .5 4-2 6-1.25 1-2 2.729-2 4.5C2 14 4.686 16 8 16m0-1c-1.657 0-3-1-3-2.75 0-.75.25-2 1.25-3C6.125 10.5 7 11 7 11c-.375-1.25.5-3.25 2-4 -.179 1 -.25 2 1 3 .625.5 1 1.364 1 2.25C11 14 9.657 15 8 15"/></symbol>
+  <symbol id="ico-map" viewBox="0 0 16 16"><path d="M15.817.113A.5.5 0 0 1 16 .5v14a.5.5 0 0 1-.402.49l-5 1a.5.5 0 0 1-.196 0L5.5 15.01l-4.902.98A.5.5 0 0 1 0 15.5v-14a.5.5 0 0 1 .402-.49l5-1a.5.5 0 0 1 .196 0L10.5.99l4.902-.98a.5.5 0 0 1 .415.103M10 1.91l-4-.8v12.98l4 .8zm1 12.98 4-.8V1.11l-4 .8zm-6-.8V1.11l-4 .8v12.98z"/></symbol>
+  <symbol id="ico-sliders" viewBox="0 0 16 16"><path d="M11.5 2a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3M9.05 3a2.5 2.5 0 0 1 4.9 0H16v1h-2.05a2.5 2.5 0 0 1-4.9 0H0V3zM4.5 7a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3M2.05 8a2.5 2.5 0 0 1 4.9 0H16v1H6.95a2.5 2.5 0 0 1-4.9 0H0V8zm9.45 4a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3m-2.45 1a2.5 2.5 0 0 1 4.9 0H16v1h-2.05a2.5 2.5 0 0 1-4.9 0H0v-1z"/></symbol>
+  <symbol id="ico-cursor" viewBox="0 0 16 16"><path d="M14.082 2.182a.5.5 0 0 1 .103.557L8.528 15.467a.5.5 0 0 1-.917-.007L5.57 10.694.803 8.652a.5.5 0 0 1-.006-.916l12.728-5.657a.5.5 0 0 1 .556.103z"/></symbol>
+  <symbol id="ico-info" viewBox="0 0 16 16"><path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16m.93-9.412-1 4.705c-.07.34.029.533.304.533.194 0 .487-.07.686-.246l-.088.416c-.287.346-.92.598-1.465.598-.703 0-1.002-.422-.808-1.319l.738-3.468c.064-.293.006-.399-.287-.47l-.451-.081.082-.381 2.29-.287zM8 5.5a1 1 0 1 1 0-2 1 1 0 0 1 0 2"/></symbol>
+  <symbol id="ico-barchart" viewBox="0 0 16 16"><path d="M4 11H2v3h2zm5-4H7v7h2zm5-5v12h-2V2zm-1-1a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h2a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1zm-5 4a1 1 0 0 0-1 1v7a1 1 0 0 0 1 1h2a1 1 0 0 0 1-1V6a1 1 0 0 0-1-1zm-5 4a1 1 0 0 0-1 1v3a1 1 0 0 0 1 1h2a1 1 0 0 0 1-1v-3a1 1 0 0 0-1-1z"/></symbol>
+  <symbol id="ico-arrows" viewBox="0 0 16 16"><path d="M1 11.5a.5.5 0 0 0 .5.5h11.793l-3.147 3.146a.5.5 0 0 0 .708.708l4-4a.5.5 0 0 0 0-.708l-4-4a.5.5 0 0 0-.708.708L13.293 11H1.5a.5.5 0 0 0-.5.5m14-7a.5.5 0 0 1-.5.5H2.707l3.147 3.146a.5.5 0 1 1-.708.708l-4-4a.5.5 0 0 1 0-.708l4-4a.5.5 0 1 1 .708.708L2.707 4H14.5a.5.5 0 0 1 .5.5"/></symbol>
+  <symbol id="ico-question" viewBox="0 0 16 16"><path d="M5.255 5.786a.237.237 0 0 0 .241.247h.825c.138 0 .248-.113.266-.25.09-.656.54-1.134 1.342-1.134.686 0 1.314.343 1.314 1.168 0 .635-.374.927-.965 1.371-.673.489-1.206 1.06-1.168 1.987l.003.217a.25.25 0 0 0 .25.246h.811a.25.25 0 0 0 .25-.25v-.105c0-.718.273-.927 1.01-1.486.609-.463 1.244-.977 1.244-2.056 0-1.511-1.276-2.241-2.673-2.241-1.267 0-2.655.59-2.75 2.286m1.557 5.763c0 .533.425.927 1.01.927.609 0 1.028-.394 1.028-.927 0-.552-.42-.94-1.029-.94-.584 0-1.009.388-1.009.94"/></symbol>
+</svg>
+
+<section class="hero-section" id="hero">
+  <div class="hero-inner">
+    <div class="hero-left">
+      <div class="hero-eyebrow">Civic Trust Index &nbsp;·&nbsp; CTI</div>
+      <h1 class="hero-title">Does civic life<br>actually <em>work</em><br>in your country?</h1>
+      <p class="hero-definition">
+        Standard rankings will tell you Japan and Mexico have both grown richer
+        over the past decade. They won't tell you that in Japan, someone who finds
+        a wallet stuffed with cash will almost certainly hand it in to the nearest
+        police box. In Mexico, they almost certainly won't.
+      </p>
+      <div class="hero-scorebar">
+        <div class="hero-scorebar-track">
+          <canvas id="hero-score-canvas" height="6" style="width:100%;display:block;border-radius:2px"></canvas>
+        </div>
+        <div class="hero-scorebar-labels">
+          <span>Low civic quality</span>
+          <span>High civic quality</span>
+        </div>
+      </div>
+      <p class="hero-para">
+        That gap — between what income figures show and what daily life actually
+        feels like — is what this index tracks. Not whether governments are
+        competent. Whether the street outside is clean. Whether you need to bribe
+        someone to register a car. Whether strangers can be trusted.
+      </p>
+      <p class="hero-para">
+        Thirteen data sources. Six percent of the weight goes on how institutions
+        look from the outside. The other ninety-four is what happens at street level.
+      </p>
+    </div>
+    <div class="hero-mid">
+      <div class="hero-quote" id="hero-quote">
+        <div class="hero-quote-text" id="hero-quote-text"></div>
+        <div class="hero-quote-attr" id="hero-quote-attr"></div>
+      </div>
+      <div class="hero-globe-wrap">
+        <svg id="hero-globe-svg" class="hero-globe-svg" viewBox="0 0 180 180">
+          <circle cx="90" cy="90" r="85" fill="#0a1020" stroke="#1e2840" stroke-width="1"/>
+        </svg>
+      </div>
+      <div class="hero-stats-row">
+        <div class="hero-stat-block">
+          <span class="hero-stat-n" id="hero-n-countries">—</span>
+          <span class="hero-stat-l">Countries</span>
+        </div>
+        <div class="hero-stat-block">
+          <span class="hero-stat-n">13</span>
+          <span class="hero-stat-l">Components</span>
+        </div>
+        <div class="hero-stat-block">
+          <span class="hero-stat-n">94%</span>
+          <span class="hero-stat-l">Behavioural</span>
+        </div>
+      </div>
+      <div class="hero-scroll" onclick="document.getElementById('sec-map').scrollIntoView({behavior:'smooth'})">
+        <span>Explore the map</span>
+        <span class="hero-scroll-arrow">↓</span>
+      </div>
+    </div>
+    <div class="hero-index-col">
+      <div class="hi-header-row">
+        <span class="hi-head">Component &amp; Source</span>
+        <span class="hi-head hi-head-wt">Weight</span>
+      </div>
+      <div class="hero-index-list">
+        <div class="hi-group-label">Institutional &amp; Infrastructure</div>
+        <div class="hi-row"><div class="hi-cell"><span class="hi-name">Corruption Control</span><a class="hi-src" href="https://info.worldbank.org/governance/wgi/" target="_blank" rel="noopener">World Bank WGI, 2023</a></div><span class="hi-wt">3%</span></div>
+        <div class="hi-row"><div class="hi-cell"><span class="hi-name">Government Effectiveness</span><a class="hi-src" href="https://info.worldbank.org/governance/wgi/" target="_blank" rel="noopener">World Bank WGI, 2023</a></div><span class="hi-wt">3%</span></div>
+        <div class="hi-row"><div class="hi-cell"><span class="hi-name">Infrastructure</span><a class="hi-src" href="https://lpi.worldbank.org/international/global/2023" target="_blank" rel="noopener">World Bank LPI, 2023</a></div><span class="hi-wt">11%</span></div>
+        <div class="hi-group-label">Order &amp; Fiscal</div>
+        <div class="hi-row"><div class="hi-cell"><span class="hi-name">Shadow Economy</span><a class="hi-src" href="https://www.imf.org/en/Publications/WP/Issues/2018/01/25/Shadow-Economies-Around-the-World-What-Did-We-Learn-Over-the-Last-20-Years-45583" target="_blank" rel="noopener">Schneider &amp; Medina, IMF 2018</a></div><span class="hi-wt">6%</span></div>
+        <div class="hi-row"><div class="hi-cell"><span class="hi-name">Law &amp; Order</span><a class="hi-src" href="https://www.gallup.com/analytics/356963/gallup-global-law-and-order.aspx" target="_blank" rel="noopener">Gallup, 2023</a></div><span class="hi-wt">12%</span></div>
+        <div class="hi-group-label">Attitudinal Trust</div>
+        <div class="hi-row"><div class="hi-cell"><span class="hi-name">Interpersonal Trust</span><a class="hi-src" href="https://www.worldvaluessurvey.org/wvs.jsp" target="_blank" rel="noopener">World Values Survey Wave 7, 2017–22</a></div><span class="hi-wt">8%</span></div>
+        <div class="hi-row"><div class="hi-cell"><span class="hi-name">Social Capital</span><a class="hi-src" href="https://www.prosperity.com/" target="_blank" rel="noopener">Legatum Prosperity Index, 2023</a></div><span class="hi-wt">8%</span></div>
+        <div class="hi-group-label">Civic Honesty</div>
+        <div class="hi-row"><div class="hi-cell"><span class="hi-name">Wallet Return Rate</span><a class="hi-src" href="https://www.science.org/doi/10.1126/science.aau8712" target="_blank" rel="noopener">Cohn et al., Science, 2019</a></div><span class="hi-wt">12%</span></div>
+        <div class="hi-row"><div class="hi-cell"><span class="hi-name">Bribery-Free Rate</span><a class="hi-src" href="https://www.transparency.org/en/gcb/global/global-corruption-barometer-2017" target="_blank" rel="noopener">TI Global Corruption Barometer, 2017</a></div><span class="hi-wt">10%</span></div>
+        <div class="hi-group-label">Outcomes</div>
+        <div class="hi-row"><div class="hi-cell"><span class="hi-name">Homicide Rate</span><a class="hi-src" href="https://www.unodc.org/unodc/en/data-and-analysis/global-study-on-homicide.html" target="_blank" rel="noopener">UNODC, 2021–23</a></div><span class="hi-wt">7%</span></div>
+        <div class="hi-row"><div class="hi-cell"><span class="hi-name">Road Deaths</span><a class="hi-src" href="https://www.who.int/publications/i/item/9789240086517" target="_blank" rel="noopener">WHO Road Safety Report, 2021</a></div><span class="hi-wt">6%</span></div>
+        <div class="hi-row"><div class="hi-cell"><span class="hi-name">Waste Management</span><a class="hi-src" href="https://epi.yale.edu/" target="_blank" rel="noopener">Yale EPI, 2022</a></div><span class="hi-wt">6%</span></div>
+        <div class="hi-row"><div class="hi-cell"><span class="hi-name">Terrorism Index</span><a class="hi-src" href="https://www.visionofhumanity.org/maps/global-terrorism-index/" target="_blank" rel="noopener">IEP Global Terrorism Index, 2023</a></div><span class="hi-wt">8%</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+<nav class="topnav">
+  <div class="tn-brand">Civic Trust Index <span class="cti-mark">CTI</span></div>
+  <div class="tn-links">
+    <a class="tn-link active" data-target="sec-map">Map</a>
+    <a class="tn-link" data-target="sec-rankings">Rankings</a>
+    <a class="tn-link" data-target="sec-methodology">Methodology</a>
+    <a class="tn-link" data-target="sec-components">Components</a>
+    <a class="tn-link" data-target="sec-about">About</a>
+    <a class="tn-link tn-donate" href="https://ko-fi.com/falsehamartia" target="_blank" rel="noopener">Support ↗</a>
+    <button class="theme-toggle" id="theme-toggle" aria-label="Switch to light mode"></button>
+  </div>
+</nav>
+<section class="section" id="sec-map">
+<div class="app">
+<aside class="sidebar">
+  <div class="sb-title">Filter Components</div>
+  <div id="sb-groups"></div>
+  <div class="sb-actions">
+    <button class="sb-btn" id="sb-all">All</button>
+    <button class="sb-btn" id="sb-none">None</button>
+    <button class="sb-btn" id="sb-reset">Reset</button>
+  </div>
+</aside>
+<main class="main-col">
+<div id="status"></div>
+<div class="view-tabs">
+  <button class="view-tab active" id="tab-flat" onclick="setView('flat')">Flat</button>
+  <button class="view-tab" id="tab-globe" onclick="setView('globe')">Globe</button>
+</div>
+<div id="wrap">
+  <svg id="msvg"></svg>
+  <div id="globe-container">
+    <svg id="globe-svg"></svg>
+    <div id="globe-ctrls">
+      <button class="zbtn" id="globe-zin" title="Zoom in">+</button>
+      <button class="zbtn" id="globe-reset" title="Reset view">&#x25CE;</button>
+      <button class="zbtn" id="globe-zout" title="Zoom out">&minus;</button>
+    </div>
+  </div>
+  <div id="zctrls">
+    <button class="zbtn" id="zin" title="Zoom in">+</button>
+    <button class="zbtn" id="zrst" title="Reset" style="font-size:11px">&#x25CE;</button>
+    <button class="zbtn" id="zout" title="Zoom out">&minus;</button>
+  </div>
+  <div id="tip">
+    <div class="tn" id="tn"></div>
+    <div class="tsc" id="tsc"></div>
+    <div class="tsummary" id="tsummary"></div>
+    <div id="trows"></div>
+    <div class="tfoot" id="tfoot"></div>
+  </div>
+</div>
+<div class="legend-row">
+  <div class="leg-inner">
+    <div class="leg-title">CTI Score</div>
+    <div class="leg-bar-wrap">
+      <canvas class="leg-bar" id="lgd" width="400" height="10" style="width:100%"></canvas>
+    </div>
+    <div class="leg-labels">
+      <span>27 — Chad / Haiti</span>
+      <span>25</span><span>50</span><span>75</span>
+      <span>91 — Nordic / micro-states</span>
+    </div>
+  </div>
+  <div class="ndbox"><span class="ndsw"></span><span>No data</span></div>
+</div>
+</main>
+<aside class="rank-panel">
+  <div class="rp-title">Rankings</div>
+  <div class="rp-tabs">
+    <button class="rp-tab active" data-mode="top">Top 25</button>
+    <button class="rp-tab" data-mode="bottom">Bottom 25</button>
+  </div>
+  <label class="rp-lowdata-toggle" title="Countries with fewer than 8 of 13 components">
+    <input type="checkbox" id="rp-lowdata-cb"> Limited data
+  </label>
+  <div class="rp-list" id="rp-list"></div>
+</aside>
+</div>
+</section>
+
+
+
+<hr style="border:none;border-top:1px solid var(--rule);margin:0 0 0">
+<section class="section" id="sec-rankings">
+  <div class="section-head">
+    <div class="section-eyebrow">Section 02</div>
+    <h2 class="section-title">Rankings</h2>
+    <div class="section-sub">All scored countries sorted by composite CTI score. Scores update live when you toggle component filters in the sidebar. Countries with fewer than 8 of 13 components are shown at reduced opacity.</div>
+  </div>
+
+  <div class="rank-controls">
+    <input type="text" id="rank-search" placeholder="Filter by country name…" style="background:var(--surface2);border:1px solid var(--border2);color:var(--text);padding:.4rem .7rem;border-radius:4px;font-family:inherit;font-size:.72rem;width:220px;">
+    <span style="font-size:.68rem;color:var(--muted)" id="rank-live-count"></span>
+    <label class="rp-lowdata-toggle">
+      <input type="checkbox" id="inline-lowdata-cb"> Include limited data
+    </label>
+    <div style="margin-left:auto;display:flex;gap:.5rem">
+      <button class="rp-tab active" id="rank-tab-all" onclick="setRankTab('all')">All</button>
+      <button class="rp-tab" id="rank-tab-top" onclick="setRankTab('top')">Top 25</button>
+      <button class="rp-tab" id="rank-tab-bot" onclick="setRankTab('bot')">Bottom 25</button>
+    </div>
+  </div>
+
+  <div style="background:var(--surface);border:1px solid var(--border);border-radius:8px;overflow:hidden;margin-top:.8rem">
+    <div style="display:grid;grid-template-columns:40px 1fr 72px 60px;gap:.5rem;padding:.5rem .9rem;background:var(--surface2);font-size:.6rem;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);border-bottom:1px solid var(--border);font-weight:600">
+      <span>Rank</span><span>Country</span><span style="text-align:right">CTI Score</span><span style="text-align:right">Coverage</span>
+    </div>
+    <div id="rank-inline"></div>
+  </div>
+</section>
+
+<section class="section" id="sec-methodology">
+  <div class="section-head">
+    <div class="section-eyebrow">Section 03</div>
+    <h2 class="section-title">Methodology</h2>
+    <div class="section-sub">Three questions guide the index design: which behaviours best reveal civic quality, how to weight them, and how to make them comparable across countries.</div>
+  </div>
+
+  <div class="method-grid">
+    <div class="method-card">
+      <div class="mc-title">Why these components</div>
+      <div class="mc-body">
+        <p>Most cross-national governance indices — the World Bank WGI, Transparency International CPI, World Justice Project Rule of Law — measure <em>institutional quality as perceived by external experts.</em> They capture what elites build. They say little about whether ordinary civic transactions are clean.</p>
+        <p>The CTI inverts the emphasis. The two highest-weighted components are <span class="mc-accent">Wallet Return Rate</span> (Cohn et al., 2019) and <span class="mc-accent">Law &amp; Order</span> (2023) because they measure what actually happens at street level: whether strangers return lost property, whether women feel safe walking at night, whether bribes are demanded for routine services.</p>
+        <p>Behavioural outcomes — homicide, road deaths, waste management, terrorism — form the floor. A society where public order has collapsed cannot be high-trust regardless of its survey responses. Institutional indicators are included, but deliberately down-weighted to 6% of the composite.</p>
+      </div>
+    </div>
+
+    <div class="method-card">
+      <div class="mc-title">Known limitations</div>
+      <div class="mc-body">
+        <ul class="caveat-list">
+          <li><strong>East Asian survey bias.</strong> Japanese and Korean respondents systematically under-report interpersonal trust in WVS surveys due to cultural norms around modest self-presentation. Behavioural components partially correct for this, but attitudinal scores remain depressed relative to observed behaviour.</li>
+          <li><strong>Cohn wallet study coverage.</strong> Only 40 countries were included in the 2019 experiment, with East Asia largely absent. Coverage skews toward developed economies — the most consequential gap in the dataset.</li>
+          <li><strong>GCB vintage.</strong> The 2015/16/17 Global Corruption Barometer (119 countries) is the most recent with global scope. TI has since published only regional editions (Africa 2019, Asia 2020, EU 2021, etc.). These cannot be pooled without introducing systematic bias from differing instruments and fieldwork windows. Several high-income countries (Norway, Canada, USA, Switzerland) are absent from the 2017 edition and are unscored on this component.</li>
+          <li><strong>LPI scope.</strong> The World Bank Logistics Performance Index covers transport infrastructure (ports, roads, rail, IT) as rated by freight forwarders — it excludes electricity and water supply, which the discontinued WEF GCI captured. Rankings are robust but the infrastructure component is now narrower in scope.</li>
+          <li><strong>Shadow economy estimates.</strong> Schneider's MIMIC model is contested in the econometric literature. Country rankings are robust but the absolute percentages should be treated as approximations rather than measurements.</li>
+          <li><strong>Property crime excluded.</strong> Police-reported theft data is confounded by reporting rates — high-trust societies report more theft, not less. The Law &amp; Order index captures the experiential dimension more accurately through direct survey questions.</li>
+          <li><strong>Micro-state scores.</strong> Liechtenstein, Monaco, San Marino and Andorra rank artificially high because they score on 5–6 components rather than 13, and those components happen to favour wealthy, stable micro-states. They are de-emphasised in the rankings.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="method-card">
+      <div class="mc-title">Normalisation</div>
+      <div class="mc-body">
+        <p>All components are rescaled to a <span class="mc-accent">0–100 range</span> before weighting, so each contributes a comparable quantum regardless of its native units.</p>
+        <p><strong>WGI scores</strong> (Corruption Control, Government Effectiveness) run natively from −2.5 to +2.5. These are linearly mapped to 0–100.</p>
+        <p><strong>Rate data with long right tails</strong> — homicide, road deaths, terrorism — are log-normalised. Without this, the handful of extreme-violence countries compress everything else into an indistinguishable mid-range.</p>
+        <p><strong>Shadow Economy</strong> is linearly inverted from % of GDP, with a 5% floor acknowledging that some informal activity exists in every economy.</p>
+        <p><strong>Infrastructure</strong> uses the World Bank Logistics Performance Index 2023 (1–5 scale), income-adjusted using the same residual method: each country's LPI score is compared against the expected score for its income bracket. A rich country with poor logistics infrastructure scores below 50; a middle-income country that invests unusually well scores above 50. This replaces the discontinued WEF Global Competitiveness Index 2019.</p>
+        <p><strong>Survey-based inputs</strong> (Gallup, WVS %, Legatum SC, EPI, GCB %) are used directly, as they already express comparable 0–100 or percentage scales.</p>
+      </div>
+    </div>
+  </div>
+</section>
+  </div>
+</div>
+
+<section class="section" id="sec-components">
+  <div class="section-head">
+    <div class="section-eyebrow">Section 04</div>
+    <h2 class="section-title">What we measure</h2>
+    <div class="section-sub">Thirteen indicators drawn from independent datasets. Each captures a different dimension of civic life — from a wallet left on a counter to a bribe demanded at a government office.</div>
+  </div>
+
+  <div class="comp-list">
+
+    <div class="comp-group-header">Institutional &amp; Infrastructure &nbsp;·&nbsp; 17%</div>
+
+    <div class="comp-row">
+      <div class="comp-row-head">
+        <div class="comp-name">Corruption Control</div>
+        <div class="comp-meta"><span class="comp-wt">3%</span><span class="comp-src-label">World Bank WGI, 2023</span></div>
+      </div>
+      <div class="comp-desc">
+        <p>The World Bank's Worldwide Governance Indicators assess how well governments prevent public officials from using their positions for private gain — whether courts can check executive power, whether contracts are enforced without bribes, whether public procurement is clean. The score combines expert assessments, business surveys, and citizen surveys.</p>
+        <p>This is deliberately down-weighted to just 3% because it measures what institutions <em>look like</em> from the outside — not what ordinary people actually experience. Elite-level governance quality is a real thing, but it is already partially captured in the bribery-free rate, which measures what happens at the counter, not the boardroom.</p>
+      </div>
+    </div>
+
+    <div class="comp-row">
+      <div class="comp-row-head">
+        <div class="comp-name">Government Effectiveness</div>
+        <div class="comp-meta"><span class="comp-wt">3%</span><span class="comp-src-label">World Bank WGI, 2023</span></div>
+      </div>
+      <div class="comp-desc">
+        <p>Also from the World Bank WGI, this measures the perceived quality of the civil service — whether the bureaucracy is competent, whether policies are well-designed and actually implemented, whether governments can deliver public services reliably. A high score means the trains run on time and licences are issued without delay.</p>
+        <p>Like corruption control, this is kept at 3% because expert-perceived institutional quality is a distant proxy for what citizens experience. A highly effective government can still preside over a low-trust society if that effectiveness is not felt at street level — and vice versa.</p>
+      </div>
+    </div>
+
+    <div class="comp-row">
+      <div class="comp-row-head">
+        <div class="comp-name">Infrastructure</div>
+        <div class="comp-meta"><span class="comp-wt">11%</span><span class="comp-src-label">World Bank LPI, 2023</span></div>
+      </div>
+      <div class="comp-desc">
+        <p>The World Bank's Logistics Performance Index surveys international freight forwarders in 138 countries, asking them to rate the quality of ports, roads, railways, and IT infrastructure on a 1–5 scale. It is the broadest comparable infrastructure quality dataset available following the discontinuation of the WEF Global Competitiveness Index after 2019.</p>
+        <p>This component uses the <em>income-adjusted residual</em> — the gap between a country's actual LPI score and the score expected for its wealth level. A rich country with poor infrastructure scores below the midpoint; a middle-income country that has invested unusually well scores above it. This isolates civic investment in shared public goods from the simple fact of being wealthy.</p>
+      </div>
+    </div>
+
+    <div class="comp-group-header">Order &amp; Fiscal &nbsp;·&nbsp; 18%</div>
+
+    <div class="comp-row">
+      <div class="comp-row-head">
+        <div class="comp-name">Shadow Economy</div>
+        <div class="comp-meta"><span class="comp-wt">6%</span><span class="comp-src-label">Schneider &amp; Medina, IMF 2018</span></div>
+      </div>
+      <div class="comp-desc">
+        <p>The shadow economy is economic activity that is informal, untaxed, and outside official systems — from cash-in-hand tradespeople to large-scale tax evasion. Economists estimate its size indirectly, using signals like electricity consumption and demand for cash relative to what official GDP would predict.</p>
+        <p>A large shadow economy indicates widespread distrust of formal institutions: people and businesses opt out of official systems because those systems are burdensome, corrupt, or simply do not function. Countries with small shadow economies — below 10% of GDP — tend to have high voluntary compliance with tax and regulation, which requires a baseline of trust in the state.</p>
+      </div>
+    </div>
+
+    <div class="comp-row">
+      <div class="comp-row-head">
+        <div class="comp-name">Law &amp; Order</div>
+        <div class="comp-meta"><span class="comp-wt">12%</span><span class="comp-src-label">Gallup, 2023</span></div>
+      </div>
+      <div class="comp-desc">
+        <p>Gallup's annual Law and Order Index surveys over 140 countries, asking people three questions: did you feel safe walking home alone at night? Was property stolen from you? Were you assaulted or mugged? The index combines confidence in local police with personal experience of safety.</p>
+        <p>This is not police-reported crime data, which is heavily distorted by reporting rates. It is what people actually experience. A country where crimes go unreported because no one trusts the police will show low crime statistics and a low Law &amp; Order score simultaneously — the index captures the reality, not the paperwork.</p>
+      </div>
+    </div>
+
+    <div class="comp-group-header">Attitudinal Trust &nbsp;·&nbsp; 16%</div>
+
+    <div class="comp-row">
+      <div class="comp-row-head">
+        <div class="comp-name">Interpersonal Trust</div>
+        <div class="comp-meta"><span class="comp-wt">8%</span><span class="comp-src-label">World Values Survey Wave 7, 2017–22</span></div>
+      </div>
+      <div class="comp-desc">
+        <p>The World Values Survey — the largest academic survey of human values ever conducted — asks one deceptively simple question: <em>"Generally speaking, would you say that most people can be trusted, or that you need to be very careful in dealing with people?"</em></p>
+        <p>The share who answer "most people can be trusted" varies from below 5% in some countries to above 75% in others. This single number predicts an enormous range of social outcomes: economic growth, quality of institutions, political stability, even health. Societies where strangers trust each other can cooperate on problems that low-trust societies cannot.</p>
+      </div>
+    </div>
+
+    <div class="comp-row">
+      <div class="comp-row-head">
+        <div class="comp-name">Social Capital</div>
+        <div class="comp-meta"><span class="comp-wt">8%</span><span class="comp-src-label">Legatum Prosperity Index, 2023</span></div>
+      </div>
+      <div class="comp-desc">
+        <p>Social capital is the informal glue that holds a society together: the density of networks, the willingness to volunteer and donate, the habit of helping strangers, the ability to rely on family and friends in a crisis. The Legatum Prosperity Index aggregates survey data on all of these into a single social capital score.</p>
+        <p>Where interpersonal trust measures an attitude — whether you believe strangers are trustworthy — social capital measures behaviour: whether people actually show up for each other. Both matter. A society can have high stated trust but weak civic participation, or dense community networks alongside high mistrust of outsiders.</p>
+      </div>
+    </div>
+
+    <div class="comp-group-header">Civic Honesty &nbsp;·&nbsp; 22%</div>
+
+    <div class="comp-row">
+      <div class="comp-row-head">
+        <div class="comp-name">Wallet Return Rate</div>
+        <div class="comp-meta"><span class="comp-wt">12%</span><span class="comp-src-label">Cohn et al., Science 2019</span></div>
+      </div>
+      <div class="comp-desc">
+        <p>In 2019, behavioural economists left 17,303 wallets — each containing a small amount of cash, a few business cards, and a grocery list — at banks, hotels, police stations, theatres and post offices across 40 countries. They then recorded how often the wallet was returned with the money intact.</p>
+        <p>It is probably the purest field test of civic honesty ever conducted. No cameras, no accountability — just whether a stranger, finding someone else's wallet, does the honest thing when there is nothing to stop them keeping it.</p>
+      </div>
+    </div>
+
+    <div class="comp-row">
+      <div class="comp-row-head">
+        <div class="comp-name">Bribery-Free Rate</div>
+        <div class="comp-meta"><span class="comp-wt">10%</span><span class="comp-src-label">TI Global Corruption Barometer, 2017</span></div>
+      </div>
+      <div class="comp-desc">
+        <p>The Transparency International Global Corruption Barometer surveys ordinary people — not executives or experts — about their direct experience of corruption. The question is simple: in the past year, did anyone ask you for a bribe? The bribery-free rate is the share of people who went through the year without being asked. The 2015/16/17 edition covered 119 countries and 162,000 respondents.</p>
+        <p>This is street-level corruption, not elite corruption. It captures whether the clerk at the vehicle registration office expects an envelope, whether the police officer stopping your car expects something in return for letting you go, whether a hospital requires unofficial payment before treating you.</p>
+      </div>
+    </div>
+
+    <div class="comp-group-header">Outcomes &nbsp;·&nbsp; 27%</div>
+
+    <div class="comp-row">
+      <div class="comp-row-head">
+        <div class="comp-name">Homicide Rate</div>
+        <div class="comp-meta"><span class="comp-wt">7%</span><span class="comp-src-label">UNODC, 2021–23</span></div>
+      </div>
+      <div class="comp-desc">
+        <p>Intentional homicide per 100,000 people, from UN Office on Drugs and Crime data. Homicide is the most reliably comparable violent crime statistic across countries: bodies get counted, and the definition is consistent. All other crime data is fatally distorted by what gets reported.</p>
+        <p>A high homicide rate is a signal of fundamental civic breakdown — whether that is gang violence, state violence, domestic violence, or conflict. It sets a floor on how high a civic trust score can go.</p>
+      </div>
+    </div>
+
+    <div class="comp-row">
+      <div class="comp-row-head">
+        <div class="comp-name">Road Deaths</div>
+        <div class="comp-meta"><span class="comp-wt">6%</span><span class="comp-src-label">WHO Road Safety Report, 2021</span></div>
+      </div>
+      <div class="comp-desc">
+        <p>Traffic fatalities per 100,000 people, from the WHO. Road death rates reflect a combination of infrastructure quality, the strictness and enforcement of traffic law, and the shared social norms around driving. Countries where overtaking on blind corners is routine, where seatbelts are ignored, and where speed limits are treated as suggestions score poorly.</p>
+        <p>High road mortality is not just a safety failure — it is evidence of a civic commons that is poorly maintained and poorly governed. Countries with very low road death rates (Norway, Sweden, Switzerland) have achieved this through decades of coordinated investment in both engineering and culture.</p>
+      </div>
+    </div>
+
+    <div class="comp-row">
+      <div class="comp-row-head">
+        <div class="comp-name">Waste Management</div>
+        <div class="comp-meta"><span class="comp-wt">6%</span><span class="comp-src-label">Yale Environmental Performance Index, 2022</span></div>
+      </div>
+      <div class="comp-desc">
+        <p>Yale's Environmental Performance Index measures how effectively countries manage municipal solid waste — collection rates, controlled disposal, recycling infrastructure. Littered streets, illegal dumping, and open landfills are the visible face of a society that has not collectively maintained its public spaces.</p>
+        <p>Waste management is a particularly good civic indicator because it is almost entirely a matter of shared norms and collective governance, not geography or wealth. Countries at similar income levels can differ dramatically in how they treat common spaces — that difference is culture, not resources.</p>
+      </div>
+    </div>
+
+    <div class="comp-row">
+      <div class="comp-row-head">
+        <div class="comp-name">Terrorism Index</div>
+        <div class="comp-meta"><span class="comp-wt">8%</span><span class="comp-src-label">IEP Global Terrorism Index, 2023</span></div>
+      </div>
+      <div class="comp-desc">
+        <p>The Institute for Economics and Peace tracks every recorded terrorist incident globally — frequency, lethality, and the groups responsible. The score reflects the overall impact of terrorism on a country in a given year.</p>
+        <p>Chronic political violence and civic trust are incompatible. Countries with near-zero scores — Iceland, Japan, most of Northern Europe — have essentially eliminated terrorism as a feature of daily life. Countries at the other end are places where violence has become normalised as a method of settling political disputes.</p>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<section class="section" id="sec-about" style="--mc-cols:2">
+  <div class="section-head">
+    <div class="section-eyebrow">Section 05</div>
+    <h2 class="section-title">About</h2>
+    <div class="section-sub">The Civic Trust Index is an independent research project. All component datasets are publicly available from the sources listed on the opening page.</div>
+  </div>
+
+  <div class="method-grid">
+    <div class="method-card">
+      <div class="mc-title">How to read this</div>
+      <div class="mc-body">
+        <div class="howto-row">
+          <span class="howto-icon"><svg class="cti-icon" viewBox="0 0 16 16" width="1em" height="1em" fill="currentColor"><use href="#ico-map"/></svg></span>
+          <p>Higher scores indicate cleaner streets, safer nights, honest transactions, and better public maintenance. Lower scores reflect the daily cost of low civic trust.</p>
+        </div>
+        <div class="howto-row">
+          <span class="howto-icon"><svg class="cti-icon" viewBox="0 0 16 16" width="1em" height="1em" fill="currentColor"><use href="#ico-sliders"/></svg></span>
+          <p>Use the <span class="mc-accent">sidebar filters</span> to toggle components. The map and rankings update live — you can isolate Civic Honesty alone or check how sensitive a country's rank is to the wallet return data.</p>
+        </div>
+        <div class="howto-row">
+          <span class="howto-icon"><svg class="cti-icon" viewBox="0 0 16 16" width="1em" height="1em" fill="currentColor"><use href="#ico-cursor"/></svg></span>
+          <p>Hover any country for its full component breakdown — raw values, normalised scores, source and year. The one-sentence summary highlights the most distinctive feature of that country's profile.</p>
+        </div>
+        <div class="howto-row">
+          <span class="howto-icon"><svg class="cti-icon" viewBox="0 0 16 16" width="1em" height="1em" fill="currentColor"><use href="#ico-info"/></svg></span>
+          <p>Countries with fewer than 8 of 13 components are shown at reduced opacity in rankings. Their scores are valid but rest on a thinner data base.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="method-card">
+      <div class="mc-title">Frequently asked</div>
+      <div class="mc-body">
+        <div class="faq-item">
+          <div class="faq-q"><svg class="cti-icon" viewBox="0 0 16 16" width="1em" height="1em" fill="currentColor"><use href="#ico-barchart"/></svg> Why do Nordic countries rank so high?</div>
+          <p>Because they score consistently well across every category — not just institutions. Denmark, Norway and Finland top the Law &amp; Order index, have near-zero bribery rates, low homicide, high wallet return rates, and excellent waste management. No single component carries them; they perform well on all simultaneously.</p>
+        </div>
+        <div class="faq-item">
+          <div class="faq-q"><svg class="cti-icon" viewBox="0 0 16 16" width="1em" height="1em" fill="currentColor"><use href="#ico-arrows"/></svg> Why does the US rank lower than its WGI position?</div>
+          <p>The CTI weights outcomes heavily. The US has strong institutions but elevated homicide, road deaths, and terrorism scores that the WGI doesn't penalise. The CTI measures what people actually experience, not what experts perceive.</p>
+        </div>
+        <div class="faq-item">
+          <div class="faq-q"><svg class="cti-icon" viewBox="0 0 16 16" width="1em" height="1em" fill="currentColor"><use href="#ico-question"/></svg> Why isn't CPI just used instead?</div>
+          <p>The TI Corruption Perceptions Index measures elite-level corruption perception. It doesn't capture whether a street-level bribe is needed to register a vehicle — which is what the GCB bribery rate measures and why both are included at different weights.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="support-bar">
+    <div class="support-inner">
+      <div class="support-text">
+        <div class="support-label">Support this project</div>
+        <p>The CTI is independently maintained. If you find it useful — for research, journalism, policy, or curiosity — consider supporting its continued development.</p>
+      </div>
+      <div class="support-actions">
+        <a class="support-btn support-btn-primary" href="https://ko-fi.com/falsehamartia" target="_blank" rel="noopener">
+          ☕ Buy me a coffee
+        </a>
+        <a class="support-btn" href="mailto:?subject=Civic%20Trust%20Index&body=I%20thought%20you%20might%20find%20this%20interesting%3A%20https%3A%2F%2Fcivictrustindex.com" target="_blank">
+          Share this
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script src="js/data.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
