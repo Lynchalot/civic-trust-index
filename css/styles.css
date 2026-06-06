@@ -87,11 +87,13 @@
 .ctry,.globe-ctry{fill:var(--map-no-data)}
 .microdot-layer circle,.globe-microdot-layer circle{fill:var(--map-no-data)}
 /* Theme toggle — pill switch */
+.theme-wrap{display:flex;align-items:center;gap:.45rem;margin:0 1rem;flex-shrink:0}
+.theme-label{font-size:.8rem;color:var(--muted);line-height:1;user-select:none}
 .theme-toggle{
   width:32px;height:18px;border-radius:18px;
   border:1px solid var(--border2);background:var(--faint);
-  position:relative;cursor:pointer;padding:0;
-  flex-shrink:0;align-self:center;margin:0 1rem;
+  position:relative;cursor:pointer;padding:0;margin:0;
+  flex-shrink:0;align-self:center;
   transition:background .22s,border-color .22s;
 }
 .theme-toggle::after{
@@ -595,6 +597,11 @@ h1{
 .rank-show-all button{background:var(--surface2);border:1px solid var(--border2);color:var(--text);padding:.4rem 1.2rem;border-radius:4px;font-family:inherit;font-size:.72rem;cursor:pointer}
 .rank-show-all button:hover{background:var(--border2)}
 @media(max-width:900px){.rank-show-all{display:block}}
+@media(max-width:600px){
+  .rank-row-full{grid-template-columns:28px 1fr 54px;font-size:.7rem}
+  .rank-row-full>span:nth-child(4){display:none}
+  .rank-controls{gap:.5rem}
+}
 .rank-row-full:hover{background:var(--surface2)}
 .rank-row-full.low-comp{opacity:.5}
 .rank-row-full .rr-detail{

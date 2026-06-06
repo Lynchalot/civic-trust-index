@@ -71,11 +71,13 @@
 [data-theme="light"] .ndsw{background:var(--map-no-data);border-color:var(--border)}
 .ctry,.globe-ctry{fill:var(--map-no-data)}
 .microdot-layer circle,.globe-microdot-layer circle{fill:var(--map-no-data)}
+.theme-wrap{display:flex;align-items:center;gap:.45rem;margin:0 1rem;flex-shrink:0}
+.theme-label{font-size:.8rem;color:var(--muted);line-height:1;user-select:none}
 .theme-toggle{
   width:32px;height:18px;border-radius:18px;
   border:1px solid var(--border2);background:var(--faint);
-  position:relative;cursor:pointer;padding:0;
-  flex-shrink:0;align-self:center;margin:0 1rem;
+  position:relative;cursor:pointer;padding:0;margin:0;
+  flex-shrink:0;align-self:center;
   transition:background .22s,border-color .22s;
 }
 .theme-toggle::after{
@@ -1619,6 +1621,11 @@ html{font-size:15px}
 .hero-scroll{animation:fadeUp .5s ease both;animation-delay:.7s;opacity:0}
 .hero-mid{animation:fadeIn .9s ease both;animation-delay:.3s;opacity:0}
 .hero-index-col{animation:fadeUp .7s ease both;animation-delay:.45s;opacity:0}
+@media(max-width:600px){
+  .rank-row-full{grid-template-columns:28px 1fr 54px!important;font-size:.7rem!important}
+  .rank-row-full>span:nth-child(4){display:none}
+  .rank-controls{gap:.5rem}
+}
 
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/twemoji.min.js" crossorigin="anonymous"></script>
@@ -1744,7 +1751,10 @@ html{font-size:15px}
     <a class="tn-link" data-target="sec-methodology">Methodology</a>
     <a class="tn-link" data-target="sec-about">About</a>
     <a class="tn-link tn-donate" href="https://ko-fi.com/falsehamartia" target="_blank" rel="noopener">Support ↗</a>
-    <button class="theme-toggle" id="theme-toggle" aria-label="Switch to light mode"></button>
+    <span class="theme-wrap">
+      <span class="theme-label" id="theme-label">☀</span>
+      <button class="theme-toggle" id="theme-toggle" aria-label="Switch to light mode"></button>
+    </span>
   </div>
 </nav>
 <section class="section" id="sec-map">
@@ -4017,12 +4027,15 @@ g.append('rect').attr('width',W).attr('height',H).style('fill','var(--map-ocean)
   try{stored=localStorage.getItem('cti-theme');}catch(e){}
 
   function applyTheme(t){
+    const lbl=document.getElementById('theme-label');
     if(t==='light'){
       html.setAttribute('data-theme','light');
       if(btn)btn.setAttribute('aria-label','Switch to dark mode');
+      if(lbl)lbl.textContent='☾';
     } else {
       html.removeAttribute('data-theme');
       if(btn)btn.setAttribute('aria-label','Switch to light mode');
+      if(lbl)lbl.textContent='☀';
     }
   }
   applyTheme(stored||(mq.matches?'dark':'light'));
