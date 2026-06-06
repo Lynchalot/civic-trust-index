@@ -257,7 +257,6 @@ h1{
   border:none;border-radius:4px;
   cursor:default;
   box-shadow:none;
-  will-change:transform;
 }
 #msvg.zooming .ctry{transition:none}
 #msvg.zooming>g{pointer-events:none}
@@ -959,7 +958,7 @@ a.hi-src:hover{color:var(--accent);text-decoration:underline;text-underline-offs
   from{opacity:0;transform:translateY(18px)}
   to{opacity:1;transform:translateY(0)}
 }
-#msvg.zooming{shape-rendering:optimizeSpeed}
+#msvg.zooming{shape-rendering:crispEdges}
 
 @keyframes fadeIn{
   from{opacity:0}to{opacity:1}
