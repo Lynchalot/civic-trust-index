@@ -2,6 +2,7 @@
 @import url('https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;1,400&family=Space+Grotesk:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap');
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
+  color-scheme: dark;
   /* ── Dark palette (default) */
   --bg:#0d0c0f;
   --surface:#141218;
@@ -33,6 +34,7 @@
 
 /* ── Light mode palette */
 [data-theme="light"]{
+  color-scheme: light;
   --bg:#f5f1ea;
   --surface:#ede8df;
   --surface2:#e4ddd2;

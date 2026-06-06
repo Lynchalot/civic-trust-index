@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="dark light">
 <title>Civic Trust Index</title>
 
 <style>
@@ -10,6 +11,7 @@
 @import url('https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;1,400&family=Space+Grotesk:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap');
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
+  color-scheme: dark;
   /* ── Conformist palette — warm amber core, cold marble counterpoint */
   --bg:#0d0c0f;          /* near-black, very slightly violet-cool */
   --surface:#141218;     /* Anna Quadri's grey coat — cool-dark surface */
@@ -34,6 +36,7 @@
   --hero-land:#2d6244;--hero-graticule:rgba(255,255,255,.18);
 }
 [data-theme="light"]{
+  color-scheme: light;
   --bg:#f5f1ea;--surface:#ede8df;--surface2:#e4ddd2;--border:#cdc5b5;
   --border2:#b8af9e;--text:#1e1a14;--muted:#6b6050;--faint:#d6cec0;
   --accent:#a85e10;--accent2:#7a1f0e;--cool:#2c5070;--rule:#d0c8b8;
@@ -3939,9 +3942,11 @@ g.append('rect').attr('width',W).attr('height',H).style('fill','var(--map-ocean)
 (function(){
   const html=document.documentElement;
   const btn=document.getElementById('theme-toggle');
-  let stored='dark';
-  try{stored=localStorage.getItem('cti-theme')||'dark';}catch(e){}
-  function setTheme(t){
+  const mq=window.matchMedia('(prefers-color-scheme: dark)');
+  let stored=null;
+  try{stored=localStorage.getItem('cti-theme');}catch(e){}
+
+  function applyTheme(t){
     if(t==='light'){
       html.setAttribute('data-theme','light');
       if(btn)btn.setAttribute('aria-label','Switch to dark mode');
@@ -3949,11 +3954,18 @@ g.append('rect').attr('width',W).attr('height',H).style('fill','var(--map-ocean)
       html.removeAttribute('data-theme');
       if(btn)btn.setAttribute('aria-label','Switch to light mode');
     }
-    try{localStorage.setItem('cti-theme',t);}catch(e){}
   }
-  setTheme(stored==='light'?'light':'dark');
+  applyTheme(stored||(mq.matches?'dark':'light'));
+
+  mq.addEventListener('change',function(e){
+    let s=null;try{s=localStorage.getItem('cti-theme');}catch(e2){}
+    if(!s)applyTheme(e.matches?'dark':'light');
+  });
+
   if(btn) btn.addEventListener('click',function(){
-    setTheme(html.getAttribute('data-theme')==='light'?'dark':'light');
+    const next=html.getAttribute('data-theme')==='light'?'dark':'light';
+    applyTheme(next);
+    try{localStorage.setItem('cti-theme',next);}catch(e){}
   });
 })();
 </script>

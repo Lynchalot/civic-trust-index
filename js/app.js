@@ -724,9 +724,11 @@ fetch('https://cdn.jsdelivr.net/npm/visionscarto-world-atlas@1/world/50m.json')
 (function(){
   const html=document.documentElement;
   const btn=document.getElementById('theme-toggle');
-  let stored='dark';
-  try{stored=localStorage.getItem('cti-theme')||'dark';}catch(e){}
-  function setTheme(t){
+  const mq=window.matchMedia('(prefers-color-scheme: dark)');
+  let stored=null;
+  try{stored=localStorage.getItem('cti-theme');}catch(e){}
+
+  function applyTheme(t){
     if(t==='light'){
       html.setAttribute('data-theme','light');
       if(btn)btn.setAttribute('aria-label','Switch to dark mode');
@@ -734,10 +736,19 @@ fetch('https://cdn.jsdelivr.net/npm/visionscarto-world-atlas@1/world/50m.json')
       html.removeAttribute('data-theme');
       if(btn)btn.setAttribute('aria-label','Switch to light mode');
     }
-    try{localStorage.setItem('cti-theme',t);}catch(e){}
   }
-  setTheme(stored==='light'?'light':'dark');
+  // stored preference > system preference
+  applyTheme(stored||(mq.matches?'dark':'light'));
+
+  // Follow system changes only when user hasn't set an explicit preference
+  mq.addEventListener('change',function(e){
+    let s=null;try{s=localStorage.getItem('cti-theme');}catch(e2){}
+    if(!s)applyTheme(e.matches?'dark':'light');
+  });
+
   if(btn) btn.addEventListener('click',function(){
-    setTheme(html.getAttribute('data-theme')==='light'?'dark':'light');
+    const next=html.getAttribute('data-theme')==='light'?'dark':'light';
+    applyTheme(next);
+    try{localStorage.setItem('cti-theme',next);}catch(e){}
   });
 })();
