@@ -297,7 +297,7 @@ function _buildGlobe(){
   const grat=gsvg.append('path').datum(d3.geoGraticule()())
     .style('fill','none').style('stroke','var(--map-graticule)').attr('stroke-width',.4);
 
-  fetch('https://cdn.jsdelivr.net/npm/visionscarto-world-atlas@1/world/50m.json')
+  fetch('https://cdn.jsdelivr.net/npm/visionscarto-world-atlas@1/world/110m.json')
     .then(r=>r.json()).then(world=>{
       const landFeat=topojson.feature(world,world.objects.land);
       const countryFeats=topojson.feature(world,world.objects.countries).features;
@@ -363,6 +363,7 @@ function _buildGlobe(){
         {iso3:'BHR',xy:[50.55,26.07]},
         {iso3:'MDV',xy:[73.5,3.2]},
         {iso3:'AND',xy:[1.52,42.5]},
+        {iso3:'MUS',xy:[57.55,-20.28]},
       ];
       const gmdG=gsvg.append('g').attr('class','globe-microdot-layer');
       const gmdCircles=GLOBE_MICRODOTS.map(ms=>{
@@ -380,13 +381,18 @@ function _buildGlobe(){
         };
       });
 
-      function redraw(){
+      function redraw(fast){
         gProj.rotate(rot);
         countries.selectAll('path').attr('d',gPath);
         dfGlobe.selectAll('path').attr('d',gPath);
         globeBorders.attr('d',gPath);
-        coast.attr('d',gPath);
-        grat.attr('d',gPath);
+        if(fast){
+          grat.style('visibility','hidden');
+          coast.style('visibility','hidden');
+        } else {
+          coast.attr('d',gPath).style('visibility','visible');
+          grat.attr('d',gPath).style('visibility','visible');
+        }
         const center=[-rot[0],-rot[1]];
         gmdCircles.forEach(({ms,circle})=>{
           const dist=d3.geoDistance(ms.xy,center);
@@ -409,8 +415,9 @@ function _buildGlobe(){
         .on('start',()=>stopGlobeRotation())
         .on('drag',ev=>{
           rot=[rot[0]+ev.dx*0.4, Math.max(-90,Math.min(90,rot[1]-ev.dy*0.4))];
-          redraw();
+          redraw(true);
         })
+        .on('end',()=>redraw(false))
       );
       gsvg.on('wheel.zoom',ev=>{
         ev.preventDefault();
@@ -628,7 +635,7 @@ function initGlobe(world){
   heroRafId=requestAnimationFrame(animate);
 }
 
-fetch('https://cdn.jsdelivr.net/npm/visionscarto-world-atlas@1/world/50m.json')
+fetch('https://cdn.jsdelivr.net/npm/visionscarto-world-atlas@1/world/110m.json')
   .then(r=>r.json())
   .then(world=>{
     const W=960,H=490;
@@ -722,6 +729,7 @@ fetch('https://cdn.jsdelivr.net/npm/visionscarto-world-atlas@1/world/50m.json')
     // ── Coastline — non-scaling-stroke keeps it hair-thin at any zoom
     g.append('path')
       .datum(topojson.feature(world,world.objects.land))
+      .attr('class','map-decor')
       .style('fill','none')
       .style('stroke','var(--map-coast)')
       .attr('stroke-width',.4)
@@ -730,6 +738,7 @@ fetch('https://cdn.jsdelivr.net/npm/visionscarto-world-atlas@1/world/50m.json')
       .attr('d',gp);
 
     g.append('path').datum(d3.geoGraticule()())
+      .attr('class','map-decor')
       .style('fill','none').style('stroke','var(--map-graticule)').attr('stroke-width',.5).attr('d',gp);
 
     // ── Dot markers for micro-states invisible at world scale
@@ -745,6 +754,7 @@ fetch('https://cdn.jsdelivr.net/npm/visionscarto-world-atlas@1/world/50m.json')
       {iso3:'BHR',xy:[50.55,26.07]},
       {iso3:'MDV',xy:[73.5,3.2]},
       {iso3:'AND',xy:[1.52,42.5]},
+      {iso3:'MUS',xy:[57.55,-20.28]},
     ];
     const mdG=g.append('g').attr('class','microdot-layer').style('pointer-events','all');
     MICRODOTS.forEach(ms=>{
