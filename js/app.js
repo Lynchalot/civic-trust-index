@@ -555,6 +555,40 @@ document.addEventListener('DOMContentLoaded', function(){
 });
 buildSidebar();
 
+// ── Panel toggles (Filters / Rankings)
+(function(){
+  const app=document.getElementById('app');
+  const btnF=document.getElementById('toggle-filters');
+  const btnR=document.getElementById('toggle-rankings');
+  const SB='cti-sb',RP='cti-rp';
+  let sbOn,rpOn;
+  try{
+    // null (first visit) → false = hidden by default for map-first layout
+    sbOn=localStorage.getItem(SB)==='1';
+    rpOn=localStorage.getItem(RP)==='1';
+  }catch(e){sbOn=false;rpOn=false;}
+  function apply(){
+    if(!app)return;
+    app.classList.toggle('sb-off',!sbOn);
+    app.classList.toggle('rp-off',!rpOn);
+    if(btnF){
+      btnF.classList.toggle('active',sbOn);
+      btnF.textContent=sbOn?'⊟ Filters':'⊞ Filters';
+    }
+    if(btnR){
+      btnR.classList.toggle('active',rpOn);
+      btnR.textContent=rpOn?'Rankings ⊟':'Rankings ⊞';
+    }
+  }
+  if(btnF)btnF.addEventListener('click',()=>{
+    sbOn=!sbOn;try{localStorage.setItem(SB,sbOn?'1':'0');}catch(e){}apply();
+  });
+  if(btnR)btnR.addEventListener('click',()=>{
+    rpOn=!rpOn;try{localStorage.setItem(RP,rpOn?'1':'0');}catch(e){}apply();
+  });
+  apply();
+})();
+
 // Close modals on overlay click or Escape
 document.querySelectorAll('.modal-overlay').forEach(m=>{
   m.addEventListener('click',e=>{if(e.target===m)m.classList.remove('open');});

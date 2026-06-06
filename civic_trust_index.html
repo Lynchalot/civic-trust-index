@@ -90,8 +90,22 @@
 [data-theme="light"] .theme-toggle:hover{border-color:var(--accent2)}
 body{background:var(--bg);color:var(--text);font-family:var(--ff-body);min-height:100vh;padding:0 2rem 6rem;}body::before{content:'';display:block;height:3px;background:linear-gradient(90deg,var(--accent2),var(--accent),var(--accent2));}
 .app{display:grid;grid-template-columns:220px 1fr 250px;gap:1rem;max-width:1700px;margin:0 auto}
-@media(max-width:1300px){.app{grid-template-columns:200px 1fr}.rank-panel{display:none}}
-@media(max-width:900px){.app{grid-template-columns:1fr}.sidebar{display:none}}
+.app.sb-off{grid-template-columns:1fr 250px}
+.app.rp-off{grid-template-columns:220px 1fr}
+.app.sb-off.rp-off{grid-template-columns:1fr}
+.app.sb-off #panel-filters{display:none}
+.app.rp-off #panel-rankings{display:none}
+@media(max-width:1300px){
+  .app{grid-template-columns:200px 1fr}
+  .app.sb-off{grid-template-columns:1fr}
+  .rank-panel{display:none}
+  #toggle-rankings{display:none}
+}
+@media(max-width:900px){
+  .app,.app.sb-off,.app.rp-off,.app.sb-off.rp-off{grid-template-columns:1fr}
+  .sidebar{display:none}
+  #toggle-filters{display:none}
+}
 
 /* ── Sidebar filters */
 .sidebar{
@@ -1532,7 +1546,8 @@ html{font-size:15px}
 
 
 /* ── Globe view mode */
-.view-tabs{display:flex;gap:0;margin-bottom:.6rem;}
+.view-tabs{display:flex;gap:0;margin-bottom:.6rem;align-items:center}
+.vt-spacer{flex:1}
 .view-tab{
   font-size:.58rem;letter-spacing:.1em;text-transform:uppercase;
   padding:.3rem .8rem;cursor:pointer;font-family:var(--ff-body);
@@ -1542,6 +1557,15 @@ html{font-size:15px}
 .view-tab:first-child{border-radius:2px 0 0 2px}
 .view-tab:last-child{border-radius:0 2px 2px 0;border-left:none}
 .view-tab.active{background:var(--accent);border-color:var(--accent);color:var(--bg);font-weight:600}
+.panel-toggle{
+  background:none;border:1px solid var(--border);border-radius:3px;
+  color:var(--muted);cursor:pointer;font-family:var(--ff-body);
+  font-size:.56rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;
+  padding:.28rem .65rem;margin-left:.4rem;
+  transition:color .12s,border-color .12s,background .12s;white-space:nowrap;
+}
+.panel-toggle:hover{color:var(--text);border-color:var(--muted)}
+.panel-toggle.active{background:var(--surface2);color:var(--accent);border-color:var(--accent)}
 #globe-container{display:none;width:100%;aspect-ratio:960/490;background:var(--bg)}
 #globe-svg{width:100%;height:100%}
 #wrap{position:relative}
@@ -1724,8 +1748,8 @@ html{font-size:15px}
   </div>
 </nav>
 <section class="section" id="sec-map">
-<div class="app">
-<aside class="sidebar">
+<div class="app" id="app">
+<aside class="sidebar" id="panel-filters">
   <div class="sb-title">Filter Components</div>
   <div id="sb-groups"></div>
   <div class="sb-actions">
@@ -1742,6 +1766,9 @@ html{font-size:15px}
 <div class="view-tabs">
   <button class="view-tab active" id="tab-flat" onclick="setView('flat')">Flat</button>
   <button class="view-tab" id="tab-globe" onclick="setView('globe')">Globe</button>
+  <span class="vt-spacer"></span>
+  <button class="panel-toggle" id="toggle-filters" title="Toggle filter panel">⊟ Filters</button>
+  <button class="panel-toggle" id="toggle-rankings" title="Toggle rankings panel">Rankings ⊟</button>
 </div>
 <div id="wrap">
   <svg id="msvg"></svg>
@@ -1781,7 +1808,7 @@ html{font-size:15px}
   <div class="ndbox"><span class="ndsw"></span><span>No data</span></div>
 </div>
 </main>
-<aside class="rank-panel">
+<aside class="rank-panel" id="panel-rankings">
   <div class="rp-title">Rankings</div>
   <div class="rp-tabs">
     <button class="rp-tab active" data-mode="top">Top 25</button>
@@ -3756,6 +3783,26 @@ document.addEventListener('DOMContentLoaded', function(){
 });
 buildSidebar();
 
+// ── Panel toggles
+(function(){
+  const app=document.getElementById('app');
+  const btnF=document.getElementById('toggle-filters');
+  const btnR=document.getElementById('toggle-rankings');
+  const SB='cti-sb',RP='cti-rp';
+  let sbOn,rpOn;
+  try{sbOn=localStorage.getItem(SB)==='1';rpOn=localStorage.getItem(RP)==='1';}
+  catch(e){sbOn=false;rpOn=false;}
+  function apply(){
+    if(!app)return;
+    app.classList.toggle('sb-off',!sbOn);
+    app.classList.toggle('rp-off',!rpOn);
+    if(btnF){btnF.classList.toggle('active',sbOn);btnF.textContent=sbOn?'⊟ Filters':'⊞ Filters';}
+    if(btnR){btnR.classList.toggle('active',rpOn);btnR.textContent=rpOn?'Rankings ⊟':'Rankings ⊞';}
+  }
+  if(btnF)btnF.addEventListener('click',()=>{sbOn=!sbOn;try{localStorage.setItem(SB,sbOn?'1':'0');}catch(e){}apply();});
+  if(btnR)btnR.addEventListener('click',()=>{rpOn=!rpOn;try{localStorage.setItem(RP,rpOn?'1':'0');}catch(e){}apply();});
+  apply();
+})();
 
 function openModal(id){
   document.getElementById('modal-'+id).classList.add('open');

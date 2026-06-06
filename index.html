@@ -138,8 +138,8 @@
   </div>
 </nav>
 <section class="section" id="sec-map">
-<div class="app">
-<aside class="sidebar">
+<div class="app" id="app">
+<aside class="sidebar" id="panel-filters">
   <div class="sb-title">Filter Components</div>
   <div id="sb-groups"></div>
   <div class="sb-actions">
@@ -153,6 +153,9 @@
 <div class="view-tabs">
   <button class="view-tab active" id="tab-flat" onclick="setView('flat')">Flat</button>
   <button class="view-tab" id="tab-globe" onclick="setView('globe')">Globe</button>
+  <span class="vt-spacer"></span>
+  <button class="panel-toggle" id="toggle-filters" title="Toggle filter panel">⊟ Filters</button>
+  <button class="panel-toggle" id="toggle-rankings" title="Toggle rankings panel">Rankings ⊟</button>
 </div>
 <div id="wrap">
   <svg id="msvg"></svg>
@@ -192,7 +195,7 @@
   <div class="ndbox"><span class="ndsw"></span><span>No data</span></div>
 </div>
 </main>
-<aside class="rank-panel">
+<aside class="rank-panel" id="panel-rankings">
   <div class="rp-title">Rankings</div>
   <div class="rp-tabs">
     <button class="rp-tab active" data-mode="top">Top 25</button>
