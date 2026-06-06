@@ -242,7 +242,9 @@ h1{
   border:none;border-radius:4px;
   cursor:default;
   box-shadow:none;
+  will-change:transform;
 }
+#msvg.zooming .ctry{transition:none}
 .ctry{cursor:pointer;transition:opacity .1s}.ctry:hover{opacity:.72}
 #zctrls{
   position:absolute;top:12px;right:12px;

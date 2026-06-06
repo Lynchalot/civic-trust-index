@@ -226,7 +226,9 @@ h1{
   border:none;border-radius:4px;
   cursor:default;
   box-shadow:none;
+  will-change:transform;
 }
+#msvg.zooming .ctry{transition:none}
 .ctry{cursor:pointer;transition:opacity .1s}.ctry:hover{opacity:.72;filter:brightness(1.08)}
 #zctrls{
   position:absolute;top:12px;right:12px;
@@ -3597,7 +3599,6 @@ function _buildGlobe(){
         .attr('class','globe-ctry')
         .attr('d',gPath)
         .style('fill',d=>{const n=d.id<0?String(d.id):String(d.id).padStart(3,'0');return byNum[n]?tc(byNum[n].score):null;})
-        .style('stroke','var(--map-border)').attr('stroke-width',.25)
         .style('cursor','pointer')
         .on('mousemove',function(ev){
           const n=d3.select(this).datum().id;
@@ -3635,6 +3636,12 @@ function _buildGlobe(){
           .on('mouseleave',()=>tip.style.opacity='0');
       });
 
+      const globeBorders=gsvg.append('path')
+        .datum(topojson.mesh(world,world.objects.countries,(a,b)=>a!==b))
+        .style('fill','none')
+        .style('stroke','var(--map-border)')
+        .attr('stroke-width',.25);
+
       // Coast outline
       const coast=gsvg.append('path').datum(landFeat)
         .style('fill','none').style('stroke','var(--map-coast)').attr('stroke-width',.45);
@@ -3643,6 +3650,7 @@ function _buildGlobe(){
         gProj.rotate(rot);
         countries.selectAll('path').attr('d',gPath);
         dfGlobe.selectAll('path').attr('d',gPath);
+        globeBorders.attr('d',gPath);
         coast.attr('d',gPath);
         grat.attr('d',gPath);
       }
@@ -3808,8 +3816,6 @@ g.append('rect').attr('width',W).attr('height',H).style('fill','var(--map-ocean)
       .data(feats)
       .join('path').attr('class','ctry').attr('d',gp)
       .style('fill',d=>{const n=d.id<0?String(d.id):String(d.id).padStart(3,'0');const r=byNum[n];return r?tc(r.score):null;})
-      .style('stroke','var(--map-border)')
-      .attr('stroke-width',.35)
       .style('cursor',d=>{const n=d.id<0?String(d.id):String(d.id).padStart(3,'0');return byNum[n]?'pointer':'help';})
       .on('mousemove',function(ev,d){
         if(d.id==null||d.id===undefined){
@@ -3868,6 +3874,14 @@ g.append('rect').attr('width',W).attr('height',H).style('fill','var(--map-ocean)
     zoom.on('zoom.defacto',ev=>{
       dfG.selectAll('path').attr('stroke-width',.7/ev.transform.k).attr('stroke-dasharray',(3/ev.transform.k)+','+(2.5/ev.transform.k));
     });
+
+    g.append('path')
+      .datum(topojson.mesh(world,world.objects.countries,(a,b)=>a!==b))
+      .style('fill','none')
+      .style('stroke','var(--map-border)')
+      .attr('stroke-width',.35)
+      .attr('vector-effect','non-scaling-stroke')
+      .attr('d',gp);
 
     // ── Coastline: thin stroke, stays ~0.4 screen-pixels at any zoom
     const coastPath=g.append('path')

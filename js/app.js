@@ -307,7 +307,6 @@ function _buildGlobe(){
         .attr('class','globe-ctry')
         .attr('d',gPath)
         .style('fill',d=>{const n=d.id<0?String(d.id):String(d.id).padStart(3,'0');return byNum[n]?tc(byNum[n].score):null;})
-        .style('stroke','var(--map-border)').attr('stroke-width',.25)
         .style('cursor','pointer')
         .on('mousemove',function(ev){
           const n=d3.select(this).datum().id;
@@ -344,6 +343,12 @@ function _buildGlobe(){
           .on('mouseleave',()=>tip.style.opacity='0');
       });
 
+      const globeBorders=gsvg.append('path')
+        .datum(topojson.mesh(world,world.objects.countries,(a,b)=>a!==b))
+        .style('fill','none')
+        .style('stroke','var(--map-border)')
+        .attr('stroke-width',.25);
+
       const coast=gsvg.append('path').datum(landFeat)
         .style('fill','none').style('stroke','var(--map-coast)').attr('stroke-width',.45);
 
@@ -379,6 +384,7 @@ function _buildGlobe(){
         gProj.rotate(rot);
         countries.selectAll('path').attr('d',gPath);
         dfGlobe.selectAll('path').attr('d',gPath);
+        globeBorders.attr('d',gPath);
         coast.attr('d',gPath);
         grat.attr('d',gPath);
         const center=[-rot[0],-rot[1]];
@@ -609,8 +615,6 @@ fetch('https://cdn.jsdelivr.net/npm/visionscarto-world-atlas@1/world/50m.json')
       .data(feats)
       .join('path').attr('class','ctry').attr('d',gp)
       .style('fill',d=>{const n=d.id<0?String(d.id):String(d.id).padStart(3,'0');const r=byNum[n];return r?tc(r.score):null;})
-      .style('stroke','var(--map-border)')
-      .attr('stroke-width',.35)
       .style('cursor',d=>{const n=d.id<0?String(d.id):String(d.id).padStart(3,'0');return byNum[n]?'pointer':'help';})
       .on('mousemove',function(ev,d){
         if(d.id==null||d.id===undefined){
@@ -663,6 +667,15 @@ fetch('https://cdn.jsdelivr.net/npm/visionscarto-world-atlas@1/world/50m.json')
         })
         .on('mouseleave',()=>tip.style.opacity='0');
     });
+
+    // ── Country borders — single mesh path instead of per-country strokes (Firefox perf)
+    g.append('path')
+      .datum(topojson.mesh(world,world.objects.countries,(a,b)=>a!==b))
+      .style('fill','none')
+      .style('stroke','var(--map-border)')
+      .attr('stroke-width',.35)
+      .attr('vector-effect','non-scaling-stroke')
+      .attr('d',gp);
 
     // ── Coastline — non-scaling-stroke keeps it hair-thin at any zoom
     g.append('path')
