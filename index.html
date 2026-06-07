@@ -127,6 +127,9 @@
 </section>
 <nav class="topnav">
   <div class="tn-brand">Civic Trust Index <span class="cti-mark">CTI</span></div>
+  <button class="ham-btn" id="ham-btn" aria-label="Open menu">
+    <span></span><span></span><span></span>
+  </button>
   <div class="tn-links">
     <a class="tn-link active" data-target="sec-map">Map</a>
     <a class="tn-link" data-target="sec-rankings">Rankings</a>
@@ -140,6 +143,7 @@
     </span>
   </div>
 </nav>
+<div class="mob-backdrop" id="mob-backdrop"></div>
 <section class="section" id="sec-map">
 <div class="app" id="app">
 <aside class="sidebar" id="panel-filters">
@@ -160,10 +164,14 @@
   <button class="panel-toggle" id="toggle-filters" title="Toggle filter panel">⊟ Filters</button>
   <button class="panel-toggle" id="toggle-rankings" title="Toggle rankings panel">Rankings ⊟</button>
 </div>
+<div class="mob-bar" id="mob-bar">
+  <button class="mob-bar-btn" id="mob-btn-filters">⊞ Filters</button>
+  <button class="mob-bar-btn" id="mob-btn-rankings">Rankings ⊞</button>
+</div>
 <div id="wrap">
-  <svg id="msvg"></svg>
+  <canvas id="msvg"></canvas>
   <div id="globe-container">
-    <svg id="globe-svg"></svg>
+    <canvas id="globe-svg"></canvas>
     <div id="globe-ctrls">
       <button class="zbtn" id="globe-zin" title="Zoom in">+</button>
       <button class="zbtn" id="globe-reset" title="Reset view">&#x25CE;</button>

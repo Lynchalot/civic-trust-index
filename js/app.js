@@ -94,21 +94,11 @@ document.addEventListener('click',e=>{
   buildRanking();
 });
 
+window.__ctiRedraws=window.__ctiRedraws||[];
+function repaintMaps(){(window.__ctiRedraws||[]).forEach(fn=>{try{fn();}catch(e){}});}
+
 function recomputeAll(){
-  // Returns hex score colour or null (null lets CSS var(--map-no-data) show through)
-  const fillFor=r=>{
-    if(!r)return null;
-    const s=recalcScoreFiltered(r);
-    return s===null?null:tc(s);
-  };
-  const numKey=d=>(d.id<0?String(d.id):String(d.id).padStart(3,'0'));
-  d3.selectAll('path.ctry').style('fill',d=>fillFor(byNum[numKey(d)]));
-  d3.selectAll('path.globe-ctry').style('fill',d=>fillFor(byNum[numKey(d)]));
-  d3.selectAll('.microdot-layer circle').style('fill',function(){
-    const iso3=d3.select(this).attr('data-iso');
-    const r=byISO[iso3];
-    return r?fillFor(r):null;
-  });
+  repaintMaps();
   buildRanking();
   buildInlineRankings();
 }
@@ -280,163 +270,147 @@ function initGlobeMap(){
   globeInitialised=true;
   setTimeout(()=>_buildGlobe(),50);
 }
+// ── Shared tooltip helpers (used by canvas hit-testing on both views)
+function showDefactoTip(ev,df){
+  document.getElementById('tn').innerHTML='<span style="font-style:italic">'+df.name+'</span>';
+  document.getElementById('tsc').innerHTML='<span style="color:var(--muted);text-transform:uppercase;font-size:.6rem;letter-spacing:.08em">No index data available</span>';
+  const summEl=document.getElementById('tsummary');summEl.textContent=df.info;summEl.classList.remove('loading');
+  document.getElementById('trows').innerHTML='';
+  document.getElementById('tfoot').textContent='Not included in CTI — boundaries shown for reference';
+  const tw=270,th=200,pad=10;let tx=ev.clientX+16,ty=ev.clientY+14;
+  if(tx+tw>window.innerWidth-pad)tx=ev.clientX-tw-10;
+  if(ty+th>window.innerHeight-pad)ty=ev.clientY-th-10;
+  tip.style.left=Math.max(pad,tx)+'px';tip.style.top=Math.max(pad,ty)+'px';tip.style.opacity='1';
+}
+function showDisputedTip(ev){
+  document.getElementById('tn').textContent='Disputed boundary';
+  document.getElementById('tsc').innerHTML='<span style="color:var(--muted)">No index data</span>';
+  const summEl=document.getElementById('tsummary');summEl.textContent='This area has competing territorial claims and is not assigned a country code in the TopoJSON source. It cannot be measured by the CTI.';summEl.classList.remove('loading');
+  document.getElementById('trows').innerHTML='';document.getElementById('tfoot').textContent='';
+  const tw=270,th=200,pad=10;let tx=ev.clientX+16,ty=ev.clientY+14;
+  if(tx+tw>window.innerWidth-pad)tx=ev.clientX-tw-10;
+  if(ty+th>window.innerHeight-pad)ty=ev.clientY-th-10;
+  tip.style.left=Math.max(pad,tx)+'px';tip.style.top=Math.max(pad,ty)+'px';tip.style.opacity='1';
+}
+function _mapColors(){
+  const cs=getComputedStyle(document.documentElement);
+  return {
+    bg:cs.getPropertyValue('--bg'),
+    ocean:cs.getPropertyValue('--map-ocean'),
+    nodata:cs.getPropertyValue('--map-no-data'),
+    border:cs.getPropertyValue('--map-border'),
+    coast:cs.getPropertyValue('--map-coast'),
+    grat:cs.getPropertyValue('--map-graticule'),
+    micro:cs.getPropertyValue('--map-micro-stroke')
+  };
+}
+
 function _buildGlobe(){
   const gc=document.getElementById('globe-container');
   const W=gc.clientWidth||960,H=gc.clientHeight||(gc.clientWidth*(490/960))||490;
+  const canvas=document.getElementById('globe-svg');
+  const ctx=canvas.getContext('2d');
+  const dpr=Math.min(window.devicePixelRatio||1,2);
+  canvas.width=Math.round(W*dpr);canvas.height=Math.round(H*dpr);
   const R=Math.min(W,H)/2-10;
-  const gsvg=d3.select('#globe-svg').attr('viewBox',`0 0 ${W} ${H}`);
-  gsvg.append('rect').attr('width',W).attr('height',H).attr('fill','var(--bg)');
-
   const gProj=d3.geoOrthographic().scale(R).translate([W/2,H/2]).clipAngle(90);
-  const gPath=d3.geoPath().projection(gProj);
+  const path=d3.geoPath(gProj,ctx);
   let rot=[0,-25];
-
-  gsvg.append('circle').attr('cx',W/2).attr('cy',H/2).attr('r',R)
-    .style('fill','var(--map-ocean)');
-
-  const grat=gsvg.append('path').datum(d3.geoGraticule()())
-    .style('fill','none').style('stroke','var(--map-graticule)').attr('stroke-width',.4);
 
   fetch('https://cdn.jsdelivr.net/npm/visionscarto-world-atlas@1/world/50m.json')
     .then(r=>r.json()).then(world=>{
-      const landFeat=topojson.feature(world,world.objects.land);
+      const land=topojson.feature(world,world.objects.land);
       const countryFeats=topojson.feature(world,world.objects.countries).features;
-
-      const countries=gsvg.append('g');
-      countries.selectAll('path').data(countryFeats).join('path')
-        .attr('class','globe-ctry')
-        .attr('d',gPath)
-        .style('fill',d=>{const n=d.id<0?String(d.id):String(d.id).padStart(3,'0');return byNum[n]?tc(byNum[n].score):null;})
-        .style('cursor','pointer')
-        .on('mousemove',function(ev){
-          const n=d3.select(this).datum().id;
-          const nk=n<0?String(n):String(n).padStart(3,'0');
-          const iso3=N2I[nk];
-          const r=byNum[nk];
-          const name=r?.name||(iso3&&WGI[iso3]?.n)||iso3||TERRITORY[nk]?.name||('Region #'+nk);
-          showTip(ev,r,name,nk);
-        })
-        .on('mouseleave',()=>tip.style.opacity='0');
-
-      const dfGlobe=gsvg.append('g').attr('class','df-globe');
-      DEFACTO_POLYGONS.forEach(df=>{
-        dfGlobe.append('path')
-          .datum({type:'Feature',geometry:df.geometry})
-          .attr('d',gPath)
-          .style('fill','var(--map-no-data)')
-          .attr('stroke','rgba(200,120,48,.6)')
-          .attr('stroke-width',.8)
-          .attr('stroke-dasharray','3,2')
-          .style('cursor','help')
-          .on('mousemove',ev=>{
-            document.getElementById('tn').innerHTML='<span style="font-style:italic">'+df.name+'</span>';
-            document.getElementById('tsc').innerHTML='<span style="color:var(--muted);font-size:.6rem;text-transform:uppercase;letter-spacing:.08em">No index data available</span>';
-            document.getElementById('tsummary').textContent=df.info;
-            document.getElementById('trows').innerHTML='';
-            document.getElementById('tfoot').textContent='Not included in CTI — boundaries shown for reference';
-            const tw=270,pad=10;
-            let tx=ev.clientX+16,ty=ev.clientY+14;
-            if(tx+tw>window.innerWidth-pad)tx=ev.clientX-tw-10;
-            if(ty+200>window.innerHeight-pad)ty=ev.clientY-210;
-            tip.style.left=Math.max(pad,tx)+'px';tip.style.top=Math.max(pad,ty)+'px';tip.style.opacity='1';
-          })
-          .on('mouseleave',()=>tip.style.opacity='0');
-      });
-
-      const globeBorders=gsvg.append('path')
-        .datum(topojson.mesh(world,world.objects.countries,(a,b)=>a!==b))
-        .style('fill','none')
-        .style('stroke','var(--map-border)')
-        .attr('stroke-width',.25);
-
-      const coast=gsvg.append('path').datum(landFeat)
-        .style('fill','none').style('stroke','var(--map-coast)').attr('stroke-width',.45);
-
+      const borders=topojson.mesh(world,world.objects.countries,(a,b)=>a!==b);
+      const grat=d3.geoGraticule()();
       const GLOBE_MICRODOTS=[
-        {iso3:'MCO',xy:[7.40,43.73]},
-        {iso3:'VAT',xy:[12.45,41.90]},
-        {iso3:'SMR',xy:[12.46,43.94]},
-        {iso3:'SGP',xy:[103.82,1.35]},
-        {iso3:'LIE',xy:[9.55,47.16]},
-        {iso3:'HKG',xy:[114.18,22.32]},
-        {iso3:'MLT',xy:[14.44,35.9]},
-        {iso3:'BHR',xy:[50.55,26.07]},
-        {iso3:'MDV',xy:[73.5,3.2]},
-        {iso3:'AND',xy:[1.52,42.5]},
+        {iso3:'MCO',xy:[7.40,43.73]},{iso3:'VAT',xy:[12.45,41.90]},
+        {iso3:'SMR',xy:[12.46,43.94]},{iso3:'SGP',xy:[103.82,1.35]},
+        {iso3:'LIE',xy:[9.55,47.16]},{iso3:'HKG',xy:[114.18,22.32]},
+        {iso3:'MLT',xy:[14.44,35.9]},{iso3:'BHR',xy:[50.55,26.07]},
+        {iso3:'MDV',xy:[73.5,3.2]},{iso3:'AND',xy:[1.52,42.5]},
       ];
-      const gmdG=gsvg.append('g').attr('class','globe-microdot-layer');
-      const gmdCircles=GLOBE_MICRODOTS.map(ms=>{
-        const r=byISO[ms.iso3];
-        return {
-          ms,
-          circle: gmdG.append('circle')
-            .attr('r',3.5)
-            .style('fill',r?tc(r.score):null)
-            .style('stroke','var(--map-micro-stroke)')
-            .attr('stroke-width',.8)
-            .style('cursor',r?'pointer':'help')
-            .on('mousemove',ev=>showTip(ev,r,r?r.name:ms.iso3,null))
-            .on('mouseleave',()=>tip.style.opacity='0')
-        };
-      });
+
+      const numKey=d=>(d.id<0?String(d.id):String(d.id).padStart(3,'0'));
+      const fillForR=r=>{if(!r)return null;const s=recalcScoreFiltered(r);return s===null?null:tc(s);};
 
       function redraw(){
         gProj.rotate(rot);
-        countries.selectAll('path').attr('d',gPath);
-        dfGlobe.selectAll('path').attr('d',gPath);
-        globeBorders.attr('d',gPath);
-        coast.attr('d',gPath);
-        grat.attr('d',gPath);
+        const C=_mapColors();
+        ctx.setTransform(dpr,0,0,dpr,0,0);
+        ctx.clearRect(0,0,W,H);
+        ctx.lineJoin='round';
+        ctx.beginPath();path({type:'Sphere'});ctx.fillStyle=C.ocean;ctx.fill();
+        ctx.beginPath();path(grat);ctx.lineWidth=.4;ctx.strokeStyle=C.grat;ctx.stroke();
+        for(const f of countryFeats){ctx.beginPath();path(f);ctx.fillStyle=fillForR(byNum[numKey(f)])||C.nodata;ctx.fill();}
+        ctx.fillStyle=C.nodata;
+        for(const df of DEFACTO_POLYGONS){ctx.beginPath();path(df.geometry);ctx.fill();}
+        ctx.strokeStyle='rgba(200,120,48,.6)';ctx.lineWidth=.8;ctx.setLineDash([3,2]);
+        for(const df of DEFACTO_POLYGONS){ctx.beginPath();path(df.geometry);ctx.stroke();}
+        ctx.setLineDash([]);
+        ctx.beginPath();path(borders);ctx.lineWidth=.25;ctx.strokeStyle=C.border;ctx.stroke();
+        ctx.beginPath();path(land);ctx.lineWidth=.45;ctx.strokeStyle=C.coast;ctx.stroke();
         const center=[-rot[0],-rot[1]];
-        gmdCircles.forEach(({ms,circle})=>{
-          const dist=d3.geoDistance(ms.xy,center);
-          if(dist<Math.PI/2){
-            const xy=gProj(ms.xy);
-            if(xy)circle.attr('cx',xy[0]).attr('cy',xy[1]).attr('visibility','visible');
-            else circle.attr('visibility','hidden');
-          } else {
-            circle.attr('visibility','hidden');
-          }
-        });
+        for(const ms of GLOBE_MICRODOTS){
+          if(d3.geoDistance(ms.xy,center)>=Math.PI/2)continue;
+          const xy=gProj(ms.xy);if(!xy)continue;
+          const r=byISO[ms.iso3];const s=r?recalcScoreFiltered(r):null;
+          ctx.beginPath();ctx.arc(xy[0],xy[1],3.5,0,6.2832);
+          ctx.fillStyle=(s===null)?C.nodata:tc(s);ctx.fill();
+          ctx.lineWidth=.8;ctx.strokeStyle=C.micro;ctx.stroke();
+        }
       }
+
+      let rafP=false;
+      function scheduleRedraw(){if(rafP)return;rafP=true;requestAnimationFrame(()=>{rafP=false;redraw();});}
 
       _startGlobe=()=>{
         function frame(){rot[0]+=0.15;redraw();globeRotating=requestAnimationFrame(frame);}
         globeRotating=requestAnimationFrame(frame);
       };
 
-      gsvg.call(d3.drag()
-        .on('start',()=>stopGlobeRotation())
-        .on('drag',ev=>{
-          rot=[rot[0]+ev.dx*0.4, Math.max(-90,Math.min(90,rot[1]-ev.dy*0.4))];
-          redraw();
-        })
+      d3.select(canvas).call(d3.drag()
+        .on('start',()=>{stopGlobeRotation();tip.style.opacity='0';})
+        .on('drag',ev=>{rot=[rot[0]+ev.dx*0.4,Math.max(-90,Math.min(90,rot[1]-ev.dy*0.4))];scheduleRedraw();})
       );
-      gsvg.on('wheel.zoom',ev=>{
+      canvas.addEventListener('wheel',ev=>{
         ev.preventDefault();
-        var delta=ev.deltaY>0?0.85:1.15;
-        var newScale=Math.max(80,Math.min(R*4,gProj.scale()*delta));
-        gProj.scale(newScale);
-        gsvg.select('circle').attr('r',newScale);
-        redraw();
+        const delta=ev.deltaY>0?0.85:1.15;
+        gProj.scale(Math.max(80,Math.min(R*4,gProj.scale()*delta)));
+        scheduleRedraw();
       },{passive:false});
 
-      const grBtn=document.getElementById('globe-reset');
-      if(grBtn) grBtn.onclick=function(){
-        rot=[0,-25]; gProj.scale(R); gsvg.select('circle').attr('r',R);
-        stopGlobeRotation();
-        startGlobeRotation();
-        redraw();
-      };
-      const gzIn=document.getElementById('globe-zin');
-      if(gzIn) gzIn.onclick=function(){
-        var ns=Math.min(R*4,gProj.scale()*1.4); gProj.scale(ns); gsvg.select('circle').attr('r',ns); redraw();
-      };
-      const gzOut=document.getElementById('globe-zout');
-      if(gzOut) gzOut.onclick=function(){
-        var ns=Math.max(80,gProj.scale()/1.4); gProj.scale(ns); gsvg.select('circle').attr('r',ns); redraw();
-      };
+      canvas.addEventListener('mousemove',ev=>{
+        const rect=canvas.getBoundingClientRect();
+        if(!rect.width)return;
+        const sx=(ev.clientX-rect.left)*(W/rect.width), sy=(ev.clientY-rect.top)*(H/rect.height);
+        const ll=gProj.invert([sx,sy]);
+        if(!ll||isNaN(ll[0])){tip.style.opacity='0';return;}
+        const center=[-rot[0],-rot[1]];
+        if(d3.geoDistance(ll,center)>Math.PI/2){tip.style.opacity='0';return;}
+        for(const ms of GLOBE_MICRODOTS){
+          if(d3.geoDistance(ms.xy,center)>=Math.PI/2)continue;
+          const xy=gProj(ms.xy);if(!xy)continue;
+          if(Math.hypot(xy[0]-sx,xy[1]-sy)<6){const r=byISO[ms.iso3];showTip(ev,r,r?r.name:ms.iso3,null);return;}
+        }
+        for(const df of DEFACTO_POLYGONS){if(d3.geoContains({type:'Feature',geometry:df.geometry},ll)){showDefactoTip(ev,df);return;}}
+        for(const f of countryFeats){if(d3.geoContains(f,ll)){
+          const nk=numKey(f);const iso3=N2I[nk];const r=byNum[nk];
+          const nm=r?.name||(iso3&&WGI[iso3]?.n)||iso3||(TERRITORY[nk]&&TERRITORY[nk].name)||('Region #'+nk);
+          showTip(ev,r,nm,nk);return;
+        }}
+        tip.style.opacity='0';
+      });
+      canvas.addEventListener('mouseleave',()=>{tip.style.opacity='0';});
 
+      const grBtn=document.getElementById('globe-reset');
+      if(grBtn)grBtn.onclick=()=>{rot=[0,-25];gProj.scale(R);stopGlobeRotation();startGlobeRotation();redraw();};
+      const gzIn=document.getElementById('globe-zin');
+      if(gzIn)gzIn.onclick=()=>{gProj.scale(Math.min(R*4,gProj.scale()*1.4));scheduleRedraw();};
+      const gzOut=document.getElementById('globe-zout');
+      if(gzOut)gzOut.onclick=()=>{gProj.scale(Math.max(80,gProj.scale()/1.4));scheduleRedraw();};
+
+      window.__ctiRedraws.push(redraw);
       startGlobeRotation();
       redraw();
     });
@@ -632,142 +606,107 @@ fetch('https://cdn.jsdelivr.net/npm/visionscarto-world-atlas@1/world/50m.json')
   .then(r=>r.json())
   .then(world=>{
     const W=960,H=490;
-    const svg=d3.select('#msvg').attr('viewBox',`0 0 ${W} ${H}`).attr('preserveAspectRatio','xMidYMid meet');
-    const svgEl=document.getElementById('msvg');
-    let _pendingT=null,_zoomRaf=null;
-    const zoom=d3.zoom().scaleExtent([1,12]).translateExtent([[0,0],[W,H]])
-      .on('start',()=>{svg.style('cursor','grabbing');svgEl.classList.add('zooming');})
-      .on('end',()=>{svg.style('cursor','default');svgEl.classList.remove('zooming');})
-      .on('zoom',(ev)=>{
-        _pendingT=ev.transform;
-        if(!_zoomRaf)_zoomRaf=requestAnimationFrame(()=>{
-          g.attr('transform',_pendingT);
-          _zoomRaf=null;
-        });
-      });
-    svg.call(zoom).on('dblclick.zoom',null);
-    const g=svg.append('g').style('will-change','transform');
-    g.append('rect').attr('width',W).attr('height',H).style('fill','var(--map-ocean)').attr('rx',5);
+    const canvas=document.getElementById('msvg');
+    const ctx=canvas.getContext('2d');
+    const dpr=Math.min(window.devicePixelRatio||1,2);
 
-    const proj=d3.geoNaturalEarth1().scale(153).translate([W/2,H/2+18]);
-    const gp=d3.geoPath().projection(proj);
     const feats=topojson.feature(world,world.objects.countries).features;
+    const borders=topojson.mesh(world,world.objects.countries,(a,b)=>a!==b);
+    const land=topojson.feature(world,world.objects.land);
+    const grat=d3.geoGraticule()();
+    const proj=d3.geoNaturalEarth1();
+    const path=d3.geoPath(proj,ctx);
 
-    g.selectAll('path.ctry')
-      .data(feats)
-      .join('path').attr('class','ctry').attr('d',gp)
-      .style('fill',d=>{const n=d.id<0?String(d.id):String(d.id).padStart(3,'0');const r=byNum[n];return r?tc(r.score):null;})
-      .style('cursor',d=>{const n=d.id<0?String(d.id):String(d.id).padStart(3,'0');return byNum[n]?'pointer':'help';})
-      .on('mousemove',function(ev,d){
-        if(d.id==null||d.id===undefined){
-          document.getElementById('tn').textContent='Disputed boundary';
-          document.getElementById('tsc').innerHTML='<span style="color:var(--muted)">No index data</span>';
-          document.getElementById('tsummary').textContent='This area has competing territorial claims and is not assigned a country code in the TopoJSON source. It cannot be measured by the CTI.';
-          document.getElementById('tsummary').classList.remove('loading');
-          document.getElementById('trows').innerHTML='';
-          document.getElementById('tfoot').textContent='';
-          const _tw=270,_pad=10;
-          let _tx=ev.clientX+16,_ty=ev.clientY+14;
-          if(_tx+_tw>window.innerWidth-_pad)_tx=ev.clientX-_tw-10;
-          if(_ty+200>window.innerHeight-_pad)_ty=ev.clientY-200-10;
-          tip.style.left=Math.max(_pad,_tx)+'px';tip.style.top=Math.max(_pad,_ty)+'px';
-          tip.style.opacity='1';
-          return;
-        }
-        const n=d.id<0?String(d.id):String(d.id).padStart(3,'0');
-        const iso3=N2I[n];
-        const resolvedName=byNum[n]?.name||(iso3&&WGI[iso3]?.n)||iso3||('Unknown #'+n);
-        showTip(ev,byNum[n],resolvedName,n);
-      })
-      .on('mouseleave',()=>{tip.style.opacity='0';clearTimeout(summaryTimer);});
-
-    // ── De facto state overlays — non-scaling-stroke keeps width constant at any zoom
-    const dfG=g.append('g').attr('class','defacto-layer');
-    DEFACTO_POLYGONS.forEach(df=>{
-      dfG.append('path')
-        .datum({type:'Feature',geometry:df.geometry})
-        .attr('d',gp)
-        .style('fill','var(--map-no-data)')
-        .attr('stroke','rgba(200,120,48,.55)')
-        .attr('stroke-width',.7)
-        .attr('stroke-dasharray','3,2.5')
-        .attr('stroke-linejoin','round')
-        .attr('vector-effect','non-scaling-stroke')
-        .style('cursor','help')
-        .on('mousemove',function(ev){
-          document.getElementById('tn').innerHTML='<span style="font-style:italic">'+df.name+'</span>';
-          document.getElementById('tsc').innerHTML='<span style="color:var(--muted);text-transform:uppercase;font-size:.6rem;letter-spacing:.08em">No index data available</span>';
-          document.getElementById('tsummary').textContent=df.info;
-          document.getElementById('tsummary').classList.remove('loading');
-          document.getElementById('trows').innerHTML='';
-          document.getElementById('tfoot').textContent='Not included in CTI — boundaries shown for reference';
-          const tw=270,th=200,pad=10;
-          let tx=ev.clientX+16,ty=ev.clientY+14;
-          if(tx+tw>window.innerWidth-pad)tx=ev.clientX-tw-10;
-          if(ty+th>window.innerHeight-pad)ty=ev.clientY-th-10;
-          tip.style.left=Math.max(pad,tx)+'px';tip.style.top=Math.max(pad,ty)+'px';tip.style.opacity='1';
-        })
-        .on('mouseleave',()=>tip.style.opacity='0');
-    });
-
-    // ── Country borders — single mesh path instead of per-country strokes (Firefox perf)
-    g.append('path')
-      .datum(topojson.mesh(world,world.objects.countries,(a,b)=>a!==b))
-      .style('fill','none')
-      .style('stroke','var(--map-border)')
-      .attr('stroke-width',.35)
-      .attr('vector-effect','non-scaling-stroke')
-      .attr('d',gp);
-
-    // ── Coastline — non-scaling-stroke keeps it hair-thin at any zoom
-    g.append('path')
-      .datum(topojson.feature(world,world.objects.land))
-      .style('fill','none')
-      .style('stroke','var(--map-coast)')
-      .attr('stroke-width',.4)
-      .attr('stroke-linejoin','round')
-      .attr('vector-effect','non-scaling-stroke')
-      .attr('d',gp);
-
-    g.append('path').datum(d3.geoGraticule()())
-      .style('fill','none').style('stroke','var(--map-graticule)').attr('stroke-width',.5).attr('d',gp);
-
-    // ── Dot markers for micro-states invisible at world scale
-    // Placed inside g so zoom transform applies automatically; radius stays proportional
     const MICRODOTS=[
-      {iso3:'MCO',xy:[7.40,43.73]},
-      {iso3:'VAT',xy:[12.45,41.90]},
-      {iso3:'SMR',xy:[12.46,43.94]},
-      {iso3:'SGP',xy:[103.82,1.35]},
-      {iso3:'LIE',xy:[9.55,47.16]},
-      {iso3:'HKG',xy:[114.18,22.32]},
-      {iso3:'MLT',xy:[14.44,35.9]},
-      {iso3:'BHR',xy:[50.55,26.07]},
-      {iso3:'MDV',xy:[73.5,3.2]},
-      {iso3:'AND',xy:[1.52,42.5]},
+      {iso3:'MCO',xy:[7.40,43.73]},{iso3:'VAT',xy:[12.45,41.90]},
+      {iso3:'SMR',xy:[12.46,43.94]},{iso3:'SGP',xy:[103.82,1.35]},
+      {iso3:'LIE',xy:[9.55,47.16]},{iso3:'HKG',xy:[114.18,22.32]},
+      {iso3:'MLT',xy:[14.44,35.9]},{iso3:'BHR',xy:[50.55,26.07]},
+      {iso3:'MDV',xy:[73.5,3.2]},{iso3:'AND',xy:[1.52,42.5]},
     ];
-    const mdG=g.append('g').attr('class','microdot-layer').style('pointer-events','all');
-    MICRODOTS.forEach(ms=>{
-      const r=byISO[ms.iso3];
-      const xy=proj(ms.xy);
-      if(!xy||isNaN(xy[0]))return;
-      mdG.append('circle')
-        .attr('data-iso',ms.iso3)
-        .attr('cx',xy[0]).attr('cy',xy[1])
-        .attr('r',8/12)
-        .style('fill',r?tc(r.score):null)
-        .style('stroke','var(--map-micro-stroke)')
-        .attr('stroke-width',.8)
-        .attr('vector-effect','non-scaling-stroke')
-        .style('cursor',r?'pointer':'help')
-        .on('mousemove',ev=>showTip(ev,r,r?r.name:ms.iso3,null))
-        .on('mouseleave',()=>tip.style.opacity='0');
+
+    let cw=W,ch=H,transform=d3.zoomIdentity,gesture=false;
+    const numKeyOf=d=>(d.id<0?String(d.id):String(d.id).padStart(3,'0'));
+    const fillForR=r=>{if(!r)return null;const s=recalcScoreFiltered(r);return s===null?null:tc(s);};
+
+    function fit(){
+      const rect=canvas.getBoundingClientRect();
+      if(rect.width<2)return;
+      cw=rect.width;ch=rect.height||cw*(H/W);
+      canvas.width=Math.round(cw*dpr);canvas.height=Math.round(ch*dpr);
+      proj.scale(153*(cw/W)).translate([cw/2,ch/2+18*(ch/H)]);
+      zoom.translateExtent([[0,0],[cw,ch]]).extent([[0,0],[cw,ch]]);
+    }
+
+    function draw(){
+      const C=_mapColors();
+      const t=transform;
+      ctx.setTransform(dpr,0,0,dpr,0,0);
+      ctx.clearRect(0,0,cw,ch);
+      ctx.fillStyle=C.ocean;ctx.fillRect(0,0,cw,ch);
+      ctx.save();
+      ctx.translate(t.x,t.y);ctx.scale(t.k,t.k);
+      ctx.lineJoin='round';
+      for(const f of feats){ctx.beginPath();path(f);ctx.fillStyle=fillForR(byNum[numKeyOf(f)])||C.nodata;ctx.fill();}
+      ctx.fillStyle=C.nodata;
+      for(const df of DEFACTO_POLYGONS){ctx.beginPath();path(df.geometry);ctx.fill();}
+      ctx.strokeStyle='rgba(200,120,48,.55)';ctx.lineWidth=.7/t.k;ctx.setLineDash([3/t.k,2.5/t.k]);
+      for(const df of DEFACTO_POLYGONS){ctx.beginPath();path(df.geometry);ctx.stroke();}
+      ctx.setLineDash([]);
+      ctx.beginPath();path(borders);ctx.lineWidth=.35/t.k;ctx.strokeStyle=C.border;ctx.stroke();
+      ctx.beginPath();path(land);ctx.lineWidth=.4/t.k;ctx.strokeStyle=C.coast;ctx.stroke();
+      ctx.beginPath();path(grat);ctx.lineWidth=.5/t.k;ctx.strokeStyle=C.grat;ctx.stroke();
+      for(const ms of MICRODOTS){
+        const xy=proj(ms.xy);if(!xy||isNaN(xy[0]))continue;
+        const r=byISO[ms.iso3];const s=r?recalcScoreFiltered(r):null;
+        ctx.beginPath();ctx.arc(xy[0],xy[1],3/t.k,0,6.2832);
+        ctx.fillStyle=(s===null)?C.nodata:tc(s);ctx.fill();
+        ctx.lineWidth=.8/t.k;ctx.strokeStyle=C.micro;ctx.stroke();
+      }
+      ctx.restore();
+    }
+
+    let rafPending=false;
+    function scheduleDraw(){if(rafPending)return;rafPending=true;requestAnimationFrame(()=>{rafPending=false;draw();});}
+
+    const zoom=d3.zoom().scaleExtent([1,12])
+      .on('start',()=>{gesture=true;canvas.style.cursor='grabbing';tip.style.opacity='0';})
+      .on('zoom',ev=>{transform=ev.transform;scheduleDraw();})
+      .on('end',()=>{gesture=false;canvas.style.cursor='default';});
+    d3.select(canvas).call(zoom).on('dblclick.zoom',null);
+
+    canvas.addEventListener('mousemove',ev=>{
+      if(gesture)return;
+      const rect=canvas.getBoundingClientRect();
+      const sx=ev.clientX-rect.left, sy=ev.clientY-rect.top;
+      const t=transform;
+      for(const ms of MICRODOTS){
+        const xy=proj(ms.xy);if(!xy)continue;
+        const scrX=xy[0]*t.k+t.x, scrY=xy[1]*t.k+t.y;
+        if(Math.hypot(scrX-sx,scrY-sy)<6){const r=byISO[ms.iso3];showTip(ev,r,r?r.name:ms.iso3,null);return;}
+      }
+      const px=(sx-t.x)/t.k, py=(sy-t.y)/t.k;
+      const ll=proj.invert([px,py]);
+      if(!ll||isNaN(ll[0])){tip.style.opacity='0';return;}
+      for(const df of DEFACTO_POLYGONS){if(d3.geoContains({type:'Feature',geometry:df.geometry},ll)){showDefactoTip(ev,df);return;}}
+      for(const f of feats){if(d3.geoContains(f,ll)){
+        if(f.id==null){showDisputedTip(ev);return;}
+        const n=numKeyOf(f);const iso3=N2I[n];
+        const nm=byNum[n]?.name||(iso3&&WGI[iso3]?.n)||iso3||('Unknown #'+n);
+        showTip(ev,byNum[n],nm,n);return;
+      }}
+      tip.style.opacity='0';
     });
+    canvas.addEventListener('mouseleave',()=>{tip.style.opacity='0';clearTimeout(summaryTimer);});
+
+    fit();draw();
+    window.__ctiRedraws.push(draw);
+    new ResizeObserver(()=>{fit();draw();}).observe(canvas);
 
     buildRanking();
-    document.getElementById('zin').onclick=()=>svg.transition().duration(300).call(zoom.scaleBy,1.6);
-    document.getElementById('zout').onclick=()=>svg.transition().duration(300).call(zoom.scaleBy,1/1.6);
-    document.getElementById('zrst').onclick=()=>svg.transition().duration(400).call(zoom.transform,d3.zoomIdentity);
+    document.getElementById('zin').onclick=()=>d3.select(canvas).transition().duration(300).call(zoom.scaleBy,1.6);
+    document.getElementById('zout').onclick=()=>d3.select(canvas).transition().duration(300).call(zoom.scaleBy,1/1.6);
+    document.getElementById('zrst').onclick=()=>d3.select(canvas).transition().duration(400).call(zoom.transform,d3.zoomIdentity);
     initGlobe(world);
     buildInlineRankings();
     const _hN=document.getElementById('hero-n-countries');
@@ -794,6 +733,7 @@ fetch('https://cdn.jsdelivr.net/npm/visionscarto-world-atlas@1/world/50m.json')
       if(btn)btn.setAttribute('aria-label','Switch to light mode');
       if(lbl)lbl.textContent='☀';
     }
+    if(typeof repaintMaps==='function')repaintMaps();
   }
   // stored preference > system preference
   applyTheme(stored||(mq.matches?'dark':'light'));
@@ -808,5 +748,62 @@ fetch('https://cdn.jsdelivr.net/npm/visionscarto-world-atlas@1/world/50m.json')
     const next=html.getAttribute('data-theme')==='light'?'dark':'light';
     applyTheme(next);
     try{localStorage.setItem('cti-theme',next);}catch(e){}
+  });
+})();
+
+// ── Mobile nav + bottom-sheet panels
+(function(){
+  const MOB=640;
+  const isMob=()=>window.innerWidth<=MOB;
+
+  const hamBtn=document.getElementById('ham-btn');
+  const tnLinks=document.querySelector('.tn-links');
+  const backdrop=document.getElementById('mob-backdrop');
+  const panelF=document.getElementById('panel-filters');
+  const panelR=document.getElementById('panel-rankings');
+  const mBtnF=document.getElementById('mob-btn-filters');
+  const mBtnR=document.getElementById('mob-btn-rankings');
+
+  function closeAll(){
+    hamBtn?.classList.remove('open');
+    tnLinks?.classList.remove('mob-open');
+    panelF?.classList.remove('mob-open');
+    panelR?.classList.remove('mob-open');
+    backdrop?.classList.remove('active');
+    mBtnF?.classList.remove('active');
+    mBtnR?.classList.remove('active');
+    document.body.style.overflow='';
+  }
+
+  function openSheet(panel,btn){
+    if(!isMob())return;
+    const already=panel.classList.contains('mob-open');
+    closeAll();
+    if(!already){
+      panel.classList.add('mob-open');
+      btn.classList.add('active');
+      backdrop.classList.add('active');
+      document.body.style.overflow='hidden';
+    }
+  }
+
+  hamBtn?.addEventListener('click',()=>{
+    const already=tnLinks.classList.contains('mob-open');
+    closeAll();
+    if(!already){
+      tnLinks.classList.add('mob-open');
+      hamBtn.classList.add('open');
+      backdrop.classList.add('active');
+      document.body.style.overflow='hidden';
+    }
+  });
+
+  mBtnF?.addEventListener('click',()=>openSheet(panelF,mBtnF));
+  mBtnR?.addEventListener('click',()=>openSheet(panelR,mBtnR));
+  backdrop?.addEventListener('click',closeAll);
+
+  // close nav drawer when a nav link is tapped on mobile
+  document.querySelectorAll('.tn-link[data-target]').forEach(l=>{
+    l.addEventListener('click',()=>{ if(isMob())closeAll(); });
   });
 })();
