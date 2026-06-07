@@ -198,6 +198,7 @@ document.addEventListener('DOMContentLoaded',()=>{
   let scrolled=false;
   hero.addEventListener('wheel',function(e){
     if(scrolled)return;
+    if(e.deltaY<=0)return; // only respond to downward scroll
     scrolled=true;
     e.preventDefault();
     document.getElementById('sec-map').scrollIntoView({behavior:'smooth'});

@@ -1,3 +1,6 @@
 .DS_Store
 node_modules/
 *.log
+
+# Local-only launch guide (not for public site)
+LAUNCH.md
