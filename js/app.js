@@ -785,15 +785,15 @@ fetch('https://cdn.jsdelivr.net/npm/visionscarto-world-atlas@1/world/50m.json')
   try{stored=localStorage.getItem('cti-theme');}catch(e){}
 
   function applyTheme(t){
-    const lbl=document.getElementById('theme-label');
+    const use=document.querySelector('#theme-label use');
     if(t==='light'){
       html.setAttribute('data-theme','light');
       if(btn)btn.setAttribute('aria-label','Switch to dark mode');
-      if(lbl)lbl.textContent='☾';
+      if(use)use.setAttribute('href','#ico-moon');
     } else {
       html.removeAttribute('data-theme');
       if(btn)btn.setAttribute('aria-label','Switch to light mode');
-      if(lbl)lbl.textContent='☀';
+      if(use)use.setAttribute('href','#ico-sun');
     }
   }
   // stored preference > system preference
