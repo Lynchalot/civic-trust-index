@@ -5,17 +5,18 @@
    both the password screen and the noindex tag in one step.
 
    Default password: tokyo-wallet
-   To change it: run in a terminal
-     printf '%s' 'YOUR-NEW-PASSWORD' | sha256sum
-   and paste the hex string into PASSWORD_HASH below.
+   To change it: update the PASSWORD value below.
 
    Note: this is a soft gate, not real security. It keeps casual
    visitors and search engines out during the preview; a determined
    technical user could bypass it. That's fine — the site is going
    public anyway.
+
+   Note: crypto.subtle only works on HTTPS, so we use a plain
+   comparison here instead. Fine for a soft gate.
    ============================================================ */
 (function () {
-  var PASSWORD_HASH = "f6d9d5fc465b758f74247b7bcee6bb54407c9154ca03738ace850cc3e4e5f20e";
+  var PASSWORD = "tokyo-wallet";
 
   // Keep the preview out of search results while gated.
   var noindex = document.createElement("meta");
@@ -57,21 +58,9 @@
     var err = document.getElementById("bg-err");
     if (input) input.focus();
 
-    async function attempt() {
+    function attempt() {
       var val = input.value || "";
-      var hex = "";
-      try {
-        var buf = await crypto.subtle.digest(
-          "SHA-256",
-          new TextEncoder().encode(val)
-        );
-        hex = Array.from(new Uint8Array(buf))
-          .map(function (b) {
-            return b.toString(16).padStart(2, "0");
-          })
-          .join("");
-      } catch (e) {}
-      if (hex === PASSWORD_HASH) {
+      if (val === PASSWORD) {
         try {
           localStorage.setItem("cti-beta", "ok");
         } catch (e) {}
