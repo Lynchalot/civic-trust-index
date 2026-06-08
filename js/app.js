@@ -115,7 +115,7 @@ function recomputeAll(){
 
 
 // ── Inline rankings (Section 02)
-let rankTabMode='all';
+let rankTabMode='top';
 let showLowData=false;
 let rankSearchFilter='';
 let mobileShowAll=false;
@@ -190,21 +190,6 @@ document.addEventListener('DOMContentLoaded',()=>{
   });
 });
 
-
-// Single wheel on hero scrolls straight to map
-(function(){
-  const hero=document.getElementById('hero');
-  if(!hero)return;
-  let scrolled=false;
-  hero.addEventListener('wheel',function(e){
-    if(scrolled)return;
-    if(e.deltaY<=0)return; // only respond to downward scroll
-    scrolled=true;
-    e.preventDefault();
-    document.getElementById('sec-map').scrollIntoView({behavior:'smooth'});
-    setTimeout(()=>{scrolled=false;},1200);
-  },{passive:false});
-})();
 
 // ── Nav smooth scroll (event delegation)
 document.addEventListener('click', function(e) {
