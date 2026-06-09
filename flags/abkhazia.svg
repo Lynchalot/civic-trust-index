@@ -6,6 +6,29 @@
   <rect y="429" width="900" height="86" fill="#FFFFFF"/>
   <!-- Red canton: upper-left, half width, covers top 4 stripes -->
   <rect width="450" height="342" fill="#D3192C"/>
-  <!-- White open hand (stylised palm) -->
-  <text x="225" y="210" text-anchor="middle" dominant-baseline="middle" font-size="230" fill="#FFFFFF" font-family="Segoe UI Emoji,Apple Color Emoji,Noto Color Emoji,sans-serif">✋</text>
+  <!-- 7 white stars in semicircle arc above the hand
+       arc centre (222,162), radius 88, screen angles 205°→313° -->
+  <defs>
+    <polygon id="st" points="0,-12 2.94,-4.05 11.41,-3.71 4.76,1.55 7.06,9.71 0,5 -7.06,9.71 -4.76,1.55 -11.41,-3.71 -2.94,-4.05" fill="#FFFFFF"/>
+  </defs>
+  <use href="#st" transform="translate(142,125)"/>
+  <use href="#st" transform="translate(158,102)"/>
+  <use href="#st" transform="translate(179,85)"/>
+  <use href="#st" transform="translate(205,76)"/>
+  <use href="#st" transform="translate(233,75)"/>
+  <use href="#st" transform="translate(259,82)"/>
+  <use href="#st" transform="translate(282,98)"/>
+  <!-- White hand: palm + thumb + 4 fingers (pure SVG shapes, no emoji) -->
+  <!-- Palm -->
+  <rect x="188" y="196" width="72" height="64" rx="8" fill="#FFFFFF"/>
+  <!-- Thumb (left side, angled) -->
+  <rect x="158" y="222" width="36" height="18" rx="9" fill="#FFFFFF" transform="rotate(-15,176,231)"/>
+  <!-- Index finger -->
+  <rect x="192" y="130" width="16" height="73" rx="8" fill="#FFFFFF"/>
+  <!-- Middle finger (tallest) -->
+  <rect x="211" y="121" width="16" height="82" rx="8" fill="#FFFFFF"/>
+  <!-- Ring finger -->
+  <rect x="230" y="127" width="16" height="76" rx="8" fill="#FFFFFF"/>
+  <!-- Pinky (shortest) -->
+  <rect x="247" y="142" width="15" height="61" rx="7" fill="#FFFFFF"/>
 </svg>

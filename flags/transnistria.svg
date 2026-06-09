@@ -1,22 +1,13 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 600">
-  <!-- Green/Red/Green vertical stripes -->
-  <rect width="300" height="600" fill="#009A44"/>
-  <rect x="300" width="300" height="600" fill="#CC0000"/>
-  <rect x="600" width="300" height="600" fill="#009A44"/>
-  <!-- Yellow hammer (handle + head) -->
-  <g transform="translate(450,310)" fill="#FFD700">
-    <!-- Hammer handle -->
-    <rect x="-8" y="-60" width="14" height="80" rx="3" transform="rotate(-45)"/>
-    <!-- Hammer head -->
-    <rect x="-28" y="-68" width="44" height="22" rx="3" transform="rotate(-45)"/>
-  </g>
-  <!-- Yellow sickle -->
-  <g transform="translate(450,310)" fill="none" stroke="#FFD700" stroke-width="18">
-    <!-- Sickle arc -->
-    <path d="M -10,-55 A 55,55 0 1,0 52,8" stroke-linecap="round"/>
-  </g>
-  <!-- Sickle tip blade -->
-  <g transform="translate(450,310)" fill="#FFD700">
-    <circle cx="52" cy="8" r="10"/>
-  </g>
+  <!-- Red background -->
+  <rect width="900" height="600" fill="#CC0000"/>
+  <!-- Green middle stripe -->
+  <rect y="240" width="900" height="120" fill="#009A44"/>
+  <!-- Outlined gold star (center 148,58; outer r=32, inner r=13) -->
+  <polygon points="148,26 155.6,47.5 178.4,48.1 160.4,62 166.8,83.9 148,71 129.2,83.9 135.6,62 117.6,48.1 140.4,47.5"
+           fill="none" stroke="#FFD700" stroke-width="4"/>
+  <!-- Gold hammer and sickle -->
+  <text x="148" y="160" text-anchor="middle" dominant-baseline="middle"
+        font-size="148" fill="#FFD700"
+        font-family="DejaVu Sans,Arial Unicode MS,sans-serif">&#x262D;</text>
 </svg>
