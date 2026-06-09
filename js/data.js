@@ -227,7 +227,7 @@ const TERR_FLAG={'Western Sahara':'EH','Greenland':'GL','Faroe Islands':'FO',
   'Montserrat':'MS','Anguilla':'AI','Turks and Caicos':'TC',
   'British Virgin Islands':'VG','US Virgin Islands':'VI','Samoa':'WS',
   'American Samoa':'AS','Reunion':'RE','Martinique':'MQ','Guadeloupe':'GP',
-  'Mayotte':'YT','French Guiana':'GF','N. Cyprus':'CY','Somaliland':'SO',
+  'Mayotte':'YT','French Guiana':'GF',
   'Vatican City':'VA','San Marino':'SM','Liechtenstein':'LI',
   'Andorra':'AD','Monaco':'MC',
   // Caribbean
@@ -242,7 +242,26 @@ const TERR_FLAG={'Western Sahara':'EH','Greenland':'GL','Faroe Islands':'FO',
   // Pacific
   'Niue':'NU','Cook Islands':'CK','Tokelau':'TK',
   'Norfolk Island':'NF','Christmas Island':'CX','Cocos Islands':'CC',
-  'Åland Islands':'AX'};
+  'Åland Islands':'AX',
+  // Uninhabited / remote territories (have valid ISO 3166-1 flag codes)
+  'South Georgia':'GS','British Indian Ocean Territory':'IO',
+  'Chagos Archipelago':'IO','French Southern Territories':'TF',
+  'Heard & McDonald Islands':'HM','Bouvet Island':'BV',
+  'US Minor Outlying Islands':'UM','Pitcairn Islands':'PN',
+  'Antarctica':'AQ'};
+// Custom flag images for de facto states without ISO emoji codes
+const DEFACTO_FLAGS={
+  'Somaliland':'flags/somaliland.svg',
+  'South Ossetia':'flags/south-ossetia.svg',
+  'Abkhazia':'flags/abkhazia.svg',
+  'Northern Cyprus':'flags/northern-cyprus.svg',
+  'Transnistria':'flags/transnistria.svg'
+};
+function defactoFlag(name){
+  const src=DEFACTO_FLAGS[name];
+  if(!src)return '';
+  return '<img src="'+src+'" style="display:inline-block;width:1.3em;height:1em;vertical-align:middle;margin-right:.35em;flex-shrink:0;object-fit:cover;border-radius:1px;" alt="">';
+}
 function flag(iso3){
   try{
     const i2=ISO2[iso3];if(!i2)return '';

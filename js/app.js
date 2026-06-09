@@ -315,7 +315,7 @@ function _buildGlobe(){
           .attr('stroke-dasharray','3,2')
           .style('cursor','help')
           .on('mousemove',ev=>{
-            document.getElementById('tn').innerHTML='<span style="font-style:italic">'+df.name+'</span>';
+            document.getElementById('tn').innerHTML=defactoFlag(df.name)+'<span style="font-style:italic">'+df.name+'</span>';
             document.getElementById('tsc').innerHTML='<span style="color:var(--muted);font-size:.6rem;text-transform:uppercase;letter-spacing:.08em">No index data available</span>';
             document.getElementById('tsummary').textContent=df.info;
             document.getElementById('trows').innerHTML='';
@@ -681,7 +681,7 @@ fetch('https://cdn.jsdelivr.net/npm/visionscarto-world-atlas@1/world/50m.json')
         .attr('vector-effect','non-scaling-stroke')
         .style('cursor','help')
         .on('mousemove',function(ev){
-          document.getElementById('tn').innerHTML='<span style="font-style:italic">'+df.name+'</span>';
+          document.getElementById('tn').innerHTML=defactoFlag(df.name)+'<span style="font-style:italic">'+df.name+'</span>';
           document.getElementById('tsc').innerHTML='<span style="color:var(--muted);text-transform:uppercase;font-size:.6rem;letter-spacing:.08em">No index data available</span>';
           document.getElementById('tsummary').textContent=df.info;
           document.getElementById('tsummary').classList.remove('loading');
