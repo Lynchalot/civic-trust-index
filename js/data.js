@@ -227,7 +227,7 @@ const TERR_FLAG={'Western Sahara':'EH','Greenland':'GL','Faroe Islands':'FO',
   'Montserrat':'MS','Anguilla':'AI','Turks and Caicos':'TC',
   'British Virgin Islands':'VG','US Virgin Islands':'VI','Samoa':'WS',
   'American Samoa':'AS','Reunion':'RE','Martinique':'MQ','Guadeloupe':'GP',
-  'Mayotte':'YT','French Guiana':'GF','N. Cyprus':'CY','Somaliland':'SO',
+  'Mayotte':'YT','French Guiana':'GF','Somaliland':'SO',
   'Vatican City':'VA','San Marino':'SM','Liechtenstein':'LI',
   'Andorra':'AD','Monaco':'MC',
   // Caribbean
@@ -242,7 +242,13 @@ const TERR_FLAG={'Western Sahara':'EH','Greenland':'GL','Faroe Islands':'FO',
   // Pacific
   'Niue':'NU','Cook Islands':'CK','Tokelau':'TK',
   'Norfolk Island':'NF','Christmas Island':'CX','Cocos Islands':'CC',
-  'Åland Islands':'AX'};
+  'Åland Islands':'AX',
+  // Uninhabited / remote territories (have valid ISO 3166-1 flag codes)
+  'South Georgia':'GS','British Indian Ocean Territory':'IO',
+  'Chagos Archipelago':'IO','French Southern Territories':'TF',
+  'Heard & McDonald Islands':'HM','Bouvet Island':'BV',
+  'US Minor Outlying Islands':'UM','Pitcairn Islands':'PN',
+  'Antarctica':'AQ'};
 function flag(iso3){
   try{
     const i2=ISO2[iso3];if(!i2)return '';
