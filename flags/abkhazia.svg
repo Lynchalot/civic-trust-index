@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 600">
+  <!-- 7 alternating green/white stripes -->
+  <rect width="900" height="600" fill="#00853F"/>
+  <rect y="85"  width="900" height="86" fill="#FFFFFF"/>
+  <rect y="257" width="900" height="86" fill="#FFFFFF"/>
+  <rect y="429" width="900" height="86" fill="#FFFFFF"/>
+  <!-- Red canton: upper-left, half width, covers top 4 stripes -->
+  <rect width="450" height="342" fill="#D3192C"/>
+  <!-- White open hand (stylised palm) -->
+  <text x="225" y="210" text-anchor="middle" dominant-baseline="middle" font-size="230" fill="#FFFFFF" font-family="Segoe UI Emoji,Apple Color Emoji,Noto Color Emoji,sans-serif">✋</text>
+</svg>
