@@ -447,6 +447,34 @@ function _buildGlobe(){
     {
       html:'The health of a democratic society may be measured by the quality of functions performed by <em>private citizens</em>.',
       attr:'Alexis de Tocqueville',work:'Democracy in America, 1835'
+    },
+    {
+      html:'The deterioration of every government begins with the decay of the <em>principles</em> on which it was founded.',
+      attr:'Montesquieu',work:'Spirit of the Laws, 1748'
+    },
+    {
+      html:'Better go without food — from of old, death has been the lot of all men. But a people that no longer <em>trusts its rulers</em> is lost indeed.',
+      attr:'Confucius',work:'Analects 12.7, c. 500 BC'
+    },
+    {
+      html:'For political stability, for government effectiveness, and even for economic progress, <em>social capital</em> may be even more important than physical or human capital.',
+      attr:'Robert Putnam',work:'Making Democracy Work, 1993'
+    },
+    {
+      html:'If men were angels, no government would be necessary. If <em>angels</em> were to govern men, neither external nor internal controls on government would be necessary.',
+      attr:'James Madison',work:'Federalist No. 51, 1788'
+    },
+    {
+      html:'We cannot reduce our need to trust others. <em>Trust</em> is not an optional extra, something that we can do without.',
+      attr:'Onora O\'Neill',work:'A Question of Trust, 2002'
+    },
+    {
+      html:'Man naturally desires, not only to be loved, but to be <em>lovely</em> — not only to be praised, but to be <em>praiseworthy</em>.',
+      attr:'Adam Smith',work:'Theory of Moral Sentiments, 1759'
+    },
+    {
+      html:'Despotism sees in the <em>separation among men</em> the surest guarantee of its own duration, and it usually makes every effort to keep them separate.',
+      attr:'Alexis de Tocqueville',work:'Democracy in America, 1840'
     }
   ];
   let idx=Math.floor(Math.random()*QUOTES.length);
