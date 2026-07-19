@@ -8,7 +8,7 @@ The **Civic Trust Index** ranks 174 countries on composite "civic quality" — n
 
 ## Serving
 
-No bundler; the only build artefact is the generated monolith (see below). Serve from any static HTTP server — the app must be served over HTTP (not `file://`) because it fetches the world atlas TopoJSON at runtime from jsDelivr.
+No bundler; the only build artefact is the generated monolith (see below). Serve from any static HTTP server. The world atlas TopoJSON is self-hosted at `assets/world-50m.json`; if that fetch fails (e.g. the monolith opened from disk via `file://`), the app falls back to jsDelivr at runtime.
 
 ```bash
 npx serve .          # port 3000
@@ -83,12 +83,13 @@ All country data, normalisation, and scoring live here. The file is self-contain
 
 ### Rendering (`js/app.js`)
 
-Fetches `visionscarto-world-atlas@1/world/50m.json` (TopoJSON) once; all map rendering flows from that.
+`loadAtlas()` fetches the world TopoJSON once behind a shared promise (self-hosted `assets/world-50m.json`, jsDelivr fallback); all map rendering flows from that.
 
 - **Flat map** — D3 `geoNaturalEarth1` projection, `d3.zoom()` (scale 1–12). Shape-rendering switches to `optimizeSpeed` during active zoom via `.zooming` CSS class. `will-change: transform` on the `<g>` layer.
 - **Globe** — D3 `geoOrthographic`, lazy-initialised on first tab click. Drag stops auto-rotation; only the Reset button restarts it. Micro-state dots rendered as separate SVG circles clipped to the visible hemisphere.
 - **Hero globe** — Decorative spinning sphere in the landing section. Uses `requestAnimationFrame` paused via `IntersectionObserver` when the hero scrolls out of view.
 - **Tooltip** (`#tip`) — `position: fixed`, populated by `showTip(ev, r, name, numKey)`. **Critical**: `#tip` is a child of `#wrap` which has `overflow: hidden`. Do not add `contain: layout paint`, CSS `transform`, `filter`, or `will-change: transform` to `#wrap` or any ancestor of `#tip` — these create a new containing block that breaks fixed positioning.
+- **Inline rankings** — `buildInlineRankings()` (Section 02). On viewports ≥ 1200px, lists of ≥ 30 rows are split into two real `.rk-col` divs with per-column headers; never use CSS `columns` here — Firefox and some Chrome versions render hover backgrounds incorrectly inside column containers.
 - **Filter sidebar** — checkboxes grouped by category. Toggling calls `recomputeAll()` which recalculates filtered scores and repaints map fills + rankings.
 - **Flags** — generated as regional indicator emoji via `String.fromCodePoint`, then converted to images by Twemoji. Lookup chain: `ISO2[r.iso3]` → `TERR_FLAG[terrName]` → `ISO2[N2I[numKey]]`.
 
@@ -109,6 +110,5 @@ App layout: CSS grid `290px 1fr 290px` (sidebar | map | rank panel). Below 1400p
 
 ## Pending improvements
 
-- **Two-column rankings on widescreen** — previously attempted with CSS `columns` but abandoned because Firefox and some Chrome versions render hover backgrounds incorrectly inside column containers. A JS-split approach (two `<div class="rank-col">`) is the correct path but needs the hover state managed carefully.
 - **Refresh stale sources** — shadow economy (~2018) is the next candidate. The GCB regional editions (Africa 2019, Asia 2020, EU 2021, LatAm 2019, Pacific 2021) could be stitched into a ~110-country dataset with careful harmonisation.
 - **Mobile rankings UX** — currently truncates at 25 rows with a "show all" button; further polish needed.

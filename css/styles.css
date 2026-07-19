@@ -525,20 +525,16 @@ h1{
 }
 
 
-/* ── Rankings split layout */
-.rank-split{
-  display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1.5rem;
-}
-@media(max-width:900px){.rank-split{grid-template-columns:1fr}}
-.rank-col{
-  background:var(--surface);border:1px solid var(--border);
-  border-radius:8px;overflow:hidden;
-}
-.rank-col-title{
-  font-size:.62rem;text-transform:uppercase;letter-spacing:.1em;
-  color:var(--muted);font-weight:600;
-  padding:.7rem 1rem;background:var(--surface2);
-  border-bottom:1px solid var(--border);
+/* ── Rankings two-column layout (widescreen, JS-split — see buildInlineRankings).
+   Two real divs, not CSS columns: Firefox/Chrome render hover backgrounds
+   incorrectly inside column containers. */
+#rank-inline.two-col{display:grid;grid-template-columns:1fr 1fr;align-items:start}
+#rank-inline.two-col .rk-col:first-child{border-right:1px solid var(--border)}
+.rk-col-head{
+  display:grid;grid-template-columns:40px 1fr 72px 60px;gap:.5rem;
+  padding:.5rem .9rem;background:var(--surface2);
+  font-size:.6rem;text-transform:uppercase;letter-spacing:.08em;
+  color:var(--muted);border-bottom:1px solid var(--border);font-weight:600;
 }
 .rank-distribution{
   background:var(--surface);border:1px solid var(--border);
@@ -1141,7 +1137,4 @@ a.hi-src:hover{color:var(--accent);text-decoration:underline;text-underline-offs
 
   /* ── Legend: compact */
   .legend-row{flex-wrap:wrap;gap:.5rem;padding:.5rem .7rem;margin-top:.4rem}
-
-  /* ── Rankings section */
-  .rank-split{grid-template-columns:1fr}
 }
