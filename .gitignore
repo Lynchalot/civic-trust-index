@@ -4,3 +4,6 @@ node_modules/
 
 # Local-only launch guide (not for public site)
 LAUNCH.md
+
+# Local Claude Code session config
+.claude/
