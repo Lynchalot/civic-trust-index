@@ -22,7 +22,7 @@ python3 -m http.server 8080
 | `index.html` + `js/` + `css/` | Modular version. Primary development target. |
 | `civic_trust_index.html` | Self-contained monolith, **generated** by `build-monolith.js`. All JS and CSS are inlined so the file can be shared and opened directly from disk. Never edit it by hand. |
 
-After any change to `index.html`, `js/data.js`, `js/app.js`, or `css/styles.css`, regenerate the monolith:
+After any change to `index.html`, `js/defacto.js`, `js/data.js`, `js/app.js`, or `css/styles.css`, regenerate the monolith:
 
 ```bash
 node build-monolith.js
@@ -41,7 +41,7 @@ All country data, normalisation, and scoring live here. The file is self-contain
 | Key | Source | Year | Update cadence |
 |---|---|---|---|
 | `WGI` / `GE` | World Bank WGI – Corruption Control / Gov. Effectiveness | 2023 | Annual |
-| `SE` | Schneider & Medina shadow economy (% GDP) | ~2018 | Irregular |
+| `SE` | World Bank Informal Economy DB (Elgin et al.) – MIMIC informal output (% GDP) | 2019 | Biennial |
 | `WVS` | World Values Survey Wave 7 – interpersonal trust % | 2017–22 | ~5 years |
 | `LSC` | Legatum Prosperity Index – social capital | 2023 | Annual |
 | `GLO` | Gallup Law & Order Index | 2023 | Annual |
@@ -76,9 +76,9 @@ All country data, normalisation, and scoring live here. The file is self-contain
 - `I3N` — ISO3 → UN numeric (bridges data dicts to TopoJSON feature IDs)
 - `N2I` — inverted `I3N`, built at runtime
 - `TERRITORY` — UN numeric → `{name, info}` for countries on the map that have no score
-- `TERR_FLAG` — territory display name → ISO2 code for flag emoji fallback (used when a territory is not in `I3N`)
+- `TERR_FLAG` — territory display name → ISO2 code; legacy first-choice fallback for territory flags (every TERRITORY entry now also resolves via `I3N`/`N2I`, so this is belt-and-braces)
 - `ISO2` — ISO3 → ISO2 for flag emoji generation via `flag(iso3)`
-- `DEFACTO_POLYGONS` — hardcoded GeoJSON for disputed/de-facto regions overlaid on both map views
+- `DEFACTO_POLYGONS` — GeoJSON for disputed/de-facto regions overlaid on both map views; lives in `js/defacto.js` (loaded before `data.js`)
 - `byNum` / `byISO` — computed score objects keyed by UN numeric and ISO3 respectively
 
 ### Rendering (`js/app.js`)
@@ -103,12 +103,10 @@ App layout: CSS grid `290px 1fr 290px` (sidebar | map | rank panel). Below 1400p
 
 1. **GCB 2017 coverage gaps** — the 2015/16/17 Global Corruption Barometer omits several high-income countries (Norway, Denmark, Finland, Iceland, Canada, USA, Switzerland, Austria, New Zealand, Israel, Gulf states). These score without the GCB component (proportional reweighting). TI has published only regional editions since 2017.
 2. **LPI scope** — the World Bank LPI covers transport/logistics infrastructure only; it excludes electricity and water supply that the discontinued WEF GCI captured.
-3. **Shadow economy ~2018** — Schneider & Medina data has no regular update schedule.
-4. **`DEFACTO_POLYGONS` inlined** — disputed territory GeoJSON is hardcoded in `data.js` rather than loaded from a separate file.
-5. **`I3N` coverage gaps** — some countries/territories visible on the map (e.g. The Bahamas, Niue, Barbados) are absent from `I3N`, so their flags fall back through `TERR_FLAG` by display name. Adding a newly scored country requires entries in both `WGI` (and other source dicts) and `I3N`.
-6. **No bundler or minification** — JS and CSS are served as raw source files.
+3. **SE legacy values** — five countries absent from the WB Informal Economy Database (TWN, HKG, SRB, MNE, UZB) keep their Schneider & Medina 2018 values; the rest use WB MIMIC 2019 (2019 chosen over 2020 to avoid COVID distortion).
+4. **No bundler or minification** — JS and CSS are served as raw source files.
 
 ## Pending improvements
 
-- **Refresh stale sources** — shadow economy (~2018) is the next candidate. The GCB regional editions (Africa 2019, Asia 2020, EU 2021, LatAm 2019, Pacific 2021) could be stitched into a ~110-country dataset with careful harmonisation.
+- **GCB regional stitching** — scoped in `gcb-stitching-plan.md`: sources, harmonisation hazards, and method for pooling the regional editions into a ~110-country bribery dataset. Requires supervised PDF transcription and an editorial rewrite of the About-section caveat; not to be done as an unsupervised data pass.
 - **Mobile rankings UX** — currently truncates at 25 rows with a "show all" button; further polish needed.

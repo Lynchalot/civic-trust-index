@@ -2,8 +2,8 @@
 /* ============================================================
    MONOLITH BUILD SCRIPT
    Regenerates civic_trust_index.html from the modular sources
-   (index.html + css/styles.css + js/data.js + js/app.js) so the
-   two never drift apart again.
+   (index.html + css/styles.css + js/defacto.js + js/data.js +
+   js/app.js) so the two never drift apart again.
 
    Usage:  node build-monolith.js
 
@@ -32,6 +32,10 @@ const replacements = [
     make: () => "<style>\n" + read("css/styles.css").trim() + "\n</style>",
   },
   {
+    find: '<script src="js/defacto.js"></script>',
+    make: () => "<script>\n" + escInline(read("js/defacto.js").trim()) + "\n</script>",
+  },
+  {
     find: '<script src="js/data.js"></script>',
     make: () => "<script>\n" + escInline(read("js/data.js").trim()) + "\n</script>",
   },
@@ -57,7 +61,7 @@ for (const { find, make } of replacements) {
 
 const banner =
   "<!-- GENERATED FILE — do not edit by hand.\n" +
-  "     Built from index.html + css/styles.css + js/data.js + js/app.js\n" +
+  "     Built from index.html + css/styles.css + js/defacto.js + js/data.js + js/app.js\n" +
   "     by build-monolith.js. Run `node build-monolith.js` after any\n" +
   "     change to those files. -->\n";
 html = html.replace("<!DOCTYPE html>\n", "<!DOCTYPE html>\n" + banner);
