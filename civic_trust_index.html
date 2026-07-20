@@ -586,20 +586,16 @@ h1{
 }
 
 
-/* ── Rankings split layout */
-.rank-split{
-  display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1.5rem;
-}
-@media(max-width:900px){.rank-split{grid-template-columns:1fr}}
-.rank-col{
-  background:var(--surface);border:1px solid var(--border);
-  border-radius:8px;overflow:hidden;
-}
-.rank-col-title{
-  font-size:.62rem;text-transform:uppercase;letter-spacing:.1em;
-  color:var(--muted);font-weight:600;
-  padding:.7rem 1rem;background:var(--surface2);
-  border-bottom:1px solid var(--border);
+/* ── Rankings two-column layout (widescreen, JS-split — see buildInlineRankings).
+   Two real divs, not CSS columns: Firefox/Chrome render hover backgrounds
+   incorrectly inside column containers. */
+#rank-inline.two-col{display:grid;grid-template-columns:1fr 1fr;align-items:start}
+#rank-inline.two-col .rk-col:first-child{border-right:1px solid var(--border)}
+.rk-col-head{
+  display:grid;grid-template-columns:40px 1fr 72px 60px;gap:.5rem;
+  padding:.5rem .9rem;background:var(--surface2);
+  font-size:.6rem;text-transform:uppercase;letter-spacing:.08em;
+  color:var(--muted);border-bottom:1px solid var(--border);font-weight:600;
 }
 .rank-distribution{
   background:var(--surface);border:1px solid var(--border);
@@ -1202,9 +1198,6 @@ a.hi-src:hover{color:var(--accent);text-decoration:underline;text-underline-offs
 
   /* ── Legend: compact */
   .legend-row{flex-wrap:wrap;gap:.5rem;padding:.5rem .7rem;margin-top:.4rem}
-
-  /* ── Rankings section */
-  .rank-split{grid-template-columns:1fr}
 }
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/twemoji.min.js" crossorigin="anonymous"></script>
@@ -1441,7 +1434,7 @@ a.hi-src:hover{color:var(--accent);text-decoration:underline;text-underline-offs
   </div>
 
   <div style="background:var(--surface);border:1px solid var(--border);border-radius:8px;overflow:hidden;margin-top:.8rem">
-    <div style="display:grid;grid-template-columns:40px 1fr 72px 60px;gap:.5rem;padding:.5rem .9rem;background:var(--surface2);font-size:.6rem;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);border-bottom:1px solid var(--border);font-weight:600">
+    <div id="rank-head" style="display:grid;grid-template-columns:40px 1fr 72px 60px;gap:.5rem;padding:.5rem .9rem;background:var(--surface2);font-size:.6rem;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);border-bottom:1px solid var(--border);font-weight:600">
       <span>Rank</span><span>Country</span><span style="text-align:right">CTI Score</span><span style="text-align:right">Coverage</span>
     </div>
     <div id="rank-inline"></div>
@@ -3059,6 +3052,21 @@ function recomputeAll(){
 }
 
 
+// ── World atlas loader
+// Self-hosted copy first (no third-party runtime dependency); falls back to
+// jsDelivr when the local file is unreachable (e.g. monolith opened from disk).
+// One shared promise so the hero globe, flat map and globe never fetch twice.
+const ATLAS_CDN='https://cdn.jsdelivr.net/npm/visionscarto-world-atlas@1/world/50m.json';
+let _atlasPromise=null;
+function loadAtlas(){
+  if(!_atlasPromise){
+    _atlasPromise=fetch('assets/world-50m.json')
+      .then(r=>{if(!r.ok)throw new Error('local atlas '+r.status);return r.json();})
+      .catch(()=>fetch(ATLAS_CDN).then(r=>r.json()));
+  }
+  return _atlasPromise;
+}
+
 // ── Inline rankings (Section 02)
 let rankTabMode='top';
 let showLowData=false;
@@ -3117,8 +3125,22 @@ function buildInlineRankings(){
       ${desc?`<div class="rr-detail">${desc}</div>`:''}
     </div>`;
   });
-  let html=rows.join('');
-  if(truncated)html+=`<div class="rank-show-all"><button onclick="mobileShowAll=true;buildInlineRankings()">Show all ${totalFiltered} countries ↓</button></div>`;
+  // Widescreen: split long lists into two real columns (CSS `columns` is
+  // avoided — it breaks hover backgrounds in Firefox and some Chrome versions).
+  const twoCol=!isMobile&&window.innerWidth>=1200&&rows.length>=30;
+  const head=document.getElementById('rank-head');
+  if(head)head.style.display=twoCol?'none':'grid';
+  container.classList.toggle('two-col',twoCol);
+
+  let html;
+  if(twoCol){
+    const mid=Math.ceil(rows.length/2);
+    const colHead=`<div class="rk-col-head"><span>Rank</span><span>Country</span><span style="text-align:right">CTI Score</span><span style="text-align:right">Coverage</span></div>`;
+    html=`<div class="rk-col">${colHead}${rows.slice(0,mid).join('')}</div><div class="rk-col">${colHead}${rows.slice(mid).join('')}</div>`;
+  }else{
+    html=rows.join('');
+    if(truncated)html+=`<div class="rank-show-all"><button onclick="mobileShowAll=true;buildInlineRankings()">Show all ${totalFiltered} countries ↓</button></div>`;
+  }
   container.innerHTML=html;
   applyTwemoji(container);
 
@@ -3133,6 +3155,13 @@ document.addEventListener('DOMContentLoaded',()=>{
     rankSearchFilter=e.target.value;
     buildInlineRankings();
   });
+});
+
+// Re-split the rankings when crossing the two-column breakpoint.
+let _rankResizeT=null;
+window.addEventListener('resize',()=>{
+  clearTimeout(_rankResizeT);
+  _rankResizeT=setTimeout(buildInlineRankings,150);
 });
 
 
@@ -3228,8 +3257,7 @@ function _buildGlobe(){
   const grat=gsvg.append('path').datum(d3.geoGraticule()())
     .style('fill','none').style('stroke','var(--map-graticule)').attr('stroke-width',.4);
 
-  fetch('https://cdn.jsdelivr.net/npm/visionscarto-world-atlas@1/world/50m.json')
-    .then(r=>r.json()).then(world=>{
+  loadAtlas().then(world=>{
       const landFeat=topojson.feature(world,world.objects.land);
       const countryFeats=topojson.feature(world,world.objects.countries).features;
 
@@ -3587,8 +3615,7 @@ function initGlobe(world){
   heroRafId=requestAnimationFrame(animate);
 }
 
-fetch('https://cdn.jsdelivr.net/npm/visionscarto-world-atlas@1/world/50m.json')
-  .then(r=>r.json())
+loadAtlas()
   .then(world=>{
     const W=960,H=490;
     const svg=d3.select('#msvg').attr('viewBox',`0 0 ${W} ${H}`).attr('preserveAspectRatio','xMidYMid meet');
