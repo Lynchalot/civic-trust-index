@@ -1145,7 +1145,7 @@ function showTip(ev,r,name,_numKey){
     rows+=(r.ge!==undefined)?f('Government Effectiveness',r.ge,r._n.ge,'',3,'WB WGI 2023'):m('Government Effectiveness',3,'WB WGI 2023');
     rows+=sep;
     rows+='<div class="tgrp-lbl">Fiscal Compliance</div>';
-    rows+=(r.se!==undefined)?f('Shadow Economy',r.se+'%',r._n.se,'',6,'Schneider ~2018'):m('Shadow Economy',6,'Schneider ~2018');
+    rows+=(r.se!==undefined)?f('Shadow Economy',r.se+'%',r._n.se,'',6,'WB Informal Economy 2019'):m('Shadow Economy',6,'WB Informal Economy 2019');
     rows+=sep;
     rows+='<div class="tgrp-lbl">Attitudinal Trust</div>';
     rows+=(r.wvs!==undefined)?f('Interpersonal Trust',r.wvs+'%',r.wvs,'',8,'WVS 2017–22'):m('Interpersonal Trust',8,'WVS 2017–22');
