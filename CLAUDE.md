@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project purpose
 
-The **Civic Trust Index** ranks 174 countries on composite "civic quality" — not GDP or expert-assessed governance, but street-level behavioural reality: whether strangers return wallets, whether people bribe bureaucrats, homicide, road deaths, waste management, terrorism, social trust. Institutional measures (World Bank WGI) account for only 6% of the total weight; 94% is behavioural. The project is a purely static web application with no backend.
+The **Civic Trust Index** ranks 173 countries on composite "civic quality" — not GDP or expert-assessed governance, but street-level behavioural reality: whether strangers return wallets, whether people bribe bureaucrats, homicide, road deaths, waste management, terrorism, social trust. Institutional measures (World Bank WGI) account for only 6% of the total weight; 94% is behavioural. The project is a purely static web application with no backend.
 
 ## Serving
 

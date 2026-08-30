@@ -595,7 +595,7 @@ document.addEventListener('DOMContentLoaded', function(){
     entries.forEach(e=>{
       if(!e.isIntersecting) return;
       obs.disconnect();
-      setTimeout(()=>animateCounter(document.getElementById('hero-n-countries'),174,'',900),100);
+      setTimeout(()=>animateCounter(document.getElementById('hero-n-countries'),173,'',900),100);
       setTimeout(()=>animateCounter(document.querySelector('.hero-stat-block:nth-child(3) .hero-stat-n'),94,'%',1100),300);
     });
   },{threshold:0.3});

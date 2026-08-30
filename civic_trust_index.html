@@ -10,8 +10,8 @@
 <meta name="color-scheme" content="dark light">
 <meta name="theme-color" content="#0d0c0f">
 
-<title>Civic Trust Index — Ranking 174 Countries by Civic Quality</title>
-<meta name="description" content="Do strangers return lost wallets? Are bribes routine? Are the streets clean? The Civic Trust Index ranks 174 countries on the everyday behaviour that makes a society work — not GDP, not expert opinion.">
+<title>Civic Trust Index — Ranking 173 Countries by Civic Quality</title>
+<meta name="description" content="Do strangers return lost wallets? Are bribes routine? Are the streets clean? The Civic Trust Index ranks 173 countries on the everyday behaviour that makes a society work — not GDP, not expert opinion.">
 <link rel="canonical" href="https://civictrustindex.com/">
 <meta name="author" content="Civic Trust Index">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
@@ -20,20 +20,20 @@
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Civic Trust Index">
 <meta property="og:title" content="Does civic life actually work in your country?">
-<meta property="og:description" content="174 countries ranked on what people actually do — whether strangers return wallets, whether bribes are routine, whether the streets are clean. The civic reality GDP never captures.">
+<meta property="og:description" content="173 countries ranked on what people actually do — whether strangers return wallets, whether bribes are routine, whether the streets are clean. The civic reality GDP never captures.">
 <meta property="og:url" content="https://civictrustindex.com/">
 <meta property="og:image" content="https://civictrustindex.com/og-image.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
-<meta property="og:image:alt" content="Civic Trust Index — ranking 174 countries by civic quality">
+<meta property="og:image:alt" content="Civic Trust Index — ranking 173 countries by civic quality">
 <meta property="og:locale" content="en_US">
 
 <!-- Twitter / X -->
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Does civic life actually work in your country?">
-<meta name="twitter:description" content="174 countries ranked on everyday civic behaviour — not GDP. Whether strangers return wallets, whether bribes are routine, whether the streets are clean.">
+<meta name="twitter:description" content="173 countries ranked on everyday civic behaviour — not GDP. Whether strangers return wallets, whether bribes are routine, whether the streets are clean.">
 <meta name="twitter:image" content="https://civictrustindex.com/og-image.png">
-<meta name="twitter:image:alt" content="Civic Trust Index — ranking 174 countries by civic quality">
+<meta name="twitter:image:alt" content="Civic Trust Index — ranking 173 countries by civic quality">
 
 <script type="application/ld+json">
 {
@@ -44,12 +44,12 @@
       "name": "Civic Trust Index",
       "alternateName": "CTI",
       "url": "https://civictrustindex.com/",
-      "description": "A composite index ranking 174 countries on civic quality — the everyday behaviour that makes a society work, from wallet-return rates to street-level bribery, rather than GDP or expert opinion."
+      "description": "A composite index ranking 173 countries on civic quality — the everyday behaviour that makes a society work, from wallet-return rates to street-level bribery, rather than GDP or expert opinion."
     },
     {
       "@type": "Dataset",
       "name": "Civic Trust Index",
-      "description": "A behavioural index of civic quality across 174 countries, combining thirteen public datasets including wallet-return rates, the Gallup Law & Order index, interpersonal trust, street-level bribery, homicide, road deaths, waste management and terrorism. Institutional measures account for only 6% of the weight; 94% is observed behaviour and outcomes.",
+      "description": "A behavioural index of civic quality across 173 countries, combining thirteen public datasets including wallet-return rates, the Gallup Law & Order index, interpersonal trust, street-level bribery, homicide, road deaths, waste management and terrorism. Institutional measures account for only 6% of the weight; 94% is observed behaviour and outcomes.",
       "url": "https://civictrustindex.com/",
       "creator": { "@type": "Organization", "name": "Civic Trust Index" },
       "isAccessibleForFree": true,
@@ -2014,93 +2014,99 @@ function applyTwemoji(el){
 
 
 // ── WGI 2023: Control of Corruption
+// World Bank Worldwide Governance Indicators — Control of Corruption,
+// point estimate (GOV_WGI_CC.EST), reference year 2023, approx. -2.5..+2.5.
+// Values are the published World Bank figures rounded to 2dp. The Holy See
+// (VAT) is not covered by the WGI and is therefore not scored by this index.
 const WGI={
-  AFG:{cc:-1.68,n:"Afghanistan"},AGO:{cc:-1.07,n:"Angola"},ALB:{cc:-0.32,n:"Albania"},
-  ARE:{cc:0.68,n:"UAE"},ARG:{cc:-0.42,n:"Argentina"},ARM:{cc:-0.17,n:"Armenia"},
-  AUS:{cc:1.72,n:"Australia"},AUT:{cc:1.52,n:"Austria"},AZE:{cc:-0.87,n:"Azerbaijan"},
-  BDI:{cc:-1.17,n:"Burundi"},BEL:{cc:1.38,n:"Belgium"},BEN:{cc:-0.37,n:"Benin"},
-  BFA:{cc:-0.58,n:"Burkina Faso"},BGD:{cc:-1.02,n:"Bangladesh"},BGR:{cc:-0.07,n:"Bulgaria"},
-  BHR:{cc:0.28,n:"Bahrain"},BIH:{cc:-0.52,n:"Bosnia & Herzegovina"},BLR:{cc:-0.77,n:"Belarus"},
-  BOL:{cc:-0.78,n:"Bolivia"},BRA:{cc:-0.22,n:"Brazil"},BRN:{cc:0.52,n:"Brunei"},
-  BTN:{cc:0.82,n:"Bhutan"},BWA:{cc:0.73,n:"Botswana"},CAF:{cc:-1.38,n:"Central African Rep."},
-  CAN:{cc:1.72,n:"Canada"},CHE:{cc:2.05,n:"Switzerland"},CHL:{cc:1.02,n:"Chile"},
-  CHN:{cc:-0.18,n:"China"},CIV:{cc:-0.52,n:"Côte d'Ivoire"},CMR:{cc:-1.05,n:"Cameroon"},
-  COD:{cc:-1.55,n:"DR Congo"},COG:{cc:-1.08,n:"Rep. of Congo"},COL:{cc:-0.43,n:"Colombia"},
-  CRI:{cc:0.37,n:"Costa Rica"},CUB:{cc:-0.33,n:"Cuba"},CYP:{cc:0.77,n:"Cyprus"},
-  CZE:{cc:0.58,n:"Czech Republic"},DEU:{cc:1.71,n:"Germany"},DJI:{cc:-0.72,n:"Djibouti"},
-  DNK:{cc:2.27,n:"Denmark"},DOM:{cc:-0.58,n:"Dominican Republic"},DZA:{cc:-0.78,n:"Algeria"},
-  ECU:{cc:-0.72,n:"Ecuador"},EGY:{cc:-0.62,n:"Egypt"},ERI:{cc:-0.93,n:"Eritrea"},
-  ESP:{cc:0.83,n:"Spain"},EST:{cc:1.25,n:"Estonia"},ETH:{cc:-0.78,n:"Ethiopia"},
-  FIN:{cc:2.21,n:"Finland"},FJI:{cc:-0.28,n:"Fiji"},FRA:{cc:1.25,n:"France"},
-  GAB:{cc:-0.87,n:"Gabon"},GBR:{cc:1.55,n:"United Kingdom"},GEO:{cc:0.43,n:"Georgia"},
-  GHA:{cc:-0.07,n:"Ghana"},GIN:{cc:-0.97,n:"Guinea"},GMB:{cc:-0.42,n:"Gambia"},
-  GNQ:{cc:-1.22,n:"Equatorial Guinea"},GRC:{cc:0.17,n:"Greece"},
-  GTM:{cc:-0.83,n:"Guatemala"},GUY:{cc:-0.32,n:"Guyana"},HND:{cc:-0.98,n:"Honduras"},
-  HRV:{cc:0.27,n:"Croatia"},HTI:{cc:-1.52,n:"Haiti"},HUN:{cc:-0.32,n:"Hungary"},
-  IDN:{cc:-0.23,n:"Indonesia"},IND:{cc:-0.37,n:"India"},IRL:{cc:1.60,n:"Ireland"},
-  IRN:{cc:-1.08,n:"Iran"},IRQ:{cc:-1.17,n:"Iraq"},ISL:{cc:1.72,n:"Iceland"},
-  ISR:{cc:0.72,n:"Israel"},ITA:{cc:0.37,n:"Italy"},JAM:{cc:-0.38,n:"Jamaica"},
-  JOR:{cc:0.17,n:"Jordan"},JPN:{cc:1.28,n:"Japan"},KAZ:{cc:-0.68,n:"Kazakhstan"},
-  KEN:{cc:-0.87,n:"Kenya"},KGZ:{cc:-0.87,n:"Kyrgyzstan"},KHM:{cc:-1.13,n:"Cambodia"},
-  KOR:{cc:0.72,n:"South Korea"},KWT:{cc:0.28,n:"Kuwait"},LAO:{cc:-0.97,n:"Laos"},
-  LBN:{cc:-1.27,n:"Lebanon"},LBR:{cc:-0.87,n:"Liberia"},LBY:{cc:-1.23,n:"Libya"},
-  LKA:{cc:-0.48,n:"Sri Lanka"},LSO:{cc:-0.28,n:"Lesotho"},LTU:{cc:0.68,n:"Lithuania"},
-  LUX:{cc:1.85,n:"Luxembourg"},LVA:{cc:0.73,n:"Latvia"},MAR:{cc:-0.27,n:"Morocco"},
-  MDA:{cc:-0.42,n:"Moldova"},MDG:{cc:-0.73,n:"Madagascar"},MDV:{cc:-0.33,n:"Maldives"},
-  MEX:{cc:-0.88,n:"Mexico"},MKD:{cc:-0.28,n:"North Macedonia"},MLI:{cc:-1.02,n:"Mali"},
-  MLT:{cc:0.52,n:"Malta"},MMR:{cc:-1.17,n:"Myanmar"},MNE:{cc:0.03,n:"Montenegro"},
-  MNG:{cc:-0.42,n:"Mongolia"},MOZ:{cc:-0.92,n:"Mozambique"},MRT:{cc:-0.62,n:"Mauritania"},
-  MUS:{cc:0.73,n:"Mauritius"},MWI:{cc:-0.73,n:"Malawi"},MYS:{cc:0.22,n:"Malaysia"},
-  NAM:{cc:0.27,n:"Namibia"},NER:{cc:-0.83,n:"Niger"},NGA:{cc:-1.17,n:"Nigeria"},
-  NIC:{cc:-0.82,n:"Nicaragua"},NLD:{cc:1.85,n:"Netherlands"},NOR:{cc:2.11,n:"Norway"},
-  NPL:{cc:-0.68,n:"Nepal"},NZL:{cc:2.15,n:"New Zealand"},OMN:{cc:0.33,n:"Oman"},
-  PAK:{cc:-0.98,n:"Pakistan"},PAN:{cc:-0.33,n:"Panama"},PER:{cc:-0.58,n:"Peru"},
-  PHL:{cc:-0.38,n:"Philippines"},PNG:{cc:-0.73,n:"Papua New Guinea"},POL:{cc:0.50,n:"Poland"},
-  PRT:{cc:0.88,n:"Portugal"},PRY:{cc:-0.78,n:"Paraguay"},QAT:{cc:0.62,n:"Qatar"},
-  ROU:{cc:-0.08,n:"Romania"},RUS:{cc:-1.02,n:"Russia"},RWA:{cc:0.03,n:"Rwanda"},
-  SAU:{cc:-0.08,n:"Saudi Arabia"},SDN:{cc:-1.37,n:"Sudan"},SEN:{cc:-0.28,n:"Senegal"},
-  SGP:{cc:2.18,n:"Singapore"},SLE:{cc:-0.72,n:"Sierra Leone"},SLV:{cc:-0.63,n:"El Salvador"},
-  SOM:{cc:-1.82,n:"Somalia"},SRB:{cc:-0.17,n:"Serbia"},SSD:{cc:-1.72,n:"South Sudan"},
-  SVK:{cc:0.27,n:"Slovakia"},SVN:{cc:0.73,n:"Slovenia"},SWE:{cc:2.09,n:"Sweden"},
-  SWZ:{cc:-0.52,n:"Eswatini"},SYR:{cc:-1.52,n:"Syria"},TCD:{cc:-1.47,n:"Chad"},
-  TGO:{cc:-0.78,n:"Togo"},THA:{cc:-0.25,n:"Thailand"},TJK:{cc:-1.12,n:"Tajikistan"},
-  TKM:{cc:-1.42,n:"Turkmenistan"},TLS:{cc:-0.23,n:"Timor-Leste"},
-  TTO:{cc:-0.28,n:"Trinidad & Tobago"},TUN:{cc:-0.37,n:"Tunisia"},TUR:{cc:-0.58,n:"Turkey"},
-  TZA:{cc:-0.58,n:"Tanzania"},UGA:{cc:-0.92,n:"Uganda"},UKR:{cc:-0.87,n:"Ukraine"},
-  URY:{cc:1.02,n:"Uruguay"},USA:{cc:1.17,n:"United States"},UZB:{cc:-0.87,n:"Uzbekistan"},
-  VEN:{cc:-1.55,n:"Venezuela"},VNM:{cc:-0.62,n:"Vietnam"},YEM:{cc:-1.52,n:"Yemen"},
-  ZAF:{cc:-0.10,n:"South Africa"},ZMB:{cc:-0.72,n:"Zambia"},ZWE:{cc:-1.32,n:"Zimbabwe"},
-  SUR:{cc:-0.37,n:"Suriname"},LIE:{cc:1.85,n:"Liechtenstein"},SMR:{cc:1.42,n:"San Marino"},
-  AND:{cc:1.52,n:"Andorra"},MCO:{cc:1.72,n:"Monaco"},XKX:{cc:-0.22,n:"Kosovo"},
-  TWN:{cc:1.32,n:"Taiwan"},HKG:{cc:1.45,n:"Hong Kong"},
-  BLZ:{cc:-0.82,n:"Belize"},
-  GNB:{cc:-1.17,n:"Guinea-Bissau"},
-  VAT:{cc:1.90,n:"Vatican City"}
+  AFG:{cc:-1.20,n:"Afghanistan"},AGO:{cc:-0.62,n:"Angola"},ALB:{cc:-0.46,n:"Albania"},
+  ARE:{cc:0.99,n:"UAE"},ARG:{cc:-0.35,n:"Argentina"},ARM:{cc:0.10,n:"Armenia"},
+  AUS:{cc:1.81,n:"Australia"},AUT:{cc:1.32,n:"Austria"},AZE:{cc:-0.88,n:"Azerbaijan"},
+  BDI:{cc:-1.29,n:"Burundi"},BEL:{cc:1.47,n:"Belgium"},BEN:{cc:-0.10,n:"Benin"},
+  BFA:{cc:-0.25,n:"Burkina Faso"},BGD:{cc:-1.20,n:"Bangladesh"},BGR:{cc:-0.15,n:"Bulgaria"},
+  BHR:{cc:0.24,n:"Bahrain"},BIH:{cc:-0.60,n:"Bosnia & Herzegovina"},BLR:{cc:-0.53,n:"Belarus"},
+  BOL:{cc:-0.96,n:"Bolivia"},BRA:{cc:-0.45,n:"Brazil"},BRN:{cc:1.18,n:"Brunei"},
+  BTN:{cc:1.36,n:"Bhutan"},BWA:{cc:0.61,n:"Botswana"},CAF:{cc:-1.38,n:"Central African Rep."},
+  CAN:{cc:1.63,n:"Canada"},CHE:{cc:2.10,n:"Switzerland"},CHL:{cc:1.03,n:"Chile"},
+  CHN:{cc:0.11,n:"China"},CIV:{cc:-0.36,n:"Côte d'Ivoire"},CMR:{cc:-1.13,n:"Cameroon"},
+  COD:{cc:-1.49,n:"DR Congo"},COG:{cc:-1.40,n:"Rep. of Congo"},COL:{cc:-0.31,n:"Colombia"},
+  CRI:{cc:0.68,n:"Costa Rica"},CUB:{cc:-0.16,n:"Cuba"},CYP:{cc:0.48,n:"Cyprus"},
+  CZE:{cc:0.85,n:"Czech Republic"},DEU:{cc:1.70,n:"Germany"},DJI:{cc:-0.91,n:"Djibouti"},
+  DNK:{cc:2.32,n:"Denmark"},DOM:{cc:-0.43,n:"Dominican Republic"},DZA:{cc:-0.64,n:"Algeria"},
+  ECU:{cc:-0.72,n:"Ecuador"},EGY:{cc:-0.82,n:"Egypt"},ERI:{cc:-1.41,n:"Eritrea"},
+  ESP:{cc:0.74,n:"Spain"},EST:{cc:1.67,n:"Estonia"},ETH:{cc:-0.46,n:"Ethiopia"},
+  FIN:{cc:2.19,n:"Finland"},FJI:{cc:0.53,n:"Fiji"},FRA:{cc:1.27,n:"France"},
+  GAB:{cc:-0.97,n:"Gabon"},GBR:{cc:1.47,n:"United Kingdom"},GEO:{cc:0.66,n:"Georgia"},
+  GHA:{cc:-0.13,n:"Ghana"},GIN:{cc:-1.01,n:"Guinea"},GMB:{cc:-0.30,n:"Gambia"},
+  GNQ:{cc:-1.52,n:"Equatorial Guinea"},GRC:{cc:0.33,n:"Greece"},
+  GTM:{cc:-1.09,n:"Guatemala"},GUY:{cc:-0.31,n:"Guyana"},HND:{cc:-1.10,n:"Honduras"},
+  HRV:{cc:0.11,n:"Croatia"},HTI:{cc:-1.50,n:"Haiti"},HUN:{cc:0.08,n:"Hungary"},
+  IDN:{cc:-0.44,n:"Indonesia"},IND:{cc:-0.34,n:"India"},IRL:{cc:1.59,n:"Ireland"},
+  IRN:{cc:-1.17,n:"Iran"},IRQ:{cc:-1.42,n:"Iraq"},ISL:{cc:1.66,n:"Iceland"},
+  ISR:{cc:0.87,n:"Israel"},ITA:{cc:0.57,n:"Italy"},JAM:{cc:-0.14,n:"Jamaica"},
+  JOR:{cc:0.11,n:"Jordan"},JPN:{cc:1.34,n:"Japan"},KAZ:{cc:-0.22,n:"Kazakhstan"},
+  KEN:{cc:-0.76,n:"Kenya"},KGZ:{cc:-1.20,n:"Kyrgyzstan"},KHM:{cc:-1.12,n:"Cambodia"},
+  KOR:{cc:0.88,n:"South Korea"},KWT:{cc:0.17,n:"Kuwait"},LAO:{cc:-0.96,n:"Laos"},
+  LBN:{cc:-1.26,n:"Lebanon"},LBR:{cc:-1.01,n:"Liberia"},LBY:{cc:-1.54,n:"Libya"},
+  LKA:{cc:-0.39,n:"Sri Lanka"},LSO:{cc:-0.30,n:"Lesotho"},LTU:{cc:0.89,n:"Lithuania"},
+  LUX:{cc:2.01,n:"Luxembourg"},LVA:{cc:0.78,n:"Latvia"},MAR:{cc:-0.55,n:"Morocco"},
+  MDA:{cc:-0.27,n:"Moldova"},MDG:{cc:-0.99,n:"Madagascar"},MDV:{cc:-0.27,n:"Maldives"},
+  MEX:{cc:-0.93,n:"Mexico"},MKD:{cc:-0.35,n:"North Macedonia"},MLI:{cc:-0.85,n:"Mali"},
+  MLT:{cc:0.32,n:"Malta"},MMR:{cc:-1.11,n:"Myanmar"},MNE:{cc:-0.07,n:"Montenegro"},
+  MNG:{cc:-0.62,n:"Mongolia"},MOZ:{cc:-0.90,n:"Mozambique"},MRT:{cc:-0.80,n:"Mauritania"},
+  MUS:{cc:0.34,n:"Mauritius"},MWI:{cc:-0.63,n:"Malawi"},MYS:{cc:0.38,n:"Malaysia"},
+  NAM:{cc:0.16,n:"Namibia"},NER:{cc:-0.52,n:"Niger"},NGA:{cc:-1.10,n:"Nigeria"},
+  NIC:{cc:-1.26,n:"Nicaragua"},NLD:{cc:1.88,n:"Netherlands"},NOR:{cc:2.07,n:"Norway"},
+  NPL:{cc:-0.63,n:"Nepal"},NZL:{cc:2.02,n:"New Zealand"},OMN:{cc:0.23,n:"Oman"},
+  PAK:{cc:-1.05,n:"Pakistan"},PAN:{cc:-0.57,n:"Panama"},PER:{cc:-0.67,n:"Peru"},
+  PHL:{cc:-0.57,n:"Philippines"},PNG:{cc:-0.60,n:"Papua New Guinea"},POL:{cc:0.75,n:"Poland"},
+  PRT:{cc:0.78,n:"Portugal"},PRY:{cc:-1.01,n:"Paraguay"},QAT:{cc:0.78,n:"Qatar"},
+  ROU:{cc:0.03,n:"Romania"},RUS:{cc:-0.89,n:"Russia"},RWA:{cc:0.68,n:"Rwanda"},
+  SAU:{cc:0.48,n:"Saudi Arabia"},SDN:{cc:-1.45,n:"Sudan"},SEN:{cc:0.04,n:"Senegal"},
+  SGP:{cc:1.92,n:"Singapore"},SLE:{cc:-0.57,n:"Sierra Leone"},SLV:{cc:-0.61,n:"El Salvador"},
+  SOM:{cc:-1.62,n:"Somalia"},SRB:{cc:-0.50,n:"Serbia"},SSD:{cc:-1.88,n:"South Sudan"},
+  SVK:{cc:0.38,n:"Slovakia"},SVN:{cc:0.68,n:"Slovenia"},SWE:{cc:1.98,n:"Sweden"},
+  SWZ:{cc:-0.63,n:"Eswatini"},SYR:{cc:-1.78,n:"Syria"},TCD:{cc:-1.49,n:"Chad"},
+  TGO:{cc:-0.59,n:"Togo"},THA:{cc:-0.44,n:"Thailand"},TJK:{cc:-1.12,n:"Tajikistan"},
+  TKM:{cc:-1.35,n:"Turkmenistan"},TLS:{cc:-0.43,n:"Timor-Leste"},
+  TTO:{cc:-0.32,n:"Trinidad & Tobago"},TUN:{cc:-0.19,n:"Tunisia"},TUR:{cc:-0.44,n:"Turkey"},
+  TZA:{cc:-0.35,n:"Tanzania"},UGA:{cc:-1.00,n:"Uganda"},UKR:{cc:-0.72,n:"Ukraine"},
+  URY:{cc:1.55,n:"Uruguay"},USA:{cc:1.20,n:"United States"},UZB:{cc:-0.70,n:"Uzbekistan"},
+  VEN:{cc:-1.56,n:"Venezuela"},VNM:{cc:-0.31,n:"Vietnam"},YEM:{cc:-1.60,n:"Yemen"},
+  ZAF:{cc:-0.21,n:"South Africa"},ZMB:{cc:-0.40,n:"Zambia"},ZWE:{cc:-1.19,n:"Zimbabwe"},
+  SUR:{cc:-0.33,n:"Suriname"},LIE:{cc:1.75,n:"Liechtenstein"},SMR:{cc:1.17,n:"San Marino"},
+  AND:{cc:1.17,n:"Andorra"},MCO:{cc:1.17,n:"Monaco"},XKX:{cc:-0.15,n:"Kosovo"},
+  TWN:{cc:1.19,n:"Taiwan"},HKG:{cc:1.55,n:"Hong Kong"},
+  BLZ:{cc:-0.12,n:"Belize"},
+  GNB:{cc:-1.16,n:"Guinea-Bissau"}
 };
 
+// World Bank Worldwide Governance Indicators — Government Effectiveness,
+// point estimate (GOV_WGI_GE.EST), reference year 2023, approx. -2.5..+2.5.
+// Published World Bank figures rounded to 2dp.
 const GE={
-  AFG:-2.05,AGO:-0.87,ALB:-0.05,ARE:1.27,ARG:-0.37,ARM:0.03,AUS:1.72,AUT:1.47,
-  AZE:-0.08,BDI:-1.33,BEL:1.32,BEN:-0.42,BFA:-1.03,BGD:-0.47,BGR:0.33,BHR:0.48,
-  BIH:-0.28,BLR:-0.22,BOL:-0.57,BRA:-0.17,BRN:0.87,BTN:0.47,BWA:0.72,CAF:-1.77,
-  CAN:1.52,CHE:1.80,CHL:1.07,CHN:0.42,CIV:-0.48,CMR:-0.87,COD:-1.52,COG:-1.07,
-  COL:-0.17,CRI:0.37,CUB:-0.33,CYP:0.72,CZE:0.93,DEU:1.62,DJI:-0.67,DNK:1.88,
-  DOM:-0.17,DZA:-0.47,ECU:-0.57,EGY:-0.17,ERI:-1.28,ESP:0.87,EST:1.03,ETH:-0.47,
-  FIN:1.98,FJI:0.08,FRA:1.38,GAB:-0.52,GBR:1.32,GEO:0.33,GHA:-0.28,GIN:-0.97,
-  GMB:-0.43,GNQ:-1.08,GRC:0.28,GTM:-0.67,GUY:-0.22,HND:-0.73,HRV:0.47,
-  HTI:-1.72,HUN:0.38,IDN:0.03,IND:0.12,IRL:1.48,IRN:-0.72,IRQ:-1.17,ISL:1.72,
-  ISR:1.17,ITA:0.52,JAM:-0.22,JOR:0.03,JPN:1.42,KAZ:-0.08,KEN:-0.23,KGZ:-0.78,
-  KHM:-0.72,KOR:1.18,KWT:0.28,LAO:-0.72,LBN:-1.18,LBR:-0.73,LBY:-1.62,LKA:0.03,
-  LSO:-0.28,LTU:0.87,LUX:1.68,LVA:0.88,MAR:0.22,MDA:-0.37,MDG:-0.63,MDV:-0.08,
-  MEX:-0.17,MKD:0.18,MLI:-1.17,MLT:0.83,MMR:-0.98,MNE:0.22,MNG:-0.18,MOZ:-0.52,
-  MRT:-0.63,MUS:0.83,MWI:-0.28,MYS:0.88,NAM:0.32,NER:-1.17,NGA:-1.12,NIC:-0.98,
-  NLD:1.87,NOR:1.92,NPL:-0.47,NZL:1.85,OMN:0.53,PAK:-0.62,PAN:0.08,PER:-0.28,
-  PHL:0.07,PNG:-0.93,POL:0.73,PRT:0.83,PRY:-0.73,QAT:0.88,ROU:0.17,
-  RUS:-0.43,RWA:0.38,SAU:0.48,SDN:-1.38,SEN:-0.18,SGP:2.05,SLE:-0.93,SLV:-0.37,
-  SOM:-2.25,SRB:0.17,SSD:-2.00,SVK:0.63,SVN:0.82,SWE:1.78,SWZ:-0.42,SYR:-1.67,
-  TCD:-1.52,TGO:-0.58,THA:0.38,TJK:-0.98,TKM:-0.92,TLS:-0.63,TTO:0.37,TUN:0.12,
-  TUR:-0.08,TZA:-0.43,UGA:-0.43,UKR:-0.12,URY:0.73,USA:1.32,UZB:-0.57,VEN:-1.42,
-  VNM:0.28,YEM:-2.03,ZAF:0.28,ZMB:-0.38,ZWE:-1.07,
-  SUR:-0.42,LIE:1.82,SMR:1.38,AND:1.45,MCO:1.65,XKX:-0.18,TWN:1.45,HKG:1.62,BLZ:-0.28,GNB:-1.07,VAT:1.85
+  AFG:-2.09,AGO:-0.83,ALB:0.29,ARE:1.31,ARG:0.06,ARM:-0.16,AUS:1.78,AUT:1.58,
+  AZE:0.07,BDI:-1.11,BEL:1.16,BEN:-0.22,BFA:-0.86,BGD:-0.56,BGR:0.11,BHR:0.73,
+  BIH:-0.65,BLR:-0.60,BOL:-0.41,BRA:-0.27,BRN:0.99,BTN:0.54,BWA:0.54,CAF:-1.57,
+  CAN:1.75,CHE:2.04,CHL:1.00,CHN:0.78,CIV:-0.32,CMR:-0.78,COD:-1.66,COG:-1.17,
+  COL:-0.04,CRI:0.33,CUB:-0.00,CYP:0.93,CZE:1.24,DEU:1.56,DJI:-0.54,DNK:1.96,
+  DOM:0.05,DZA:-0.36,ECU:-0.16,EGY:-0.04,ERI:-1.38,ESP:1.08,EST:1.27,ETH:-0.69,
+  FIN:1.79,FJI:0.50,FRA:1.35,GAB:-0.58,GBR:1.14,GEO:0.59,GHA:-0.02,GIN:-0.87,
+  GMB:-0.47,GNQ:-1.15,GRC:0.26,GTM:-0.86,GUY:-0.10,HND:-0.66,HRV:0.75,
+  HTI:-2.01,HUN:0.55,IDN:0.27,IND:0.42,IRL:1.66,IRN:-0.74,IRQ:-1.34,ISL:1.64,
+  ISR:1.36,ITA:0.85,JAM:0.17,JOR:0.39,JPN:1.99,KAZ:0.15,KEN:-0.31,KGZ:-1.00,
+  KHM:-0.42,KOR:1.50,KWT:0.31,LAO:-0.75,LBN:-1.17,LBR:-1.22,LBY:-1.45,LKA:-0.28,
+  LSO:-0.75,LTU:0.94,LUX:2.15,LVA:0.64,MAR:-0.02,MDA:-0.03,MDG:-0.95,MDV:-0.22,
+  MEX:-0.07,MKD:0.02,MLI:-1.23,MLT:0.76,MMR:-1.58,MNE:0.28,MNG:-0.36,MOZ:-0.78,
+  MRT:-0.82,MUS:0.82,MWI:-0.77,MYS:0.75,NAM:0.15,NER:-0.61,NGA:-0.87,NIC:-0.94,
+  NLD:1.75,NOR:1.79,NPL:-0.84,NZL:1.73,OMN:0.47,PAK:-0.66,PAN:0.03,PER:-0.20,
+  PHL:0.10,PNG:-1.08,POL:0.63,PRT:0.97,PRY:-0.34,QAT:1.15,ROU:0.13,
+  RUS:-0.21,RWA:0.41,SAU:0.73,SDN:-1.77,SEN:0.15,SGP:2.26,SLE:-0.95,SLV:-0.09,
+  SOM:-1.87,SRB:0.10,SSD:-2.21,SVK:0.58,SVN:1.16,SWE:1.69,SWZ:-0.72,SYR:-1.61,
+  TCD:-1.22,TGO:-0.92,THA:0.31,TJK:-0.77,TKM:-0.49,TLS:-0.85,TTO:0.15,TUN:-0.17,
+  TUR:-0.11,TZA:-0.41,UGA:-0.43,UKR:-0.58,URY:0.85,USA:1.36,UZB:-0.30,VEN:-1.43,
+  VNM:-0.18,YEM:-1.89,ZAF:-0.18,ZMB:-0.56,ZWE:-0.99,
+  SUR:-0.37,LIE:1.69,SMR:0.90,AND:1.16,MCO:1.74,XKX:0.01,TWN:1.52,HKG:1.54,BLZ:-0.06,GNB:-1.45
 };
 
 const SE={
@@ -2631,6 +2637,7 @@ const TERRITORY={
   '674':{name:'San Marino',info:'Oldest constitutional republic; high institutional quality but excluded from most social trust and behavioural surveys due to its micro-state status.'},
   '492':{name:'Monaco',info:'City-state principality; very high institutional and infrastructure quality but not covered in most social trust surveys.'},
   '020':{name:'Andorra',info:'Co-principality between France and Spain; high institutional quality but limited coverage in social trust and behavioural survey components.'},
+  '336':{name:'Vatican City',info:'The Holy See is not covered by the World Bank Worldwide Governance Indicators and is absent from every behavioural survey used here, so it is shown on the map but not scored or ranked.'},
   // ── Caspian Sea / inland water bodies (appear as polygons in some TopoJSON versions)
   // ── Disputed / de facto
   'KAS':{name:'Siachen Glacier',info:'High-altitude glacier administered by India but claimed by Pakistan.'},
@@ -3578,7 +3585,7 @@ document.addEventListener('DOMContentLoaded', function(){
     entries.forEach(e=>{
       if(!e.isIntersecting) return;
       obs.disconnect();
-      setTimeout(()=>animateCounter(document.getElementById('hero-n-countries'),174,'',900),100);
+      setTimeout(()=>animateCounter(document.getElementById('hero-n-countries'),173,'',900),100);
       setTimeout(()=>animateCounter(document.querySelector('.hero-stat-block:nth-child(3) .hero-stat-n'),94,'%',1100),300);
     });
   },{threshold:0.3});
