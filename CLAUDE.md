@@ -8,21 +8,27 @@ The **Civic Trust Index** ranks 174 countries on composite "civic quality" — n
 
 ## Serving
 
-No build step or bundler. Serve from any static HTTP server — the app must be served over HTTP (not `file://`) because it fetches the world atlas TopoJSON at runtime from jsDelivr.
+No bundler; the only build artefact is the generated monolith (see below). Serve from any static HTTP server. The world atlas TopoJSON is self-hosted at `assets/world-50m.json`; if that fetch fails (e.g. the monolith opened from disk via `file://`), the app falls back to jsDelivr at runtime.
 
 ```bash
 npx serve .          # port 3000
 python3 -m http.server 8080
 ```
 
-## Two HTML files — keep them in sync
+## Two HTML files — monolith is generated
 
 | File | Purpose |
 |---|---|
 | `index.html` + `js/` + `css/` | Modular version. Primary development target. |
-| `civic_trust_index.html` | Self-contained monolith (3 882 lines). All JS and CSS are inlined so the file can be shared and opened directly from disk. Must be manually kept in sync whenever logic or styles change. |
+| `civic_trust_index.html` | Self-contained monolith, **generated** by `build-monolith.js`. All JS and CSS are inlined so the file can be shared and opened directly from disk. Never edit it by hand. |
 
-**This is the single biggest source of fragility.** Any change to `data.js`, `app.js`, or `styles.css` also needs to be reflected inside `civic_trust_index.html`.
+After any change to `index.html`, `js/defacto.js`, `js/data.js`, `js/app.js`, or `css/styles.css`, regenerate the monolith:
+
+```bash
+node build-monolith.js
+```
+
+The script inlines the stylesheet and both scripts into a copy of `index.html`, strips the beta-gate `<script>` line (the monolith is for direct sharing and is never gated), and stamps a "generated file" banner at the top. It exits non-zero if any expected pattern is missing from `index.html` — if you rename the CSS/JS files or restructure the `<head>`, update the script's patterns to match.
 
 ## Architecture
 
@@ -35,7 +41,7 @@ All country data, normalisation, and scoring live here. The file is self-contain
 | Key | Source | Year | Update cadence |
 |---|---|---|---|
 | `WGI` / `GE` | World Bank WGI – Corruption Control / Gov. Effectiveness | 2023 | Annual |
-| `SE` | Schneider & Medina shadow economy (% GDP) | ~2018 | Irregular |
+| `SE` | World Bank Informal Economy DB (Elgin et al.) – MIMIC informal output (% GDP) | 2019 | Biennial |
 | `WVS` | World Values Survey Wave 7 – interpersonal trust % | 2017–22 | ~5 years |
 | `LSC` | Legatum Prosperity Index – social capital | 2023 | Annual |
 | `GLO` | Gallup Law & Order Index | 2023 | Annual |
@@ -70,19 +76,20 @@ All country data, normalisation, and scoring live here. The file is self-contain
 - `I3N` — ISO3 → UN numeric (bridges data dicts to TopoJSON feature IDs)
 - `N2I` — inverted `I3N`, built at runtime
 - `TERRITORY` — UN numeric → `{name, info}` for countries on the map that have no score
-- `TERR_FLAG` — territory display name → ISO2 code for flag emoji fallback (used when a territory is not in `I3N`)
+- `TERR_FLAG` — territory display name → ISO2 code; legacy first-choice fallback for territory flags (every TERRITORY entry now also resolves via `I3N`/`N2I`, so this is belt-and-braces)
 - `ISO2` — ISO3 → ISO2 for flag emoji generation via `flag(iso3)`
-- `DEFACTO_POLYGONS` — hardcoded GeoJSON for disputed/de-facto regions overlaid on both map views
+- `DEFACTO_POLYGONS` — GeoJSON for disputed/de-facto regions overlaid on both map views; lives in `js/defacto.js` (loaded before `data.js`)
 - `byNum` / `byISO` — computed score objects keyed by UN numeric and ISO3 respectively
 
 ### Rendering (`js/app.js`)
 
-Fetches `visionscarto-world-atlas@1/world/50m.json` (TopoJSON) once; all map rendering flows from that.
+`loadAtlas()` fetches the world TopoJSON once behind a shared promise (self-hosted `assets/world-50m.json`, jsDelivr fallback); all map rendering flows from that.
 
 - **Flat map** — D3 `geoNaturalEarth1` projection, `d3.zoom()` (scale 1–12). Shape-rendering switches to `optimizeSpeed` during active zoom via `.zooming` CSS class. `will-change: transform` on the `<g>` layer.
 - **Globe** — D3 `geoOrthographic`, lazy-initialised on first tab click. Drag stops auto-rotation; only the Reset button restarts it. Micro-state dots rendered as separate SVG circles clipped to the visible hemisphere.
 - **Hero globe** — Decorative spinning sphere in the landing section. Uses `requestAnimationFrame` paused via `IntersectionObserver` when the hero scrolls out of view.
 - **Tooltip** (`#tip`) — `position: fixed`, populated by `showTip(ev, r, name, numKey)`. **Critical**: `#tip` is a child of `#wrap` which has `overflow: hidden`. Do not add `contain: layout paint`, CSS `transform`, `filter`, or `will-change: transform` to `#wrap` or any ancestor of `#tip` — these create a new containing block that breaks fixed positioning.
+- **Inline rankings** — `buildInlineRankings()` (Section 02). On viewports ≥ 1200px, lists of ≥ 30 rows are split into two real `.rk-col` divs with per-column headers; never use CSS `columns` here — Firefox and some Chrome versions render hover backgrounds incorrectly inside column containers.
 - **Filter sidebar** — checkboxes grouped by category. Toggling calls `recomputeAll()` which recalculates filtered scores and repaints map fills + rankings.
 - **Flags** — generated as regional indicator emoji via `String.fromCodePoint`, then converted to images by Twemoji. Lookup chain: `ISO2[r.iso3]` → `TERR_FLAG[terrName]` → `ISO2[N2I[numKey]]`.
 
@@ -94,17 +101,12 @@ App layout: CSS grid `290px 1fr 290px` (sidebar | map | rank panel). Below 1400p
 
 ## Known technical debt
 
-1. **`civic_trust_index.html` drift** — the monolith has no automated sync with the modular files. Every edit needs to be applied twice.
-2. **GCB 2017 coverage gaps** — the 2015/16/17 Global Corruption Barometer omits several high-income countries (Norway, Denmark, Finland, Iceland, Canada, USA, Switzerland, Austria, New Zealand, Israel, Gulf states). These score without the GCB component (proportional reweighting). TI has published only regional editions since 2017.
-3. **LPI scope** — the World Bank LPI covers transport/logistics infrastructure only; it excludes electricity and water supply that the discontinued WEF GCI captured.
-4. **Shadow economy ~2018** — Schneider & Medina data has no regular update schedule.
-5. **`DEFACTO_POLYGONS` inlined** — disputed territory GeoJSON is hardcoded in `data.js` rather than loaded from a separate file.
-6. **`I3N` coverage gaps** — some countries/territories visible on the map (e.g. The Bahamas, Niue, Barbados) are absent from `I3N`, so their flags fall back through `TERR_FLAG` by display name. Adding a newly scored country requires entries in both `WGI` (and other source dicts) and `I3N`.
-7. **No bundler or minification** — JS and CSS are served as raw source files.
+1. **GCB 2017 coverage gaps** — the 2015/16/17 Global Corruption Barometer omits several high-income countries (Norway, Denmark, Finland, Iceland, Canada, USA, Switzerland, Austria, New Zealand, Israel, Gulf states). These score without the GCB component (proportional reweighting). TI has published only regional editions since 2017.
+2. **LPI scope** — the World Bank LPI covers transport/logistics infrastructure only; it excludes electricity and water supply that the discontinued WEF GCI captured.
+3. **SE legacy values** — five countries absent from the WB Informal Economy Database (TWN, HKG, SRB, MNE, UZB) keep their Schneider & Medina 2018 values; the rest use WB MIMIC 2019 (2019 chosen over 2020 to avoid COVID distortion).
+4. **No bundler or minification** — JS and CSS are served as raw source files.
 
 ## Pending improvements
 
-- **Two-column rankings on widescreen** — previously attempted with CSS `columns` but abandoned because Firefox and some Chrome versions render hover backgrounds incorrectly inside column containers. A JS-split approach (two `<div class="rank-col">`) is the correct path but needs the hover state managed carefully.
-- **Refresh stale sources** — shadow economy (~2018) is the next candidate. The GCB regional editions (Africa 2019, Asia 2020, EU 2021, LatAm 2019, Pacific 2021) could be stitched into a ~110-country dataset with careful harmonisation.
-- **Automate monolith sync** — a build script that inlines `data.js`, `app.js`, and `styles.css` into `civic_trust_index.html` would eliminate manual double-editing.
+- **GCB regional stitching** — scoped in `gcb-stitching-plan.md`: sources, harmonisation hazards, and method for pooling the regional editions into a ~110-country bribery dataset. Requires supervised PDF transcription and an editorial rewrite of the About-section caveat; not to be done as an unsupervised data pass.
 - **Mobile rankings UX** — currently truncates at 25 rows with a "show all" button; further polish needed.

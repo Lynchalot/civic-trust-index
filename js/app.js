@@ -114,6 +114,21 @@ function recomputeAll(){
 }
 
 
+// ── World atlas loader
+// Self-hosted copy first (no third-party runtime dependency); falls back to
+// jsDelivr when the local file is unreachable (e.g. monolith opened from disk).
+// One shared promise so the hero globe, flat map and globe never fetch twice.
+const ATLAS_CDN='https://cdn.jsdelivr.net/npm/visionscarto-world-atlas@1/world/50m.json';
+let _atlasPromise=null;
+function loadAtlas(){
+  if(!_atlasPromise){
+    _atlasPromise=fetch('assets/world-50m.json')
+      .then(r=>{if(!r.ok)throw new Error('local atlas '+r.status);return r.json();})
+      .catch(()=>fetch(ATLAS_CDN).then(r=>r.json()));
+  }
+  return _atlasPromise;
+}
+
 // ── Inline rankings (Section 02)
 let rankTabMode='top';
 let showLowData=false;
@@ -172,8 +187,22 @@ function buildInlineRankings(){
       ${desc?`<div class="rr-detail">${desc}</div>`:''}
     </div>`;
   });
-  let html=rows.join('');
-  if(truncated)html+=`<div class="rank-show-all"><button onclick="mobileShowAll=true;buildInlineRankings()">Show all ${totalFiltered} countries ↓</button></div>`;
+  // Widescreen: split long lists into two real columns (CSS `columns` is
+  // avoided — it breaks hover backgrounds in Firefox and some Chrome versions).
+  const twoCol=!isMobile&&window.innerWidth>=1200&&rows.length>=30;
+  const head=document.getElementById('rank-head');
+  if(head)head.style.display=twoCol?'none':'grid';
+  container.classList.toggle('two-col',twoCol);
+
+  let html;
+  if(twoCol){
+    const mid=Math.ceil(rows.length/2);
+    const colHead=`<div class="rk-col-head"><span>Rank</span><span>Country</span><span style="text-align:right">CTI Score</span><span style="text-align:right">Coverage</span></div>`;
+    html=`<div class="rk-col">${colHead}${rows.slice(0,mid).join('')}</div><div class="rk-col">${colHead}${rows.slice(mid).join('')}</div>`;
+  }else{
+    html=rows.join('');
+    if(truncated)html+=`<div class="rank-show-all"><button onclick="mobileShowAll=true;buildInlineRankings()">Show all ${totalFiltered} countries ↓</button></div>`;
+  }
   container.innerHTML=html;
   applyTwemoji(container);
 
@@ -188,6 +217,13 @@ document.addEventListener('DOMContentLoaded',()=>{
     rankSearchFilter=e.target.value;
     buildInlineRankings();
   });
+});
+
+// Re-split the rankings when crossing the two-column breakpoint.
+let _rankResizeT=null;
+window.addEventListener('resize',()=>{
+  clearTimeout(_rankResizeT);
+  _rankResizeT=setTimeout(buildInlineRankings,150);
 });
 
 
@@ -283,8 +319,7 @@ function _buildGlobe(){
   const grat=gsvg.append('path').datum(d3.geoGraticule()())
     .style('fill','none').style('stroke','var(--map-graticule)').attr('stroke-width',.4);
 
-  fetch('https://cdn.jsdelivr.net/npm/visionscarto-world-atlas@1/world/50m.json')
-    .then(r=>r.json()).then(world=>{
+  loadAtlas().then(world=>{
       const landFeat=topojson.feature(world,world.objects.land);
       const countryFeats=topojson.feature(world,world.objects.countries).features;
 
@@ -447,6 +482,34 @@ function _buildGlobe(){
     {
       html:'The health of a democratic society may be measured by the quality of functions performed by <em>private citizens</em>.',
       attr:'Alexis de Tocqueville',work:'Democracy in America, 1835'
+    },
+    {
+      html:'The deterioration of every government begins with the decay of the <em>principles</em> on which it was founded.',
+      attr:'Montesquieu',work:'Spirit of the Laws, 1748'
+    },
+    {
+      html:'Better go without food — from of old, death has been the lot of all men. But a people that no longer <em>trusts its rulers</em> is lost indeed.',
+      attr:'Confucius',work:'Analects 12.7, c. 500 BC'
+    },
+    {
+      html:'For political stability, for government effectiveness, and even for economic progress, <em>social capital</em> may be even more important than physical or human capital.',
+      attr:'Robert Putnam',work:'Making Democracy Work, 1993'
+    },
+    {
+      html:'If men were angels, no government would be necessary. If <em>angels</em> were to govern men, neither external nor internal controls on government would be necessary.',
+      attr:'James Madison',work:'Federalist No. 51, 1788'
+    },
+    {
+      html:'We cannot reduce our need to trust others. <em>Trust</em> is not an optional extra, something that we can do without.',
+      attr:'Onora O\'Neill',work:'A Question of Trust, 2002'
+    },
+    {
+      html:'Man naturally desires, not only to be loved, but to be <em>lovely</em> — not only to be praised, but to be <em>praiseworthy</em>.',
+      attr:'Adam Smith',work:'Theory of Moral Sentiments, 1759'
+    },
+    {
+      html:'Despotism sees in the <em>separation among men</em> the surest guarantee of its own duration, and it usually makes every effort to keep them separate.',
+      attr:'Alexis de Tocqueville',work:'Democracy in America, 1840'
     }
   ];
   let idx=Math.floor(Math.random()*QUOTES.length);
@@ -614,8 +677,7 @@ function initGlobe(world){
   heroRafId=requestAnimationFrame(animate);
 }
 
-fetch('https://cdn.jsdelivr.net/npm/visionscarto-world-atlas@1/world/50m.json')
-  .then(r=>r.json())
+loadAtlas()
   .then(world=>{
     const W=960,H=490;
     const svg=d3.select('#msvg').attr('viewBox',`0 0 ${W} ${H}`).attr('preserveAspectRatio','xMidYMid meet');
