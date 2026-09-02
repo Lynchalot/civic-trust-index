@@ -2097,8 +2097,25 @@ function applyTwemoji(el){
 // ── WGI 2023: Control of Corruption
 // World Bank Worldwide Governance Indicators — Control of Corruption,
 // point estimate (GOV_WGI_CC.EST), reference year 2023, approx. -2.5..+2.5.
-// Values are the published World Bank figures rounded to 2dp. The Holy See
-// (VAT) is not covered by the WGI and is therefore not scored by this index.
+// The Holy See (VAT) is not covered by the WGI and is not scored here.
+//
+// PROVENANCE WARNING — these values need re-sourcing.
+// Spot-checks against published WGI 2023 estimates show a consistent
+// downward bias of roughly 0.03-0.12, and it is not a constant offset:
+//   Denmark 2.32 (pub. 2.3761)   Finland   2.19 (pub. 2.2215)
+//   Singapore 1.92 (pub. 2.0402) N.Zealand 2.02 (pub. 2.0841)
+// So these are NOT the published figures rounded to 2dp, whatever the
+// import claimed. Country ordering is correct, which is why a
+// rank-based validation passed and missed this.
+// They replaced an earlier set that was outright synthetic (digits 4
+// and 6 never occurred as the 2nd decimal across 174 values; 88% sat
+// exactly 0.02 off a 0.05 grid), so this is a real improvement, but
+// unfinished. Likeliest cause is a wrong WGI vintage/revision.
+// To fix: re-import CC.EST and GE.EST for reference year 2023 from
+// databank.worldbank.org and diff against these. That could not be
+// done from the environment this was written in — the World Bank
+// domains are blocked by its network egress policy.
+// cc and ge carry 3% each, so the ranking impact is small but real.
 const WGI={
   AFG:{cc:-1.20,n:"Afghanistan"},AGO:{cc:-0.62,n:"Angola"},ALB:{cc:-0.46,n:"Albania"},
   ARE:{cc:0.99,n:"UAE"},ARG:{cc:-0.35,n:"Argentina"},ARM:{cc:0.10,n:"Armenia"},
@@ -2164,7 +2181,7 @@ const WGI={
 
 // World Bank Worldwide Governance Indicators — Government Effectiveness,
 // point estimate (GOV_WGI_GE.EST), reference year 2023, approx. -2.5..+2.5.
-// Published World Bank figures rounded to 2dp.
+// Same provenance warning as WGI/cc above — these need re-sourcing.
 const GE={
   AFG:-2.09,AGO:-0.83,ALB:0.29,ARE:1.31,ARG:0.06,ARM:-0.16,AUS:1.78,AUT:1.58,
   AZE:0.07,BDI:-1.11,BEL:1.16,BEN:-0.22,BFA:-0.86,BGD:-0.56,BGR:0.11,BHR:0.73,
