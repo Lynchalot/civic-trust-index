@@ -350,7 +350,7 @@ function _buildGlobe(){
           .attr('stroke-dasharray','3,2')
           .style('cursor','help')
           .on('mousemove',ev=>{
-            document.getElementById('tn').innerHTML='<span style="font-style:italic">'+df.name+'</span>';
+            document.getElementById('tn').innerHTML=defactoFlag(df.name)+'<span style="font-style:italic">'+df.name+'</span>';
             document.getElementById('tsc').innerHTML='<span style="color:var(--muted);font-size:.6rem;text-transform:uppercase;letter-spacing:.08em">No index data available</span>';
             document.getElementById('tsummary').textContent=df.info;
             document.getElementById('trows').innerHTML='';
@@ -595,7 +595,7 @@ document.addEventListener('DOMContentLoaded', function(){
     entries.forEach(e=>{
       if(!e.isIntersecting) return;
       obs.disconnect();
-      setTimeout(()=>animateCounter(document.getElementById('hero-n-countries'),174,'',900),100);
+      setTimeout(()=>animateCounter(document.getElementById('hero-n-countries'),173,'',900),100);
       setTimeout(()=>animateCounter(document.querySelector('.hero-stat-block:nth-child(3) .hero-stat-n'),94,'%',1100),300);
     });
   },{threshold:0.3});
@@ -743,7 +743,7 @@ loadAtlas()
         .attr('vector-effect','non-scaling-stroke')
         .style('cursor','help')
         .on('mousemove',function(ev){
-          document.getElementById('tn').innerHTML='<span style="font-style:italic">'+df.name+'</span>';
+          document.getElementById('tn').innerHTML=defactoFlag(df.name)+'<span style="font-style:italic">'+df.name+'</span>';
           document.getElementById('tsc').innerHTML='<span style="color:var(--muted);text-transform:uppercase;font-size:.6rem;letter-spacing:.08em">No index data available</span>';
           document.getElementById('tsummary').textContent=df.info;
           document.getElementById('tsummary').classList.remove('loading');

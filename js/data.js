@@ -228,7 +228,7 @@ const TERR_FLAG={'Western Sahara':'EH','Greenland':'GL','Faroe Islands':'FO',
   'Montserrat':'MS','Anguilla':'AI','Turks and Caicos':'TC',
   'British Virgin Islands':'VG','US Virgin Islands':'VI','Samoa':'WS',
   'American Samoa':'AS','Reunion':'RE','Martinique':'MQ','Guadeloupe':'GP',
-  'Mayotte':'YT','French Guiana':'GF','N. Cyprus':'CY','Somaliland':'SO',
+  'Mayotte':'YT','French Guiana':'GF',
   'Vatican City':'VA','San Marino':'SM','Liechtenstein':'LI',
   'Andorra':'AD','Monaco':'MC',
   // Caribbean
@@ -243,7 +243,31 @@ const TERR_FLAG={'Western Sahara':'EH','Greenland':'GL','Faroe Islands':'FO',
   // Pacific
   'Niue':'NU','Cook Islands':'CK','Tokelau':'TK',
   'Norfolk Island':'NF','Christmas Island':'CX','Cocos Islands':'CC',
-  'Åland Islands':'AX'};
+  'Åland Islands':'AX',
+  // Uninhabited / remote territories (have valid ISO 3166-1 flag codes)
+  'South Georgia':'GS','British Indian Ocean Territory':'IO',
+  'Chagos Archipelago':'IO','French Southern Territories':'TF',
+  'Heard & McDonald Islands':'HM','Bouvet Island':'BV',
+  'US Minor Outlying Islands':'UM','Pitcairn Islands':'PN',
+  'Antarctica':'AQ'};
+// Custom flag images for de facto states that have no ISO 3166-1 code,
+// and therefore no Unicode regional-indicator flag emoji. Inlined as
+// data URIs so the generated monolith stays self-contained when shared.
+// Editable sources live in flags/*.svg. Do not hand-edit the URIs below:
+// run `node build-flags.js` to regenerate them (raw " # and & all break
+// them in different ways — see CLAUDE.md).
+const DEFACTO_FLAGS={
+  'Somaliland':'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 900 600%22%3E%3Crect width=%22900%22 height=%22200%22 fill=%22%23009A44%22/%3E%3Crect y=%22200%22 width=%22900%22 height=%22200%22 fill=%22%23FFFFFF%22/%3E%3Crect y=%22400%22 width=%22900%22 height=%22200%22 fill=%22%23CE1126%22/%3E%3Ctext x=%22450%22 y=%22300%22 text-anchor=%22middle%22 dominant-baseline=%22middle%22 font-size=%22160%22 fill=%22%23000000%22 font-family=%22Arial,sans-serif%22%3E%E2%98%85%3C/text%3E%3C/svg%3E',
+  'South Ossetia':'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 900 600%22%3E%3Crect width=%22900%22 height=%22200%22 fill=%22%23FFFFFF%22/%3E%3Crect y=%22200%22 width=%22900%22 height=%22200%22 fill=%22%23D3192C%22/%3E%3Crect y=%22400%22 width=%22900%22 height=%22200%22 fill=%22%23F5C518%22/%3E%3C/svg%3E',
+  'Abkhazia':'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 900 600%22%3E%3Crect width=%22900%22 height=%22600%22 fill=%22%2300853F%22/%3E%3Crect y=%2285%22 width=%22900%22 height=%2286%22 fill=%22%23FFFFFF%22/%3E%3Crect y=%22257%22 width=%22900%22 height=%2286%22 fill=%22%23FFFFFF%22/%3E%3Crect y=%22429%22 width=%22900%22 height=%2286%22 fill=%22%23FFFFFF%22/%3E%3Crect width=%22450%22 height=%22342%22 fill=%22%23D3192C%22/%3E%3Cdefs%3E%3Cpolygon id=%22st%22 points=%220,-12 2.94,-4.05 11.41,-3.71 4.76,1.55 7.06,9.71 0,5 -7.06,9.71 -4.76,1.55 -11.41,-3.71 -2.94,-4.05%22 fill=%22%23FFFFFF%22/%3E%3C/defs%3E%3Cuse href=%22%23st%22 transform=%22translate(142,125)%22/%3E%3Cuse href=%22%23st%22 transform=%22translate(158,102)%22/%3E%3Cuse href=%22%23st%22 transform=%22translate(179,85)%22/%3E%3Cuse href=%22%23st%22 transform=%22translate(205,76)%22/%3E%3Cuse href=%22%23st%22 transform=%22translate(233,75)%22/%3E%3Cuse href=%22%23st%22 transform=%22translate(259,82)%22/%3E%3Cuse href=%22%23st%22 transform=%22translate(282,98)%22/%3E%3Crect x=%22188%22 y=%22196%22 width=%2272%22 height=%2264%22 rx=%228%22 fill=%22%23FFFFFF%22/%3E%3Crect x=%22158%22 y=%22222%22 width=%2236%22 height=%2218%22 rx=%229%22 fill=%22%23FFFFFF%22 transform=%22rotate(-15,176,231)%22/%3E%3Crect x=%22192%22 y=%22130%22 width=%2216%22 height=%2273%22 rx=%228%22 fill=%22%23FFFFFF%22/%3E%3Crect x=%22211%22 y=%22121%22 width=%2216%22 height=%2282%22 rx=%228%22 fill=%22%23FFFFFF%22/%3E%3Crect x=%22230%22 y=%22127%22 width=%2216%22 height=%2276%22 rx=%228%22 fill=%22%23FFFFFF%22/%3E%3Crect x=%22247%22 y=%22142%22 width=%2215%22 height=%2261%22 rx=%227%22 fill=%22%23FFFFFF%22/%3E%3C/svg%3E',
+  'Northern Cyprus':'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 900 600%22%3E%3Crect width=%22900%22 height=%22600%22 fill=%22%23FFFFFF%22/%3E%3Crect width=%22900%22 height=%2270%22 fill=%22%23E31E24%22/%3E%3Crect y=%22530%22 width=%22900%22 height=%2270%22 fill=%22%23E31E24%22/%3E%3Ccircle cx=%22410%22 cy=%22300%22 r=%22130%22 fill=%22%23E31E24%22/%3E%3Ccircle cx=%22462%22 cy=%22300%22 r=%22108%22 fill=%22%23FFFFFF%22/%3E%3Ctext x=%22635%22 y=%22333%22 text-anchor=%22middle%22 dominant-baseline=%22middle%22 font-size=%22145%22 fill=%22%23E31E24%22 font-family=%22Arial,sans-serif%22%3E%E2%98%85%3C/text%3E%3C/svg%3E',
+  'Transnistria':'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 900 600%22%3E%3Crect width=%22900%22 height=%22600%22 fill=%22%23CC0000%22/%3E%3Crect y=%22240%22 width=%22900%22 height=%22120%22 fill=%22%23009A44%22/%3E%3Cpolygon points=%22148,26 155.6,47.5 178.4,48.1 160.4,62 166.8,83.9 148,71 129.2,83.9 135.6,62 117.6,48.1 140.4,47.5%22 fill=%22none%22 stroke=%22%23FFD700%22 stroke-width=%224%22/%3E%3Ctext x=%22148%22 y=%22160%22 text-anchor=%22middle%22 dominant-baseline=%22middle%22 font-size=%22148%22 fill=%22%23FFD700%22 font-family=%22DejaVu Sans,Arial Unicode MS,sans-serif%22%3E%26%23x262D;%3C/text%3E%3C/svg%3E'
+};
+function defactoFlag(name){
+  const src=DEFACTO_FLAGS[name];
+  if(!src)return '';
+  return '<img src="'+src+'" style="display:inline-block;width:1.3em;height:1em;vertical-align:middle;margin-right:.35em;flex-shrink:0;object-fit:cover;border-radius:1px;" alt="">';
+}
 function flag(iso3){
   try{
     const i2=ISO2[iso3];if(!i2)return '';
@@ -257,94 +281,107 @@ function applyTwemoji(el){
 }
 
 
-// ── WGI 2023: Control of Corruption
+// ── WGI 2024: Control of Corruption
+// World Bank Worldwide Governance Indicators, Control of Corruption,
+// point estimate (GOV_WGI_CC.EST), reference year 2024, approx. -2.5..+2.5.
+// Imported from a DataBank export of the WGI database (source 3) and
+// rounded to 2dp. 173 countries — every country scored by this index.
+// The Holy See (VAT) is not covered by the WGI and is not scored here.
+//
+// These replaced a set that was not the published figures: spot-checks
+// against WGI 2023 showed a non-constant downward bias of 0.03-0.12,
+// and those in turn had replaced an outright synthetic set (digits 4
+// and 6 never occurred as the 2nd decimal across 174 values; 88% sat
+// exactly 0.02 off a 0.05 grid). This is the first set taken directly
+// from the source.
+//
+// NOTE THE VINTAGE: 2024, newer than most other components (2021-2023)
+// but older than GTI (2025). The index mixes years; see CLAUDE.md.
 const WGI={
-  AFG:{cc:-1.68,n:"Afghanistan"},AGO:{cc:-1.07,n:"Angola"},ALB:{cc:-0.32,n:"Albania"},
-  ARE:{cc:0.68,n:"UAE"},ARG:{cc:-0.42,n:"Argentina"},ARM:{cc:-0.17,n:"Armenia"},
-  AUS:{cc:1.72,n:"Australia"},AUT:{cc:1.52,n:"Austria"},AZE:{cc:-0.87,n:"Azerbaijan"},
-  BDI:{cc:-1.17,n:"Burundi"},BEL:{cc:1.38,n:"Belgium"},BEN:{cc:-0.37,n:"Benin"},
-  BFA:{cc:-0.58,n:"Burkina Faso"},BGD:{cc:-1.02,n:"Bangladesh"},BGR:{cc:-0.07,n:"Bulgaria"},
-  BHR:{cc:0.28,n:"Bahrain"},BIH:{cc:-0.52,n:"Bosnia & Herzegovina"},BLR:{cc:-0.77,n:"Belarus"},
-  BOL:{cc:-0.78,n:"Bolivia"},BRA:{cc:-0.22,n:"Brazil"},BRN:{cc:0.52,n:"Brunei"},
-  BTN:{cc:0.82,n:"Bhutan"},BWA:{cc:0.73,n:"Botswana"},CAF:{cc:-1.38,n:"Central African Rep."},
-  CAN:{cc:1.72,n:"Canada"},CHE:{cc:2.05,n:"Switzerland"},CHL:{cc:1.02,n:"Chile"},
-  CHN:{cc:-0.18,n:"China"},CIV:{cc:-0.52,n:"Côte d'Ivoire"},CMR:{cc:-1.05,n:"Cameroon"},
-  COD:{cc:-1.55,n:"DR Congo"},COG:{cc:-1.08,n:"Rep. of Congo"},COL:{cc:-0.43,n:"Colombia"},
-  CRI:{cc:0.37,n:"Costa Rica"},CUB:{cc:-0.33,n:"Cuba"},CYP:{cc:0.77,n:"Cyprus"},
-  CZE:{cc:0.58,n:"Czech Republic"},DEU:{cc:1.71,n:"Germany"},DJI:{cc:-0.72,n:"Djibouti"},
-  DNK:{cc:2.27,n:"Denmark"},DOM:{cc:-0.58,n:"Dominican Republic"},DZA:{cc:-0.78,n:"Algeria"},
-  ECU:{cc:-0.72,n:"Ecuador"},EGY:{cc:-0.62,n:"Egypt"},ERI:{cc:-0.93,n:"Eritrea"},
-  ESP:{cc:0.83,n:"Spain"},EST:{cc:1.25,n:"Estonia"},ETH:{cc:-0.78,n:"Ethiopia"},
-  FIN:{cc:2.21,n:"Finland"},FJI:{cc:-0.28,n:"Fiji"},FRA:{cc:1.25,n:"France"},
-  GAB:{cc:-0.87,n:"Gabon"},GBR:{cc:1.55,n:"United Kingdom"},GEO:{cc:0.43,n:"Georgia"},
-  GHA:{cc:-0.07,n:"Ghana"},GIN:{cc:-0.97,n:"Guinea"},GMB:{cc:-0.42,n:"Gambia"},
-  GNQ:{cc:-1.22,n:"Equatorial Guinea"},GRC:{cc:0.17,n:"Greece"},
-  GTM:{cc:-0.83,n:"Guatemala"},GUY:{cc:-0.32,n:"Guyana"},HND:{cc:-0.98,n:"Honduras"},
-  HRV:{cc:0.27,n:"Croatia"},HTI:{cc:-1.52,n:"Haiti"},HUN:{cc:-0.32,n:"Hungary"},
-  IDN:{cc:-0.23,n:"Indonesia"},IND:{cc:-0.37,n:"India"},IRL:{cc:1.60,n:"Ireland"},
-  IRN:{cc:-1.08,n:"Iran"},IRQ:{cc:-1.17,n:"Iraq"},ISL:{cc:1.72,n:"Iceland"},
-  ISR:{cc:0.72,n:"Israel"},ITA:{cc:0.37,n:"Italy"},JAM:{cc:-0.38,n:"Jamaica"},
-  JOR:{cc:0.17,n:"Jordan"},JPN:{cc:1.28,n:"Japan"},KAZ:{cc:-0.68,n:"Kazakhstan"},
-  KEN:{cc:-0.87,n:"Kenya"},KGZ:{cc:-0.87,n:"Kyrgyzstan"},KHM:{cc:-1.13,n:"Cambodia"},
-  KOR:{cc:0.72,n:"South Korea"},KWT:{cc:0.28,n:"Kuwait"},LAO:{cc:-0.97,n:"Laos"},
-  LBN:{cc:-1.27,n:"Lebanon"},LBR:{cc:-0.87,n:"Liberia"},LBY:{cc:-1.23,n:"Libya"},
-  LKA:{cc:-0.48,n:"Sri Lanka"},LSO:{cc:-0.28,n:"Lesotho"},LTU:{cc:0.68,n:"Lithuania"},
-  LUX:{cc:1.85,n:"Luxembourg"},LVA:{cc:0.73,n:"Latvia"},MAR:{cc:-0.27,n:"Morocco"},
-  MDA:{cc:-0.42,n:"Moldova"},MDG:{cc:-0.73,n:"Madagascar"},MDV:{cc:-0.33,n:"Maldives"},
-  MEX:{cc:-0.88,n:"Mexico"},MKD:{cc:-0.28,n:"North Macedonia"},MLI:{cc:-1.02,n:"Mali"},
-  MLT:{cc:0.52,n:"Malta"},MMR:{cc:-1.17,n:"Myanmar"},MNE:{cc:0.03,n:"Montenegro"},
-  MNG:{cc:-0.42,n:"Mongolia"},MOZ:{cc:-0.92,n:"Mozambique"},MRT:{cc:-0.62,n:"Mauritania"},
-  MUS:{cc:0.73,n:"Mauritius"},MWI:{cc:-0.73,n:"Malawi"},MYS:{cc:0.22,n:"Malaysia"},
-  NAM:{cc:0.27,n:"Namibia"},NER:{cc:-0.83,n:"Niger"},NGA:{cc:-1.17,n:"Nigeria"},
-  NIC:{cc:-0.82,n:"Nicaragua"},NLD:{cc:1.85,n:"Netherlands"},NOR:{cc:2.11,n:"Norway"},
-  NPL:{cc:-0.68,n:"Nepal"},NZL:{cc:2.15,n:"New Zealand"},OMN:{cc:0.33,n:"Oman"},
-  PAK:{cc:-0.98,n:"Pakistan"},PAN:{cc:-0.33,n:"Panama"},PER:{cc:-0.58,n:"Peru"},
-  PHL:{cc:-0.38,n:"Philippines"},PNG:{cc:-0.73,n:"Papua New Guinea"},POL:{cc:0.50,n:"Poland"},
-  PRT:{cc:0.88,n:"Portugal"},PRY:{cc:-0.78,n:"Paraguay"},QAT:{cc:0.62,n:"Qatar"},
-  ROU:{cc:-0.08,n:"Romania"},RUS:{cc:-1.02,n:"Russia"},RWA:{cc:0.03,n:"Rwanda"},
-  SAU:{cc:-0.08,n:"Saudi Arabia"},SDN:{cc:-1.37,n:"Sudan"},SEN:{cc:-0.28,n:"Senegal"},
-  SGP:{cc:2.18,n:"Singapore"},SLE:{cc:-0.72,n:"Sierra Leone"},SLV:{cc:-0.63,n:"El Salvador"},
-  SOM:{cc:-1.82,n:"Somalia"},SRB:{cc:-0.17,n:"Serbia"},SSD:{cc:-1.72,n:"South Sudan"},
-  SVK:{cc:0.27,n:"Slovakia"},SVN:{cc:0.73,n:"Slovenia"},SWE:{cc:2.09,n:"Sweden"},
-  SWZ:{cc:-0.52,n:"Eswatini"},SYR:{cc:-1.52,n:"Syria"},TCD:{cc:-1.47,n:"Chad"},
-  TGO:{cc:-0.78,n:"Togo"},THA:{cc:-0.25,n:"Thailand"},TJK:{cc:-1.12,n:"Tajikistan"},
-  TKM:{cc:-1.42,n:"Turkmenistan"},TLS:{cc:-0.23,n:"Timor-Leste"},
-  TTO:{cc:-0.28,n:"Trinidad & Tobago"},TUN:{cc:-0.37,n:"Tunisia"},TUR:{cc:-0.58,n:"Turkey"},
-  TZA:{cc:-0.58,n:"Tanzania"},UGA:{cc:-0.92,n:"Uganda"},UKR:{cc:-0.87,n:"Ukraine"},
-  URY:{cc:1.02,n:"Uruguay"},USA:{cc:1.17,n:"United States"},UZB:{cc:-0.87,n:"Uzbekistan"},
-  VEN:{cc:-1.55,n:"Venezuela"},VNM:{cc:-0.62,n:"Vietnam"},YEM:{cc:-1.52,n:"Yemen"},
-  ZAF:{cc:-0.10,n:"South Africa"},ZMB:{cc:-0.72,n:"Zambia"},ZWE:{cc:-1.32,n:"Zimbabwe"},
-  SUR:{cc:-0.37,n:"Suriname"},LIE:{cc:1.85,n:"Liechtenstein"},SMR:{cc:1.42,n:"San Marino"},
-  AND:{cc:1.52,n:"Andorra"},MCO:{cc:1.72,n:"Monaco"},XKX:{cc:-0.22,n:"Kosovo"},
-  TWN:{cc:1.32,n:"Taiwan"},HKG:{cc:1.45,n:"Hong Kong"},
-  BLZ:{cc:-0.82,n:"Belize"},
-  GNB:{cc:-1.17,n:"Guinea-Bissau"},
-  VAT:{cc:1.90,n:"Vatican City"}
+  AFG:{cc:-1.31,n:"Afghanistan"},AGO:{cc:-0.62,n:"Angola"},ALB:{cc:-0.42,n:"Albania"},
+  AND:{cc:1.18,n:"Andorra"},ARE:{cc:1.17,n:"UAE"},ARG:{cc:-0.33,n:"Argentina"},
+  ARM:{cc:0.14,n:"Armenia"},AUS:{cc:1.85,n:"Australia"},AUT:{cc:1.29,n:"Austria"},
+  AZE:{cc:-0.78,n:"Azerbaijan"},BDI:{cc:-1.46,n:"Burundi"},BEL:{cc:1.47,n:"Belgium"},
+  BEN:{cc:-0.24,n:"Benin"},BFA:{cc:-0.25,n:"Burkina Faso"},BGD:{cc:-1.10,n:"Bangladesh"},
+  BGR:{cc:-0.24,n:"Bulgaria"},BHR:{cc:0.25,n:"Bahrain"},BIH:{cc:-0.51,n:"Bosnia & Herzegovina"},
+  BLR:{cc:-0.58,n:"Belarus"},BLZ:{cc:-0.16,n:"Belize"},BOL:{cc:-1.00,n:"Bolivia"},
+  BRA:{cc:-0.41,n:"Brazil"},BRN:{cc:1.19,n:"Brunei"},BTN:{cc:1.47,n:"Bhutan"},
+  BWA:{cc:0.63,n:"Botswana"},CAF:{cc:-1.31,n:"Central African Rep."},CAN:{cc:1.63,n:"Canada"},
+  CHE:{cc:2.01,n:"Switzerland"},CHL:{cc:1.11,n:"Chile"},CHN:{cc:0.09,n:"China"},
+  CIV:{cc:-0.29,n:"Côte d'Ivoire"},CMR:{cc:-1.22,n:"Cameroon"},COD:{cc:-1.52,n:"DR Congo"},
+  COG:{cc:-1.42,n:"Rep. of Congo"},COL:{cc:-0.29,n:"Colombia"},CRI:{cc:0.68,n:"Costa Rica"},
+  CUB:{cc:-0.23,n:"Cuba"},CYP:{cc:0.53,n:"Cyprus"},CZE:{cc:0.93,n:"Czech Republic"},
+  DEU:{cc:1.77,n:"Germany"},DJI:{cc:-0.89,n:"Djibouti"},DNK:{cc:2.29,n:"Denmark"},
+  DOM:{cc:-0.27,n:"Dominican Republic"},DZA:{cc:-0.59,n:"Algeria"},ECU:{cc:-0.78,n:"Ecuador"},
+  EGY:{cc:-0.83,n:"Egypt"},ERI:{cc:-1.63,n:"Eritrea"},ESP:{cc:0.71,n:"Spain"},
+  EST:{cc:1.67,n:"Estonia"},ETH:{cc:-0.44,n:"Ethiopia"},FIN:{cc:2.19,n:"Finland"},
+  FJI:{cc:0.56,n:"Fiji"},FRA:{cc:1.22,n:"France"},GAB:{cc:-0.94,n:"Gabon"},
+  GBR:{cc:1.51,n:"United Kingdom"},GEO:{cc:0.38,n:"Georgia"},GHA:{cc:-0.19,n:"Ghana"},
+  GIN:{cc:-1.17,n:"Guinea"},GMB:{cc:-0.33,n:"Gambia"},GNB:{cc:-1.35,n:"Guinea-Bissau"},
+  GNQ:{cc:-1.47,n:"Equatorial Guinea"},GRC:{cc:0.30,n:"Greece"},GTM:{cc:-0.95,n:"Guatemala"},
+  GUY:{cc:-0.35,n:"Guyana"},HKG:{cc:1.57,n:"Hong Kong"},HND:{cc:-1.24,n:"Honduras"},
+  HRV:{cc:0.15,n:"Croatia"},HTI:{cc:-1.54,n:"Haiti"},HUN:{cc:0.04,n:"Hungary"},
+  IDN:{cc:-0.54,n:"Indonesia"},IND:{cc:-0.30,n:"India"},IRL:{cc:1.57,n:"Ireland"},
+  IRN:{cc:-1.15,n:"Iran"},IRQ:{cc:-1.21,n:"Iraq"},ISL:{cc:1.83,n:"Iceland"},
+  ISR:{cc:0.85,n:"Israel"},ITA:{cc:0.55,n:"Italy"},JAM:{cc:-0.10,n:"Jamaica"},
+  JOR:{cc:0.27,n:"Jordan"},JPN:{cc:1.36,n:"Japan"},KAZ:{cc:-0.07,n:"Kazakhstan"},
+  KEN:{cc:-0.80,n:"Kenya"},KGZ:{cc:-1.14,n:"Kyrgyzstan"},KHM:{cc:-1.23,n:"Cambodia"},
+  KOR:{cc:0.85,n:"South Korea"},KWT:{cc:0.22,n:"Kuwait"},LAO:{cc:-0.98,n:"Laos"},
+  LBN:{cc:-1.30,n:"Lebanon"},LBR:{cc:-1.05,n:"Liberia"},LBY:{cc:-1.53,n:"Libya"},
+  LIE:{cc:1.76,n:"Liechtenstein"},LKA:{cc:-0.38,n:"Sri Lanka"},LSO:{cc:-0.30,n:"Lesotho"},
+  LTU:{cc:0.99,n:"Lithuania"},LUX:{cc:2.02,n:"Luxembourg"},LVA:{cc:0.83,n:"Latvia"},
+  MAR:{cc:-0.52,n:"Morocco"},MCO:{cc:1.80,n:"Monaco"},MDA:{cc:-0.29,n:"Moldova"},
+  MDG:{cc:-1.01,n:"Madagascar"},MDV:{cc:-0.34,n:"Maldives"},MEX:{cc:-0.94,n:"Mexico"},
+  MKD:{cc:-0.33,n:"North Macedonia"},MLI:{cc:-0.98,n:"Mali"},MLT:{cc:0.27,n:"Malta"},
+  MMR:{cc:-1.25,n:"Myanmar"},MNE:{cc:-0.06,n:"Montenegro"},MNG:{cc:-0.49,n:"Mongolia"},
+  MOZ:{cc:-1.06,n:"Mozambique"},MRT:{cc:-0.93,n:"Mauritania"},MUS:{cc:0.34,n:"Mauritius"},
+  MWI:{cc:-0.65,n:"Malawi"},MYS:{cc:0.50,n:"Malaysia"},NAM:{cc:0.13,n:"Namibia"},
+  NER:{cc:-0.62,n:"Niger"},NGA:{cc:-1.11,n:"Nigeria"},NIC:{cc:-1.43,n:"Nicaragua"},
+  NLD:{cc:1.91,n:"Netherlands"},NOR:{cc:1.96,n:"Norway"},NPL:{cc:-0.63,n:"Nepal"},
+  NZL:{cc:1.93,n:"New Zealand"},OMN:{cc:0.51,n:"Oman"},PAK:{cc:-1.07,n:"Pakistan"},
+  PAN:{cc:-0.55,n:"Panama"},PER:{cc:-0.72,n:"Peru"},PHL:{cc:-0.58,n:"Philippines"},
+  PNG:{cc:-0.80,n:"Papua New Guinea"},POL:{cc:0.79,n:"Poland"},PRT:{cc:0.82,n:"Portugal"},
+  PRY:{cc:-1.02,n:"Paraguay"},QAT:{cc:0.75,n:"Qatar"},ROU:{cc:0.03,n:"Romania"},
+  RUS:{cc:-0.89,n:"Russia"},RWA:{cc:0.63,n:"Rwanda"},SAU:{cc:0.75,n:"Saudi Arabia"},
+  SDN:{cc:-1.56,n:"Sudan"},SEN:{cc:0.11,n:"Senegal"},SGP:{cc:1.97,n:"Singapore"},
+  SLE:{cc:-0.70,n:"Sierra Leone"},SLV:{cc:-0.58,n:"El Salvador"},SMR:{cc:1.18,n:"San Marino"},
+  SOM:{cc:-1.79,n:"Somalia"},SRB:{cc:-0.56,n:"Serbia"},SSD:{cc:-2.06,n:"South Sudan"},
+  SUR:{cc:-0.38,n:"Suriname"},SVK:{cc:0.11,n:"Slovakia"},SVN:{cc:0.67,n:"Slovenia"},
+  SWE:{cc:1.97,n:"Sweden"},SWZ:{cc:-0.79,n:"Eswatini"},SYR:{cc:-1.70,n:"Syria"},
+  TCD:{cc:-1.39,n:"Chad"},TGO:{cc:-0.66,n:"Togo"},THA:{cc:-0.53,n:"Thailand"},
+  TJK:{cc:-1.22,n:"Tajikistan"},TKM:{cc:-1.30,n:"Turkmenistan"},TLS:{cc:-0.38,n:"Timor-Leste"},
+  TTO:{cc:-0.34,n:"Trinidad & Tobago"},TUN:{cc:-0.22,n:"Tunisia"},TUR:{cc:-0.56,n:"Turkey"},
+  TWN:{cc:1.18,n:"Taiwan"},TZA:{cc:-0.29,n:"Tanzania"},UGA:{cc:-1.12,n:"Uganda"},
+  UKR:{cc:-0.67,n:"Ukraine"},URY:{cc:1.53,n:"Uruguay"},USA:{cc:1.09,n:"United States"},
+  UZB:{cc:-0.75,n:"Uzbekistan"},VEN:{cc:-1.59,n:"Venezuela"},VNM:{cc:-0.25,n:"Vietnam"},
+  XKX:{cc:-0.25,n:"Kosovo"},YEM:{cc:-1.64,n:"Yemen"},ZAF:{cc:-0.19,n:"South Africa"},
+  ZMB:{cc:-0.46,n:"Zambia"},ZWE:{cc:-1.25,n:"Zimbabwe"}
 };
 
+// World Bank Worldwide Governance Indicators, Government Effectiveness,
+// point estimate (GOV_WGI_GE.EST), reference year 2024, approx. -2.5..+2.5.
+// Same DataBank export and provenance as WGI/cc above.
 const GE={
-  AFG:-2.05,AGO:-0.87,ALB:-0.05,ARE:1.27,ARG:-0.37,ARM:0.03,AUS:1.72,AUT:1.47,
-  AZE:-0.08,BDI:-1.33,BEL:1.32,BEN:-0.42,BFA:-1.03,BGD:-0.47,BGR:0.33,BHR:0.48,
-  BIH:-0.28,BLR:-0.22,BOL:-0.57,BRA:-0.17,BRN:0.87,BTN:0.47,BWA:0.72,CAF:-1.77,
-  CAN:1.52,CHE:1.80,CHL:1.07,CHN:0.42,CIV:-0.48,CMR:-0.87,COD:-1.52,COG:-1.07,
-  COL:-0.17,CRI:0.37,CUB:-0.33,CYP:0.72,CZE:0.93,DEU:1.62,DJI:-0.67,DNK:1.88,
-  DOM:-0.17,DZA:-0.47,ECU:-0.57,EGY:-0.17,ERI:-1.28,ESP:0.87,EST:1.03,ETH:-0.47,
-  FIN:1.98,FJI:0.08,FRA:1.38,GAB:-0.52,GBR:1.32,GEO:0.33,GHA:-0.28,GIN:-0.97,
-  GMB:-0.43,GNQ:-1.08,GRC:0.28,GTM:-0.67,GUY:-0.22,HND:-0.73,HRV:0.47,
-  HTI:-1.72,HUN:0.38,IDN:0.03,IND:0.12,IRL:1.48,IRN:-0.72,IRQ:-1.17,ISL:1.72,
-  ISR:1.17,ITA:0.52,JAM:-0.22,JOR:0.03,JPN:1.42,KAZ:-0.08,KEN:-0.23,KGZ:-0.78,
-  KHM:-0.72,KOR:1.18,KWT:0.28,LAO:-0.72,LBN:-1.18,LBR:-0.73,LBY:-1.62,LKA:0.03,
-  LSO:-0.28,LTU:0.87,LUX:1.68,LVA:0.88,MAR:0.22,MDA:-0.37,MDG:-0.63,MDV:-0.08,
-  MEX:-0.17,MKD:0.18,MLI:-1.17,MLT:0.83,MMR:-0.98,MNE:0.22,MNG:-0.18,MOZ:-0.52,
-  MRT:-0.63,MUS:0.83,MWI:-0.28,MYS:0.88,NAM:0.32,NER:-1.17,NGA:-1.12,NIC:-0.98,
-  NLD:1.87,NOR:1.92,NPL:-0.47,NZL:1.85,OMN:0.53,PAK:-0.62,PAN:0.08,PER:-0.28,
-  PHL:0.07,PNG:-0.93,POL:0.73,PRT:0.83,PRY:-0.73,QAT:0.88,ROU:0.17,
-  RUS:-0.43,RWA:0.38,SAU:0.48,SDN:-1.38,SEN:-0.18,SGP:2.05,SLE:-0.93,SLV:-0.37,
-  SOM:-2.25,SRB:0.17,SSD:-2.00,SVK:0.63,SVN:0.82,SWE:1.78,SWZ:-0.42,SYR:-1.67,
-  TCD:-1.52,TGO:-0.58,THA:0.38,TJK:-0.98,TKM:-0.92,TLS:-0.63,TTO:0.37,TUN:0.12,
-  TUR:-0.08,TZA:-0.43,UGA:-0.43,UKR:-0.12,URY:0.73,USA:1.32,UZB:-0.57,VEN:-1.42,
-  VNM:0.28,YEM:-2.03,ZAF:0.28,ZMB:-0.38,ZWE:-1.07,
-  SUR:-0.42,LIE:1.82,SMR:1.38,AND:1.45,MCO:1.65,XKX:-0.18,TWN:1.45,HKG:1.62,BLZ:-0.28,GNB:-1.07,VAT:1.85
+  AFG:-1.93,AGO:-0.79,ALB:0.31,AND:1.16,ARE:1.26,ARG:0.18,ARM:-0.36,AUS:1.81,AUT:1.51,
+  AZE:0.17,BDI:-1.01,BEL:1.19,BEN:-0.19,BFA:-0.87,BGD:-0.62,BGR:0.04,BHR:0.60,BIH:-0.64,
+  BLR:-0.70,BLZ:-0.13,BOL:-0.61,BRA:-0.22,BRN:0.84,BTN:0.58,BWA:0.42,CAF:-1.58,CAN:1.76,
+  CHE:1.84,CHL:0.96,CHN:0.90,CIV:-0.32,CMR:-0.80,COD:-1.69,COG:-1.11,COL:-0.11,CRI:0.29,
+  CUB:-0.27,CYP:0.87,CZE:1.18,DEU:1.55,DJI:-0.49,DNK:1.91,DOM:0.07,DZA:-0.25,ECU:-0.22,
+  EGY:-0.10,ERI:-1.46,ESP:1.11,EST:1.30,ETH:-0.65,FIN:1.82,FJI:0.61,FRA:1.20,GAB:-0.57,
+  GBR:1.18,GEO:0.46,GHA:0.06,GIN:-0.89,GMB:-0.54,GNB:-1.37,GNQ:-1.18,GRC:0.19,GTM:-0.91,
+  GUY:-0.10,HKG:1.64,HND:-0.62,HRV:0.71,HTI:-2.02,HUN:0.50,IDN:0.18,IND:0.40,IRL:1.61,
+  IRN:-0.71,IRQ:-1.10,ISL:1.65,ISR:1.17,ITA:0.79,JAM:0.17,JOR:0.22,JPN:2.09,KAZ:0.15,
+  KEN:-0.30,KGZ:-0.89,KHM:-0.29,KOR:1.49,KWT:0.33,LAO:-0.58,LBN:-1.13,LBR:-1.25,LBY:-1.42,
+  LIE:1.69,LKA:-0.27,LSO:-0.65,LTU:1.20,LUX:2.04,LVA:0.74,MAR:0.18,MCO:1.74,MDA:0.26,
+  MDG:-0.86,MDV:-0.22,MEX:-0.22,MKD:-0.03,MLI:-1.29,MLT:0.62,MMR:-1.56,MNE:0.37,MNG:-0.39,
+  MOZ:-0.72,MRT:-0.74,MUS:0.77,MWI:-0.73,MYS:0.91,NAM:0.10,NER:-0.77,NGA:-1.01,NIC:-1.05,
+  NLD:1.75,NOR:1.84,NPL:-0.88,NZL:1.85,OMN:0.57,PAK:-0.60,PAN:0.25,PER:-0.20,PHL:0.14,
+  PNG:-0.90,POL:0.67,PRT:0.95,PRY:-0.35,QAT:1.13,ROU:0.42,RUS:-0.32,RWA:0.35,SAU:0.78,
+  SDN:-1.79,SEN:0.23,SGP:2.28,SLE:-0.97,SLV:-0.18,SMR:0.90,SOM:-1.95,SRB:0.10,SSD:-2.17,
+  SUR:-0.45,SVK:0.66,SVN:1.09,SWE:1.77,SWZ:-0.78,SYR:-1.67,TCD:-1.10,TGO:-0.80,THA:0.25,
+  TJK:-0.60,TKM:-1.06,TLS:-0.90,TTO:0.11,TUN:-0.24,TUR:-0.07,TWN:1.50,TZA:-0.29,UGA:-0.35,
+  UKR:-0.60,URY:0.69,USA:1.36,UZB:-0.14,VEN:-1.47,VNM:-0.09,XKX:-0.06,YEM:-1.87,ZAF:-0.23,
+  ZMB:-0.53,ZWE:-0.99,
 };
 
 const SE={
@@ -578,125 +615,54 @@ const GCB_RAW={
   ZWE:22,
 };
 
-// ── Global Terrorism Index 2023 (IEP) — 0=most peaceful, 10=least
+// ── Global Terrorism Index 2026 (IEP) — 0=most peaceful, 10=least
 // nGTI = 100 - (score*10), so lower terrorism = higher civic score
+//
+// Source: Institute for Economics & Peace, Global Terrorism Index 2026
+// (reporting year 2025), country scores as published on
+// visionofhumanity.org/maps/global-terrorism-index/.
+// Composite of four indicators — incidents, fatalities, injuries and
+// hostages — under a five-year weighted average.
+//
+// IEP scores 163 countries; 161 are kept here. Palestine and North
+// Korea are dropped because they carry no WGI entry and so are not
+// scored by this index at all. Luxembourg and Malta are absent from
+// the GTI's 163 and therefore lose this component entirely (their
+// scores reweight proportionally across the remaining twelve).
+//
+// This replaced a dictionary that was NOT the published index: it had
+// 116 countries, not one scoring 0 against the GTI's 63 zeroes here,
+// a maximum of 9.1 against a true 8.574, and a last decimal that
+// clustered implausibly (32 values ending .5, one ending .4).
+// Re-importing moved 159 of 173 ranks, median 7 places.
 const GTI={
-  AFG:9.1,
-  ARE:1.1,
-  ARG:1.7,
-  ARM:2.0,
-  AUS:2.0,
-  AUT:1.3,
-  AZE:2.2,
-  BEL:2.2,
-  BFA:7.9,
-  BGD:3.5,
-  BGR:1.2,
-  BHR:1.2,
-  BLR:1.5,
-  BOL:2.2,
-  BRA:2.8,
-  CAF:5.5,
-  CAN:2.2,
-  CHE:1.3,
-  CHL:2.5,
-  CHN:1.3,
-  CIV:2.8,
-  CMR:4.5,
-  COD:6.2,
-  COL:4.8,
-  CRI:2.2,
-  CYP:1.1,
-  CZE:1.0,
-  DEU:2.2,
-  DNK:1.2,
-  DOM:2.5,
-  ECU:3.0,
-  EGY:4.0,
-  ESP:2.0,
-  EST:1.0,
-  ETH:4.8,
-  FIN:1.2,
-  FRA:3.1,
-  GBR:2.6,
-  GEO:2.5,
-  GHA:1.8,
-  GRC:2.5,
-  GTM:3.5,
-  HND:3.2,
-  HRV:1.3,
-  HUN:1.2,
-  IDN:2.8,
-  IND:4.5,
-  IRL:1.9,
-  IRN:4.5,
-  IRQ:7.8,
-  ISL:1.0,
-  ISR:5.7,
-  ITA:2.3,
-  JOR:2.2,
-  JPN:1.1,
-  KAZ:2.5,
-  KEN:3.8,
-  KGZ:2.0,
-  KOR:1.2,
-  KWT:1.5,
-  LBN:3.8,
-  LBY:5.5,
-  LKA:2.5,
-  LTU:1.2,
-  LUX:1.1,
-  LVA:1.1,
-  MAR:2.2,
-  MEX:4.6,
-  MLI:7.5,
-  MLT:1.0,
-  MNG:1.5,
-  MOZ:4.5,
-  MYS:2.0,
-  NER:6.5,
-  NGA:7.1,
-  NIC:2.5,
-  NLD:1.8,
-  NOR:1.4,
-  NPL:2.8,
-  NZL:1.9,
-  OMN:1.2,
-  PAK:7.6,
-  PAN:2.0,
-  PER:3.2,
-  PHL:4.5,
-  POL:1.5,
-  PRT:1.2,
-  PRY:1.8,
-  QAT:1.1,
-  ROU:1.2,
-  RUS:4.0,
-  SDN:5.5,
-  SEN:2.8,
-  SGP:1.0,
-  SLV:4.5,
-  SOM:7.8,
-  SSD:6.8,
-  SVK:1.1,
-  SVN:1.0,
-  SWE:1.5,
-  SYR:7.5,
-  TCD:6.8,
-  THA:3.5,
-  TJK:2.5,
-  TUN:3.1,
-  TUR:4.1,
-  TWN:1.1,
-  TZA:3.2,
-  UGA:3.5,
-  UKR:4.5,
-  URY:1.5,
-  USA:5.3,
-  UZB:2.0,
-  VNM:1.5,
-  YEM:7.9,
-  ZAF:2.8
+  AFG:6.678,AGO:1.136,ALB:0,ARE:0.749,ARG:0.455,ARM:0.423,
+  AUS:3.732,AUT:1.498,AZE:0.123,BDI:3.361,BEL:1.198,BEN:5.434,
+  BFA:8.324,BGD:2.286,BGR:0,BHR:0.03,BIH:0.782,BLR:0.123,
+  BOL:0,BRA:0.909,BTN:0,BWA:0,CAF:0.556,CAN:1.333,
+  CHE:0.749,CHL:4.553,CHN:1.311,CIV:0.702,CMR:6.593,COD:7.171,
+  COG:0,COL:7.116,CRI:0,CUB:0,CYP:0.176,CZE:2.261,
+  DEU:4.447,DJI:0.925,DNK:0.72,DOM:0,DZA:1.766,ECU:3.063,
+  EGY:3.465,ERI:0,ESP:0.794,EST:0,ETH:0.288,FIN:0.582,
+  FRA:3.224,GAB:0,GBR:2.936,GEO:0.506,GHA:0,GIN:0,
+  GMB:0,GNB:0,GNQ:0,GRC:2.788,GTM:0,GUY:0,
+  HND:0,HRV:0,HTI:0,HUN:0,IDN:4.714,IND:6.428,
+  IRL:0.423,IRN:5.477,IRQ:5.822,ISL:0.059,ISR:6.79,ITA:0.999,
+  JAM:0,JOR:2.268,JPN:0.571,KAZ:0,KEN:5.088,KGZ:0,
+  KHM:0.233,KOR:0.333,KWT:0,LAO:0,LBN:0.648,LBR:0,
+  LBY:1.007,LKA:0,LSO:0,LTU:0.423,LVA:0.233,MAR:0,
+  MDA:0,MDG:0,MEX:0.325,MKD:0,MLI:7.586,MMR:6.245,
+  MNE:0,MNG:0,MOZ:6.022,MRT:0,MUS:0,MWI:0,
+  MYS:1.092,NAM:0,NER:7.816,NGA:7.792,NIC:0,NLD:1.475,
+  NOR:0.725,NPL:0.288,NZL:0.114,OMN:2.282,PAK:8.574,PAN:0,
+  PER:1.572,PHL:4.719,PNG:0,POL:1.682,PRT:0.423,PRY:0,
+  QAT:0,ROU:0,RUS:5.593,RWA:0,SAU:0.443,SDN:0,
+  SEN:1.07,SGP:0,SLE:0,SLV:0,SOM:7.391,SRB:0.782,
+  SSD:0,SVK:0.616,SVN:0,SWE:1.839,SWZ:0.044,SYR:7.545,
+  TCD:4.625,TGO:4.305,THA:5.275,TJK:2.602,TKM:0,TLS:0,
+  TTO:0,TUN:1.522,TUR:3.212,TWN:0,TZA:0.888,UGA:3.25,
+  UKR:2.927,URY:0,USA:4.521,UZB:0.114,VEN:0.396,VNM:0,
+  XKX:0.465,YEM:4.653,ZAF:0,ZMB:0,ZWE:0
 };
 
 // ── World Bank Logistics Performance Index 2023 — Infrastructure sub-index
@@ -875,6 +841,7 @@ const TERRITORY={
   '674':{name:'San Marino',info:'Oldest constitutional republic; high institutional quality but excluded from most social trust and behavioural surveys due to its micro-state status.'},
   '492':{name:'Monaco',info:'City-state principality; very high institutional and infrastructure quality but not covered in most social trust surveys.'},
   '020':{name:'Andorra',info:'Co-principality between France and Spain; high institutional quality but limited coverage in social trust and behavioural survey components.'},
+  '336':{name:'Vatican City',info:'The Holy See is not covered by the World Bank Worldwide Governance Indicators and is absent from every behavioural survey used here, so it is shown on the map but not scored or ranked.'},
   // ── Caspian Sea / inland water bodies (appear as polygons in some TopoJSON versions)
   // ── Disputed / de facto
   'KAS':{name:'Siachen Glacier',info:'High-altitude glacier administered by India but claimed by Pakistan.'},
@@ -1118,11 +1085,11 @@ function showTip(ev,r,name,_numKey){
     const sep=`<div class="tsep"></div>`;
     let rows='';
     rows+='<div class="tgrp-lbl">Institutional</div>';
-    rows+=f('Corruption Control',r.cc,r._n.cc,'',3,'WB WGI 2023');
-    rows+=(r.ge!==undefined)?f('Government Effectiveness',r.ge,r._n.ge,'',3,'WB WGI 2023'):m('Government Effectiveness',3,'WB WGI 2023');
+    rows+=f('Corruption Control',r.cc,r._n.cc,'',3,'WB WGI 2024');
+    rows+=(r.ge!==undefined)?f('Government Effectiveness',r.ge,r._n.ge,'',3,'WB WGI 2024'):m('Government Effectiveness',3,'WB WGI 2024');
     rows+=sep;
     rows+='<div class="tgrp-lbl">Fiscal Compliance</div>';
-    rows+=(r.se!==undefined)?f('Shadow Economy',r.se+'%',r._n.se,'',6,'Schneider ~2018'):m('Shadow Economy',6,'Schneider ~2018');
+    rows+=(r.se!==undefined)?f('Shadow Economy',r.se+'%',r._n.se,'',6,'WB Informal Economy 2019'):m('Shadow Economy',6,'WB Informal Economy 2019');
     rows+=sep;
     rows+='<div class="tgrp-lbl">Attitudinal Trust</div>';
     rows+=(r.wvs!==undefined)?f('Interpersonal Trust',r.wvs+'%',r.wvs,'',8,'WVS 2017–22'):m('Interpersonal Trust',8,'WVS 2017–22');
@@ -1139,7 +1106,7 @@ function showTip(ev,r,name,_numKey){
     rows+=(r.hom!==undefined)?f('Homicide Rate',r.hom,r._n.hom,'/100k',7,'UNODC 2021–23'):m('Homicide Rate',7,'UNODC 2021–23');
     rows+=(r.rtr!==undefined)?f('Road Deaths',r.rtr,r._n.rtr,'/100k',6,'WHO 2021'):m('Road Deaths',6,'WHO 2021');
     rows+=(r.epi!==undefined)?f('Waste Management',r.epi,r.epi,'',6,'Yale EPI 2022'):m('Waste Management',6,'Yale EPI 2022');
-    rows+=(r.gtiR!==undefined)?f('Terrorism Index',r.gtiR,nGTI(r.gtiR),'',8,'IEP GTI 2023'):m('Terrorism Index',8,'IEP GTI 2023');
+    rows+=(r.gtiR!==undefined)?f('Terrorism Index',r.gtiR,nGTI(r.gtiR),'',8,'IEP GTI 2026'):m('Terrorism Index',8,'IEP GTI 2026');
     rows+=sep;
     rows+='<div class="tgrp-lbl">Public Goods</div>';
     rows+=(r.infN!==undefined)?f('Infrastructure',r.infR.toFixed(1),r.infN,'/5',11,'WB LPI 2023'):m('Infrastructure',11,'WB LPI 2023');

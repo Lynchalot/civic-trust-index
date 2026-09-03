@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 600">
+  <rect width="900" height="200" fill="#009A44"/>
+  <rect y="200" width="900" height="200" fill="#FFFFFF"/>
+  <rect y="400" width="900" height="200" fill="#CE1126"/>
+  <text x="450" y="300" text-anchor="middle" dominant-baseline="middle" font-size="160" fill="#000000" font-family="Arial,sans-serif">★</text>
+</svg>
