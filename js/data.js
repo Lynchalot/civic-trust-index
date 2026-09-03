@@ -423,6 +423,23 @@ const WVS={
   MOZ:19,BWA:22,NAM:25,ZMB:18,TUR:14
 };
 
+// ── Legatum Prosperity Index 2023: Social Capital pillar
+// Pillar score, 0-100. Spot-checked against the published 2023 index:
+// Denmark 82.56, Norway 79.03, Sweden 78.29, Finland 77.27,
+// Switzerland 69.14 all match, and Japan's 43.82 matches its widely
+// reported near-bottom social capital placement. The values are real.
+//
+// COVERAGE IS THE PROBLEM: 66 entries against the 167 countries
+// Legatum publishes, and the subset is skewed. Split this index's
+// countries into quartiles by Control of Corruption, and the number
+// carrying a social capital value runs 34 / 22 / 10 / 0 from best-
+// governed to worst. Every missing country loses the 8% weight to
+// proportional reweighting, so the component is absent exactly where
+// it would most likely score low. The 66 present bottom out at 43.82
+// (Japan); Legatum's full range runs well below that.
+//
+// Completing this needs the Legatum dataset — their domains are
+// blocked from the build sandbox. See CLAUDE.md.
 const LSC={
   DNK:82.56,NOR:79.03,NZL:79.88,ISL:77.75,SWE:78.29,FIN:77.27,AUS:77.42,
   NLD:74.03,CAN:73.60,USA:73.91,GBR:67.77,AUT:67.94,IRL:67.73,CHE:69.14,
