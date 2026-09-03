@@ -30,6 +30,35 @@ node build-monolith.js
 
 The script inlines the stylesheet and both scripts into a copy of `index.html`, strips the beta-gate `<script>` line (the monolith is for direct sharing and is never gated), and stamps a "generated file" banner at the top. It exits non-zero if any expected pattern is missing from `index.html` — if you rename the CSS/JS files or restructure the `<head>`, update the script's patterns to match.
 
+### Custom de facto flags
+
+Five de facto states — Somaliland, South Ossetia, Abkhazia, Northern Cyprus,
+Transnistria — have no ISO 3166-1 code and therefore no Unicode
+regional-indicator flag emoji, so they get hand-drawn SVGs. The editable
+sources are `flags/*.svg`; the copies the app actually uses are inlined as
+URL-encoded `data:image/svg+xml,` URIs in `DEFACTO_FLAGS` (`js/data.js`), so
+the monolith stays self-contained when shared.
+
+After editing a source SVG, regenerate the inlined copies, then rebuild the
+monolith:
+
+```bash
+node build-flags.js      # flags/*.svg  →  DEFACTO_FLAGS in js/data.js
+node build-monolith.js
+```
+
+`build-monolith.js` does not look at `flags/` — the two steps are separate.
+`build-flags.js` holds the basename → display-name map (display names must
+match the `DEFACTO_POLYGONS` names in `js/defacto.js`) and exits non-zero if a
+source SVG or the `DEFACTO_FLAGS` block is missing.
+
+**Do not hand-write these URIs.** They are emitted into an HTML string
+(`<img src="...">`) via `innerHTML`, so a raw `"` closes the attribute and a
+raw `&` opens an entity; and per the URL spec a raw `#` — every hex colour
+starts with one — begins the fragment and truncates the SVG at that point. An
+earlier hand-inlined set carried all three and every flag failed to render.
+`build-flags.js` escapes `%`, `#`, `&`, `"`, `'`, `<`, `>` and non-ASCII glyphs.
+
 ## Architecture
 
 ### Data pipeline (`js/data.js`)
@@ -79,6 +108,7 @@ All country data, normalisation, and scoring live here. The file is self-contain
 - `TERR_FLAG` — territory display name → ISO2 code; legacy first-choice fallback for territory flags (every TERRITORY entry now also resolves via `I3N`/`N2I`, so this is belt-and-braces)
 - `ISO2` — ISO3 → ISO2 for flag emoji generation via `flag(iso3)`
 - `DEFACTO_POLYGONS` — GeoJSON for disputed/de-facto regions overlaid on both map views; lives in `js/defacto.js` (loaded before `data.js`)
+- `DEFACTO_FLAGS` — de facto state display name → inline SVG data URI, rendered by `defactoFlag(name)`; covers the five polygons that have no ISO 3166-1 code (see *Custom de facto flags* below)
 - `byNum` / `byISO` — computed score objects keyed by UN numeric and ISO3 respectively
 
 ### Rendering (`js/app.js`)
@@ -91,7 +121,7 @@ All country data, normalisation, and scoring live here. The file is self-contain
 - **Tooltip** (`#tip`) — `position: fixed`, populated by `showTip(ev, r, name, numKey)`. **Critical**: `#tip` is a child of `#wrap` which has `overflow: hidden`. Do not add `contain: layout paint`, CSS `transform`, `filter`, or `will-change: transform` to `#wrap` or any ancestor of `#tip` — these create a new containing block that breaks fixed positioning.
 - **Inline rankings** — `buildInlineRankings()` (Section 02). On viewports ≥ 1200px, lists of ≥ 30 rows are split into two real `.rk-col` divs with per-column headers; never use CSS `columns` here — Firefox and some Chrome versions render hover backgrounds incorrectly inside column containers.
 - **Filter sidebar** — checkboxes grouped by category. Toggling calls `recomputeAll()` which recalculates filtered scores and repaints map fills + rankings.
-- **Flags** — generated as regional indicator emoji via `String.fromCodePoint`, then converted to images by Twemoji. Lookup chain: `ISO2[r.iso3]` → `TERR_FLAG[terrName]` → `ISO2[N2I[numKey]]`.
+- **Flags** — generated as regional indicator emoji via `String.fromCodePoint`, then converted to images by Twemoji. Lookup chain: `ISO2[r.iso3]` → `TERR_FLAG[terrName]` → `ISO2[N2I[numKey]]`. De facto states bypass this entirely and use `defactoFlag(name)` (`DEFACTO_FLAGS`), which returns an `<img>` and needs no Twemoji pass.
 
 ### Styling (`css/styles.css`)
 
