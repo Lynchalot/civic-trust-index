@@ -2440,6 +2440,28 @@ const GCB_RAW={
 
 // ── Global Terrorism Index 2023 (IEP) — 0=most peaceful, 10=least
 // nGTI = 100 - (score*10), so lower terrorism = higher civic score
+//
+// PROVENANCE WARNING — these values are NOT the published GTI.
+// Structural mismatch against IEP's Global Terrorism Index 2023:
+//   published: 163 countries, 70 of them scoring exactly 0.000,
+//              maximum 8.822 (Afghanistan)
+//   here:      116 countries, NOT ONE scoring 0, maximum 9.1
+// Countries the published index scores 0.000 carry invented values
+// here: Panama 2, Kuwait 1.5, Singapore 1, El Salvador 4.5.
+// The last decimal also clusters implausibly — 32 values end in .5
+// while only one ends in .4.
+//
+// This is not cosmetic. Because nGTI = 100 - score*10, a country
+// that should score 0 (=100 civic points) is penalised 10-45 points
+// on a component carrying 8% of the total weight — more than cc and
+// ge combined. Correcting just the four countries above moves 47 of
+// 173 ranks; El Salvador alone gains 30 places and 5.00 points.
+// The true correction covers ~70 countries and is much larger.
+//
+// To fix: re-import the GTI 2023 country scores from IEP
+// (visionofhumanity.org / economicsandpeace.org). Both domains, like
+// the World Bank's, are blocked by the Claude Code web sandbox's
+// egress policy, so this needs an environment with access.
 const GTI={
   AFG:9.1,
   ARE:1.1,
