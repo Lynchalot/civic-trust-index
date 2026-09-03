@@ -423,34 +423,55 @@ const WVS={
   MOZ:19,BWA:22,NAM:25,ZMB:18,TUR:14
 };
 
-// ── Legatum Prosperity Index 2023: Social Capital pillar
-// Pillar score, 0-100. Spot-checked against the published 2023 index:
-// Denmark 82.56, Norway 79.03, Sweden 78.29, Finland 77.27,
-// Switzerland 69.14 all match, and Japan's 43.82 matches its widely
-// reported near-bottom social capital placement. The values are real.
+// ── Legatum Prosperity Index 2026: Integrity of Communities
+// Pillar score, 0-100, from the published 2026 data sheet ('scores'
+// tab — the definitive scores, not the alternative-method tabs).
+// 160 of the 173 countries scored here; the 2026 index runs to 161
+// countries and omits Liechtenstein, Monaco, San Marino, Andorra,
+// Brunei, Cuba, Guyana, Hong Kong, Maldives, Syria, Taiwan, Ukraine
+// and Kosovo, which lose the component to proportional reweighting.
 //
-// COVERAGE IS THE PROBLEM: 66 entries against the 167 countries
-// Legatum publishes, and the subset is skewed. Split this index's
-// countries into quartiles by Control of Corruption, and the number
-// carrying a social capital value runs 34 / 22 / 10 / 0 from best-
-// governed to worst. Every missing country loses the 8% weight to
-// proportional reweighting, so the component is absent exactly where
-// it would most likely score low. The 66 present bottom out at 43.82
-// (Japan); Legatum's full range runs well below that.
+// THIS REPLACED A DIFFERENT MEASURE. Until now the slot held the
+// Social Capital pillar of the 2023 edition — real values, verified
+// against the published index, but only 66 countries and skewed:
+// by quartile of Control of Corruption the coverage ran 34/22/10/0
+// from best-governed to worst, so an 8% weight vanished precisely
+// where it would most likely have scored low.
 //
-// Completing this needs the Legatum dataset — their domains are
-// blocked from the build sandbox. See CLAUDE.md.
+// The 2026 edition rebuilt the tree into three domains and ten
+// pillars, and Social Capital is not among them. Integrity of
+// Communities is the closest published successor, but it is not the
+// same measure: across the 66 countries that had both, the two
+// correlate at only r=0.51. The component was renamed rather than
+// quietly refilled. Swapping it moved 141 of 173 ranks (median 3,
+// max 43) — mostly thin-data countries losing the advantage that
+// the missing pillar had been giving them.
+//
+// NOTE THE VINTAGE: 2026, the newest component in the index.
 const LSC={
-  DNK:82.56,NOR:79.03,NZL:79.88,ISL:77.75,SWE:78.29,FIN:77.27,AUS:77.42,
-  NLD:74.03,CAN:73.60,USA:73.91,GBR:67.77,AUT:67.94,IRL:67.73,CHE:69.14,
-  ESP:69.27,MLT:68.19,URY:66.76,CRI:63.45,POL:63.27,BRA:61.83,SRB:61.27,
-  PAN:60.37,MUS:61.47,GEO:52.10,ARG:63.30,DOM:59.32,TTO:56.27,JAM:53.68,
-  IDN:60.62,THA:63.19,CHN:62.67,MYS:57.90,QAT:59.20,BHR:58.78,MNE:59.33,
-  BGR:54.62,CYP:56.86,KAZ:51.27,ARM:47.95,ALB:47.47,HUN:59.51,SVK:61.15,
-  KWT:52.71,OMN:53.61,DEU:65.96,FRA:60.60,ITA:60.97,GRC:52.31,HRV:52.19,
-  LTU:47.26,LVA:55.06,EST:61.94,CZE:61.62,PRT:62.92,SVN:62.69,BEL:64.55,
-  LUX:66.60,KOR:51.59,JPN:43.82,SGP:64.68,ARE:55.16,ROU:49.96,PER:53.59,
-  CHL:59.48,MKD:55.70,ISR:54.44
+  AFG:39.05,AGO:61.13,ALB:72.68,ARE:75.08,ARG:72.61,ARM:69.03,AUS:78.84,
+  AUT:80.16,AZE:66.25,BDI:59.79,BEL:80.44,BEN:60.33,BFA:65.55,BGD:59.63,
+  BGR:69.68,BHR:76.26,BIH:70.51,BLR:34.75,BLZ:67.15,BOL:64.96,BRA:69.55,
+  BTN:47.93,BWA:57.68,CAF:47.07,CAN:77.54,CHE:80.80,CHL:69.02,CHN:64.13,
+  CIV:68.33,CMR:62.16,COD:54.22,COG:53.04,COL:60.93,CRI:70.96,CYP:73.71,
+  CZE:79.56,DEU:77.95,DJI:44.01,DNK:87.87,DOM:67.48,DZA:67.15,ECU:50.20,
+  EGY:55.53,ERI:21.44,ESP:75.74,EST:76.16,ETH:63.83,FIN:84.72,FJI:68.77,
+  FRA:77.11,GAB:60.17,GBR:77.34,GEO:73.95,GHA:69.83,GIN:61.77,GMB:61.51,
+  GNB:57.33,GNQ:33.25,GRC:66.17,GTM:64.88,HND:60.50,HRV:70.33,HTI:24.94,
+  HUN:69.70,IDN:84.99,IND:70.67,IRL:82.60,IRN:69.61,IRQ:65.75,ISL:86.10,
+  ISR:78.81,ITA:78.19,JAM:58.89,JOR:60.82,JPN:75.48,KAZ:71.19,KEN:63.18,
+  KGZ:77.35,KHM:69.09,KOR:73.85,KWT:64.48,LAO:67.79,LBN:57.22,LBR:38.90,
+  LBY:64.43,LKA:73.51,LSO:61.65,LTU:75.81,LUX:79.50,LVA:71.53,MAR:64.78,
+  MDA:68.21,MDG:63.27,MEX:63.10,MKD:67.38,MLI:62.89,MLT:75.67,MMR:66.59,
+  MNE:72.08,MNG:69.19,MOZ:61.91,MRT:56.86,MUS:75.64,MWI:58.29,MYS:78.94,
+  NAM:62.36,NER:62.46,NGA:60.06,NIC:63.04,NLD:82.35,NOR:87.36,NPL:65.48,
+  NZL:79.66,OMN:80.76,PAK:61.55,PAN:71.10,PER:63.94,PHL:77.39,PNG:41.94,
+  POL:69.75,PRT:75.11,PRY:73.19,QAT:36.90,ROU:72.56,RUS:67.04,RWA:62.69,
+  SAU:69.25,SDN:51.40,SEN:70.03,SGP:82.69,SLE:44.77,SLV:73.53,SOM:57.58,
+  SRB:74.17,SSD:45.73,SUR:73.44,SVK:74.26,SVN:79.23,SWE:82.51,SWZ:57.10,
+  TCD:50.44,TGO:64.11,THA:76.49,TJK:74.76,TKM:23.43,TLS:60.22,TTO:57.55,
+  TUN:60.91,TUR:61.81,TZA:65.60,UGA:59.98,URY:71.20,USA:79.83,UZB:79.49,
+  VEN:66.50,VNM:80.12,YEM:57.39,ZAF:50.35,ZMB:60.57,ZWE:57.77
 };
 
 const GLO={
@@ -1110,7 +1131,7 @@ function showTip(ev,r,name,_numKey){
     rows+=sep;
     rows+='<div class="tgrp-lbl">Attitudinal Trust</div>';
     rows+=(r.wvs!==undefined)?f('Interpersonal Trust',r.wvs+'%',r.wvs,'',8,'WVS 2017–22'):m('Interpersonal Trust',8,'WVS 2017–22');
-    rows+=(r.lsc!==undefined)?f('Social Capital',r.lsc.toFixed(1),r.lsc,'',8,'Legatum 2023'):m('Social Capital',8,'Legatum 2023');
+    rows+=(r.lsc!==undefined)?f('Integrity of Communities',r.lsc.toFixed(1),r.lsc,'',8,'Legatum 2026'):m('Integrity of Communities',8,'Legatum 2026');
     rows+=sep;
     rows+='<div class="tgrp-lbl">Safety &amp; Order</div>';
     rows+=(r.glo!==undefined)?f('Law & Order',r.glo,r.glo,'',12,'Gallup 2023'):m('Law & Order',12,'Gallup 2023');
@@ -1166,7 +1187,7 @@ const COMP_META={
   se:{label:'Shadow Economy',group:'Order & Fiscal'},
   glo:{label:'Law & Order',group:'Order & Fiscal'},
   wvs:{label:'Interpersonal Trust',group:'Attitudinal Trust'},
-  lsc:{label:'Social Capital',group:'Attitudinal Trust'},
+  lsc:{label:'Integrity of Communities',group:'Attitudinal Trust'},
   wlt:{label:'Wallet Return Rate',group:'Civic Honesty'},
   gcb:{label:'Bribery-Free Rate',group:'Civic Honesty'},
   hom:{label:'Homicide Rate',group:'Outcomes'},
