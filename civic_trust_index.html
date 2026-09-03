@@ -1334,7 +1334,7 @@ a.hi-src:hover{color:var(--accent);text-decoration:underline;text-underline-offs
         <div class="hi-row"><div class="hi-cell"><span class="hi-name">Homicide Rate</span><a class="hi-src" href="https://www.unodc.org/unodc/en/data-and-analysis/global-study-on-homicide.html" target="_blank" rel="noopener">UNODC, 2021–23</a></div><span class="hi-wt">7%</span></div>
         <div class="hi-row"><div class="hi-cell"><span class="hi-name">Road Deaths</span><a class="hi-src" href="https://www.who.int/publications/i/item/9789240086517" target="_blank" rel="noopener">WHO Road Safety Report, 2021</a></div><span class="hi-wt">6%</span></div>
         <div class="hi-row"><div class="hi-cell"><span class="hi-name">Waste Management</span><a class="hi-src" href="https://epi.yale.edu/" target="_blank" rel="noopener">Yale EPI, 2022</a></div><span class="hi-wt">6%</span></div>
-        <div class="hi-row"><div class="hi-cell"><span class="hi-name">Terrorism Index</span><a class="hi-src" href="https://www.visionofhumanity.org/maps/global-terrorism-index/" target="_blank" rel="noopener">IEP Global Terrorism Index, 2023</a></div><span class="hi-wt">8%</span></div>
+        <div class="hi-row"><div class="hi-cell"><span class="hi-name">Terrorism Index</span><a class="hi-src" href="https://www.visionofhumanity.org/maps/global-terrorism-index/" target="_blank" rel="noopener">IEP Global Terrorism Index, 2026</a></div><span class="hi-wt">8%</span></div>
       </div>
     </div>
   </div>
@@ -1719,15 +1719,15 @@ a.hi-src:hover{color:var(--accent);text-decoration:underline;text-underline-offs
     <div class="comp-row">
       <div class="comp-row-head">
         <div class="comp-name">Terrorism Index</div>
-        <div class="comp-meta"><span class="comp-wt">8%</span><span class="comp-src-label">IEP Global Terrorism Index, 2023</span></div>
+        <div class="comp-meta"><span class="comp-wt">8%</span><span class="comp-src-label">IEP Global Terrorism Index, 2026</span></div>
       </div>
       <div class="comp-desc">
-        <p>The Institute for Economics and Peace logs terrorist incidents worldwide and scores each country on how many occurred, how many were killed and injured, and how much hostage-taking there was — weighted so that recent years count for more, since a single atrocity should not define a country for a decade.</p>
-        <p>Most of the world sits near the floor. Singapore 1, Japan 1.1, Denmark 1.2 — against Nigeria 7.1 and Afghanistan 9.1, where political violence has become an ordinary way of settling scores.</p>
+        <p>The Institute for Economics &amp; Peace logs terrorist incidents worldwide from its Terrorism Tracker database and scores each country on four things: how many attacks occurred, how many people were killed, how many injured, and how much hostage-taking there was. A five-year weighted average is applied, so a single atrocity does not define a country for a decade.</p>
+        <p>Most of the world records no terrorism at all: 63 of the 161 countries scored here sit at exactly zero, Singapore and Uruguay among them. Japan is 0.57 and Denmark 0.72, against the United States at 4.52 and Germany 4.45 — and then Nigeria 7.79 and Pakistan 8.57, where political violence has become an ordinary way of settling scores.</p>
         <dl class="comp-facts">
-          <div><dt>Method</dt><dd>Incident database, five-year weighted</dd></div>
-          <div><dt>Countries scored</dt><dd>116</dd></div>
-          <div><dt>Range in this index</dt><dd>Czech Republic 1 → Afghanistan 9.1 (scale 0–10)</dd></div>
+          <div><dt>Method</dt><dd>Incident database, five-year weighted average</dd></div>
+          <div><dt>Countries scored</dt><dd>161 — 63 of them at zero</dd></div>
+          <div><dt>Range in this index</dt><dd>0 → Pakistan 8.57 (scale 0–10)</dd></div>
         </dl>
       </div>
     </div>
@@ -2438,147 +2438,54 @@ const GCB_RAW={
   ZWE:22,
 };
 
-// ── Global Terrorism Index 2023 (IEP) — 0=most peaceful, 10=least
+// ── Global Terrorism Index 2026 (IEP) — 0=most peaceful, 10=least
 // nGTI = 100 - (score*10), so lower terrorism = higher civic score
 //
-// PROVENANCE WARNING — these values are NOT the published GTI.
-// Structural mismatch against IEP's Global Terrorism Index 2023:
-//   published: 163 countries, 70 of them scoring exactly 0.000,
-//              maximum 8.822 (Afghanistan)
-//   here:      116 countries, NOT ONE scoring 0, maximum 9.1
-// Countries the published index scores 0.000 carry invented values
-// here: Panama 2, Kuwait 1.5, Singapore 1, El Salvador 4.5.
-// The last decimal also clusters implausibly — 32 values end in .5
-// while only one ends in .4.
+// Source: Institute for Economics & Peace, Global Terrorism Index 2026
+// (reporting year 2025), country scores as published on
+// visionofhumanity.org/maps/global-terrorism-index/.
+// Composite of four indicators — incidents, fatalities, injuries and
+// hostages — under a five-year weighted average.
 //
-// This is not cosmetic. Because nGTI = 100 - score*10, a country
-// that should score 0 (=100 civic points) is penalised 10-45 points
-// on a component carrying 8% of the total weight — more than cc and
-// ge combined. Correcting just the four countries above moves 47 of
-// 173 ranks; El Salvador alone gains 30 places and 5.00 points.
-// The true correction covers ~70 countries and is much larger.
+// IEP scores 163 countries; 161 are kept here. Palestine and North
+// Korea are dropped because they carry no WGI entry and so are not
+// scored by this index at all. Luxembourg and Malta are absent from
+// the GTI's 163 and therefore lose this component entirely (their
+// scores reweight proportionally across the remaining twelve).
 //
-// To fix: re-import the GTI 2023 country scores from IEP
-// (visionofhumanity.org / economicsandpeace.org). Both domains, like
-// the World Bank's, are blocked by the Claude Code web sandbox's
-// egress policy, so this needs an environment with access.
+// This replaced a dictionary that was NOT the published index: it had
+// 116 countries, not one scoring 0 against the GTI's 63 zeroes here,
+// a maximum of 9.1 against a true 8.574, and a last decimal that
+// clustered implausibly (32 values ending .5, one ending .4).
+// Re-importing moved 159 of 173 ranks, median 7 places.
 const GTI={
-  AFG:9.1,
-  ARE:1.1,
-  ARG:1.7,
-  ARM:2.0,
-  AUS:2.0,
-  AUT:1.3,
-  AZE:2.2,
-  BEL:2.2,
-  BFA:7.9,
-  BGD:3.5,
-  BGR:1.2,
-  BHR:1.2,
-  BLR:1.5,
-  BOL:2.2,
-  BRA:2.8,
-  CAF:5.5,
-  CAN:2.2,
-  CHE:1.3,
-  CHL:2.5,
-  CHN:1.3,
-  CIV:2.8,
-  CMR:4.5,
-  COD:6.2,
-  COL:4.8,
-  CRI:2.2,
-  CYP:1.1,
-  CZE:1.0,
-  DEU:2.2,
-  DNK:1.2,
-  DOM:2.5,
-  ECU:3.0,
-  EGY:4.0,
-  ESP:2.0,
-  EST:1.0,
-  ETH:4.8,
-  FIN:1.2,
-  FRA:3.1,
-  GBR:2.6,
-  GEO:2.5,
-  GHA:1.8,
-  GRC:2.5,
-  GTM:3.5,
-  HND:3.2,
-  HRV:1.3,
-  HUN:1.2,
-  IDN:2.8,
-  IND:4.5,
-  IRL:1.9,
-  IRN:4.5,
-  IRQ:7.8,
-  ISL:1.0,
-  ISR:5.7,
-  ITA:2.3,
-  JOR:2.2,
-  JPN:1.1,
-  KAZ:2.5,
-  KEN:3.8,
-  KGZ:2.0,
-  KOR:1.2,
-  KWT:1.5,
-  LBN:3.8,
-  LBY:5.5,
-  LKA:2.5,
-  LTU:1.2,
-  LUX:1.1,
-  LVA:1.1,
-  MAR:2.2,
-  MEX:4.6,
-  MLI:7.5,
-  MLT:1.0,
-  MNG:1.5,
-  MOZ:4.5,
-  MYS:2.0,
-  NER:6.5,
-  NGA:7.1,
-  NIC:2.5,
-  NLD:1.8,
-  NOR:1.4,
-  NPL:2.8,
-  NZL:1.9,
-  OMN:1.2,
-  PAK:7.6,
-  PAN:2.0,
-  PER:3.2,
-  PHL:4.5,
-  POL:1.5,
-  PRT:1.2,
-  PRY:1.8,
-  QAT:1.1,
-  ROU:1.2,
-  RUS:4.0,
-  SDN:5.5,
-  SEN:2.8,
-  SGP:1.0,
-  SLV:4.5,
-  SOM:7.8,
-  SSD:6.8,
-  SVK:1.1,
-  SVN:1.0,
-  SWE:1.5,
-  SYR:7.5,
-  TCD:6.8,
-  THA:3.5,
-  TJK:2.5,
-  TUN:3.1,
-  TUR:4.1,
-  TWN:1.1,
-  TZA:3.2,
-  UGA:3.5,
-  UKR:4.5,
-  URY:1.5,
-  USA:5.3,
-  UZB:2.0,
-  VNM:1.5,
-  YEM:7.9,
-  ZAF:2.8
+  AFG:6.678,AGO:1.136,ALB:0,ARE:0.749,ARG:0.455,ARM:0.423,
+  AUS:3.732,AUT:1.498,AZE:0.123,BDI:3.361,BEL:1.198,BEN:5.434,
+  BFA:8.324,BGD:2.286,BGR:0,BHR:0.03,BIH:0.782,BLR:0.123,
+  BOL:0,BRA:0.909,BTN:0,BWA:0,CAF:0.556,CAN:1.333,
+  CHE:0.749,CHL:4.553,CHN:1.311,CIV:0.702,CMR:6.593,COD:7.171,
+  COG:0,COL:7.116,CRI:0,CUB:0,CYP:0.176,CZE:2.261,
+  DEU:4.447,DJI:0.925,DNK:0.72,DOM:0,DZA:1.766,ECU:3.063,
+  EGY:3.465,ERI:0,ESP:0.794,EST:0,ETH:0.288,FIN:0.582,
+  FRA:3.224,GAB:0,GBR:2.936,GEO:0.506,GHA:0,GIN:0,
+  GMB:0,GNB:0,GNQ:0,GRC:2.788,GTM:0,GUY:0,
+  HND:0,HRV:0,HTI:0,HUN:0,IDN:4.714,IND:6.428,
+  IRL:0.423,IRN:5.477,IRQ:5.822,ISL:0.059,ISR:6.79,ITA:0.999,
+  JAM:0,JOR:2.268,JPN:0.571,KAZ:0,KEN:5.088,KGZ:0,
+  KHM:0.233,KOR:0.333,KWT:0,LAO:0,LBN:0.648,LBR:0,
+  LBY:1.007,LKA:0,LSO:0,LTU:0.423,LVA:0.233,MAR:0,
+  MDA:0,MDG:0,MEX:0.325,MKD:0,MLI:7.586,MMR:6.245,
+  MNE:0,MNG:0,MOZ:6.022,MRT:0,MUS:0,MWI:0,
+  MYS:1.092,NAM:0,NER:7.816,NGA:7.792,NIC:0,NLD:1.475,
+  NOR:0.725,NPL:0.288,NZL:0.114,OMN:2.282,PAK:8.574,PAN:0,
+  PER:1.572,PHL:4.719,PNG:0,POL:1.682,PRT:0.423,PRY:0,
+  QAT:0,ROU:0,RUS:5.593,RWA:0,SAU:0.443,SDN:0,
+  SEN:1.07,SGP:0,SLE:0,SLV:0,SOM:7.391,SRB:0.782,
+  SSD:0,SVK:0.616,SVN:0,SWE:1.839,SWZ:0.044,SYR:7.545,
+  TCD:4.625,TGO:4.305,THA:5.275,TJK:2.602,TKM:0,TLS:0,
+  TTO:0,TUN:1.522,TUR:3.212,TWN:0,TZA:0.888,UGA:3.25,
+  UKR:2.927,URY:0,USA:4.521,UZB:0.114,VEN:0.396,VNM:0,
+  XKX:0.465,YEM:4.653,ZAF:0,ZMB:0,ZWE:0
 };
 
 // ── World Bank Logistics Performance Index 2023 — Infrastructure sub-index
@@ -3022,7 +2929,7 @@ function showTip(ev,r,name,_numKey){
     rows+=(r.hom!==undefined)?f('Homicide Rate',r.hom,r._n.hom,'/100k',7,'UNODC 2021–23'):m('Homicide Rate',7,'UNODC 2021–23');
     rows+=(r.rtr!==undefined)?f('Road Deaths',r.rtr,r._n.rtr,'/100k',6,'WHO 2021'):m('Road Deaths',6,'WHO 2021');
     rows+=(r.epi!==undefined)?f('Waste Management',r.epi,r.epi,'',6,'Yale EPI 2022'):m('Waste Management',6,'Yale EPI 2022');
-    rows+=(r.gtiR!==undefined)?f('Terrorism Index',r.gtiR,nGTI(r.gtiR),'',8,'IEP GTI 2023'):m('Terrorism Index',8,'IEP GTI 2023');
+    rows+=(r.gtiR!==undefined)?f('Terrorism Index',r.gtiR,nGTI(r.gtiR),'',8,'IEP GTI 2026'):m('Terrorism Index',8,'IEP GTI 2026');
     rows+=sep;
     rows+='<div class="tgrp-lbl">Public Goods</div>';
     rows+=(r.infN!==undefined)?f('Infrastructure',r.infR.toFixed(1),r.infN,'/5',11,'WB LPI 2023'):m('Infrastructure',11,'WB LPI 2023');
