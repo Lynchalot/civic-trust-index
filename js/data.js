@@ -280,117 +280,107 @@ function applyTwemoji(el){
 }
 
 
-// ── WGI 2023: Control of Corruption
-// World Bank Worldwide Governance Indicators — Control of Corruption,
-// point estimate (GOV_WGI_CC.EST), reference year 2023, approx. -2.5..+2.5.
+// ── WGI 2024: Control of Corruption
+// World Bank Worldwide Governance Indicators, Control of Corruption,
+// point estimate (GOV_WGI_CC.EST), reference year 2024, approx. -2.5..+2.5.
+// Imported from a DataBank export of the WGI database (source 3) and
+// rounded to 2dp. 173 countries — every country scored by this index.
 // The Holy See (VAT) is not covered by the WGI and is not scored here.
 //
-// PROVENANCE WARNING — these values need re-sourcing.
-// Spot-checks against published WGI 2023 estimates show a consistent
-// downward bias of roughly 0.03-0.12, and it is not a constant offset:
-//   Denmark 2.32 (pub. 2.3761)   Finland   2.19 (pub. 2.2215)
-//   Singapore 1.92 (pub. 2.0402) N.Zealand 2.02 (pub. 2.0841)
-// So these are NOT the published figures rounded to 2dp, whatever the
-// import claimed. Country ordering is correct, which is why a
-// rank-based validation passed and missed this.
-// They replaced an earlier set that was outright synthetic (digits 4
+// These replaced a set that was not the published figures: spot-checks
+// against WGI 2023 showed a non-constant downward bias of 0.03-0.12,
+// and those in turn had replaced an outright synthetic set (digits 4
 // and 6 never occurred as the 2nd decimal across 174 values; 88% sat
-// exactly 0.02 off a 0.05 grid), so this is a real improvement, but
-// unfinished. Likeliest cause is a wrong WGI vintage/revision.
-// To fix: re-import CC.EST and GE.EST for reference year 2023 from
-// databank.worldbank.org and diff against these. That could not be
-// done from the environment this was written in — the World Bank
-// domains are blocked by its network egress policy.
-// cc and ge carry 3% each, so the ranking impact is small but real.
+// exactly 0.02 off a 0.05 grid). This is the first set taken directly
+// from the source.
+//
+// NOTE THE VINTAGE: 2024, newer than most other components (2021-2023)
+// but older than GTI (2025). The index mixes years; see CLAUDE.md.
 const WGI={
-  AFG:{cc:-1.20,n:"Afghanistan"},AGO:{cc:-0.62,n:"Angola"},ALB:{cc:-0.46,n:"Albania"},
-  ARE:{cc:0.99,n:"UAE"},ARG:{cc:-0.35,n:"Argentina"},ARM:{cc:0.10,n:"Armenia"},
-  AUS:{cc:1.81,n:"Australia"},AUT:{cc:1.32,n:"Austria"},AZE:{cc:-0.88,n:"Azerbaijan"},
-  BDI:{cc:-1.29,n:"Burundi"},BEL:{cc:1.47,n:"Belgium"},BEN:{cc:-0.10,n:"Benin"},
-  BFA:{cc:-0.25,n:"Burkina Faso"},BGD:{cc:-1.20,n:"Bangladesh"},BGR:{cc:-0.15,n:"Bulgaria"},
-  BHR:{cc:0.24,n:"Bahrain"},BIH:{cc:-0.60,n:"Bosnia & Herzegovina"},BLR:{cc:-0.53,n:"Belarus"},
-  BOL:{cc:-0.96,n:"Bolivia"},BRA:{cc:-0.45,n:"Brazil"},BRN:{cc:1.18,n:"Brunei"},
-  BTN:{cc:1.36,n:"Bhutan"},BWA:{cc:0.61,n:"Botswana"},CAF:{cc:-1.38,n:"Central African Rep."},
-  CAN:{cc:1.63,n:"Canada"},CHE:{cc:2.10,n:"Switzerland"},CHL:{cc:1.03,n:"Chile"},
-  CHN:{cc:0.11,n:"China"},CIV:{cc:-0.36,n:"Côte d'Ivoire"},CMR:{cc:-1.13,n:"Cameroon"},
-  COD:{cc:-1.49,n:"DR Congo"},COG:{cc:-1.40,n:"Rep. of Congo"},COL:{cc:-0.31,n:"Colombia"},
-  CRI:{cc:0.68,n:"Costa Rica"},CUB:{cc:-0.16,n:"Cuba"},CYP:{cc:0.48,n:"Cyprus"},
-  CZE:{cc:0.85,n:"Czech Republic"},DEU:{cc:1.70,n:"Germany"},DJI:{cc:-0.91,n:"Djibouti"},
-  DNK:{cc:2.32,n:"Denmark"},DOM:{cc:-0.43,n:"Dominican Republic"},DZA:{cc:-0.64,n:"Algeria"},
-  ECU:{cc:-0.72,n:"Ecuador"},EGY:{cc:-0.82,n:"Egypt"},ERI:{cc:-1.41,n:"Eritrea"},
-  ESP:{cc:0.74,n:"Spain"},EST:{cc:1.67,n:"Estonia"},ETH:{cc:-0.46,n:"Ethiopia"},
-  FIN:{cc:2.19,n:"Finland"},FJI:{cc:0.53,n:"Fiji"},FRA:{cc:1.27,n:"France"},
-  GAB:{cc:-0.97,n:"Gabon"},GBR:{cc:1.47,n:"United Kingdom"},GEO:{cc:0.66,n:"Georgia"},
-  GHA:{cc:-0.13,n:"Ghana"},GIN:{cc:-1.01,n:"Guinea"},GMB:{cc:-0.30,n:"Gambia"},
-  GNQ:{cc:-1.52,n:"Equatorial Guinea"},GRC:{cc:0.33,n:"Greece"},
-  GTM:{cc:-1.09,n:"Guatemala"},GUY:{cc:-0.31,n:"Guyana"},HND:{cc:-1.10,n:"Honduras"},
-  HRV:{cc:0.11,n:"Croatia"},HTI:{cc:-1.50,n:"Haiti"},HUN:{cc:0.08,n:"Hungary"},
-  IDN:{cc:-0.44,n:"Indonesia"},IND:{cc:-0.34,n:"India"},IRL:{cc:1.59,n:"Ireland"},
-  IRN:{cc:-1.17,n:"Iran"},IRQ:{cc:-1.42,n:"Iraq"},ISL:{cc:1.66,n:"Iceland"},
-  ISR:{cc:0.87,n:"Israel"},ITA:{cc:0.57,n:"Italy"},JAM:{cc:-0.14,n:"Jamaica"},
-  JOR:{cc:0.11,n:"Jordan"},JPN:{cc:1.34,n:"Japan"},KAZ:{cc:-0.22,n:"Kazakhstan"},
-  KEN:{cc:-0.76,n:"Kenya"},KGZ:{cc:-1.20,n:"Kyrgyzstan"},KHM:{cc:-1.12,n:"Cambodia"},
-  KOR:{cc:0.88,n:"South Korea"},KWT:{cc:0.17,n:"Kuwait"},LAO:{cc:-0.96,n:"Laos"},
-  LBN:{cc:-1.26,n:"Lebanon"},LBR:{cc:-1.01,n:"Liberia"},LBY:{cc:-1.54,n:"Libya"},
-  LKA:{cc:-0.39,n:"Sri Lanka"},LSO:{cc:-0.30,n:"Lesotho"},LTU:{cc:0.89,n:"Lithuania"},
-  LUX:{cc:2.01,n:"Luxembourg"},LVA:{cc:0.78,n:"Latvia"},MAR:{cc:-0.55,n:"Morocco"},
-  MDA:{cc:-0.27,n:"Moldova"},MDG:{cc:-0.99,n:"Madagascar"},MDV:{cc:-0.27,n:"Maldives"},
-  MEX:{cc:-0.93,n:"Mexico"},MKD:{cc:-0.35,n:"North Macedonia"},MLI:{cc:-0.85,n:"Mali"},
-  MLT:{cc:0.32,n:"Malta"},MMR:{cc:-1.11,n:"Myanmar"},MNE:{cc:-0.07,n:"Montenegro"},
-  MNG:{cc:-0.62,n:"Mongolia"},MOZ:{cc:-0.90,n:"Mozambique"},MRT:{cc:-0.80,n:"Mauritania"},
-  MUS:{cc:0.34,n:"Mauritius"},MWI:{cc:-0.63,n:"Malawi"},MYS:{cc:0.38,n:"Malaysia"},
-  NAM:{cc:0.16,n:"Namibia"},NER:{cc:-0.52,n:"Niger"},NGA:{cc:-1.10,n:"Nigeria"},
-  NIC:{cc:-1.26,n:"Nicaragua"},NLD:{cc:1.88,n:"Netherlands"},NOR:{cc:2.07,n:"Norway"},
-  NPL:{cc:-0.63,n:"Nepal"},NZL:{cc:2.02,n:"New Zealand"},OMN:{cc:0.23,n:"Oman"},
-  PAK:{cc:-1.05,n:"Pakistan"},PAN:{cc:-0.57,n:"Panama"},PER:{cc:-0.67,n:"Peru"},
-  PHL:{cc:-0.57,n:"Philippines"},PNG:{cc:-0.60,n:"Papua New Guinea"},POL:{cc:0.75,n:"Poland"},
-  PRT:{cc:0.78,n:"Portugal"},PRY:{cc:-1.01,n:"Paraguay"},QAT:{cc:0.78,n:"Qatar"},
-  ROU:{cc:0.03,n:"Romania"},RUS:{cc:-0.89,n:"Russia"},RWA:{cc:0.68,n:"Rwanda"},
-  SAU:{cc:0.48,n:"Saudi Arabia"},SDN:{cc:-1.45,n:"Sudan"},SEN:{cc:0.04,n:"Senegal"},
-  SGP:{cc:1.92,n:"Singapore"},SLE:{cc:-0.57,n:"Sierra Leone"},SLV:{cc:-0.61,n:"El Salvador"},
-  SOM:{cc:-1.62,n:"Somalia"},SRB:{cc:-0.50,n:"Serbia"},SSD:{cc:-1.88,n:"South Sudan"},
-  SVK:{cc:0.38,n:"Slovakia"},SVN:{cc:0.68,n:"Slovenia"},SWE:{cc:1.98,n:"Sweden"},
-  SWZ:{cc:-0.63,n:"Eswatini"},SYR:{cc:-1.78,n:"Syria"},TCD:{cc:-1.49,n:"Chad"},
-  TGO:{cc:-0.59,n:"Togo"},THA:{cc:-0.44,n:"Thailand"},TJK:{cc:-1.12,n:"Tajikistan"},
-  TKM:{cc:-1.35,n:"Turkmenistan"},TLS:{cc:-0.43,n:"Timor-Leste"},
-  TTO:{cc:-0.32,n:"Trinidad & Tobago"},TUN:{cc:-0.19,n:"Tunisia"},TUR:{cc:-0.44,n:"Turkey"},
-  TZA:{cc:-0.35,n:"Tanzania"},UGA:{cc:-1.00,n:"Uganda"},UKR:{cc:-0.72,n:"Ukraine"},
-  URY:{cc:1.55,n:"Uruguay"},USA:{cc:1.20,n:"United States"},UZB:{cc:-0.70,n:"Uzbekistan"},
-  VEN:{cc:-1.56,n:"Venezuela"},VNM:{cc:-0.31,n:"Vietnam"},YEM:{cc:-1.60,n:"Yemen"},
-  ZAF:{cc:-0.21,n:"South Africa"},ZMB:{cc:-0.40,n:"Zambia"},ZWE:{cc:-1.19,n:"Zimbabwe"},
-  SUR:{cc:-0.33,n:"Suriname"},LIE:{cc:1.75,n:"Liechtenstein"},SMR:{cc:1.17,n:"San Marino"},
-  AND:{cc:1.17,n:"Andorra"},MCO:{cc:1.17,n:"Monaco"},XKX:{cc:-0.15,n:"Kosovo"},
-  TWN:{cc:1.19,n:"Taiwan"},HKG:{cc:1.55,n:"Hong Kong"},
-  BLZ:{cc:-0.12,n:"Belize"},
-  GNB:{cc:-1.16,n:"Guinea-Bissau"}
+  AFG:{cc:-1.31,n:"Afghanistan"},AGO:{cc:-0.62,n:"Angola"},ALB:{cc:-0.42,n:"Albania"},
+  AND:{cc:1.18,n:"Andorra"},ARE:{cc:1.17,n:"UAE"},ARG:{cc:-0.33,n:"Argentina"},
+  ARM:{cc:0.14,n:"Armenia"},AUS:{cc:1.85,n:"Australia"},AUT:{cc:1.29,n:"Austria"},
+  AZE:{cc:-0.78,n:"Azerbaijan"},BDI:{cc:-1.46,n:"Burundi"},BEL:{cc:1.47,n:"Belgium"},
+  BEN:{cc:-0.24,n:"Benin"},BFA:{cc:-0.25,n:"Burkina Faso"},BGD:{cc:-1.10,n:"Bangladesh"},
+  BGR:{cc:-0.24,n:"Bulgaria"},BHR:{cc:0.25,n:"Bahrain"},BIH:{cc:-0.51,n:"Bosnia & Herzegovina"},
+  BLR:{cc:-0.58,n:"Belarus"},BLZ:{cc:-0.16,n:"Belize"},BOL:{cc:-1.00,n:"Bolivia"},
+  BRA:{cc:-0.41,n:"Brazil"},BRN:{cc:1.19,n:"Brunei"},BTN:{cc:1.47,n:"Bhutan"},
+  BWA:{cc:0.63,n:"Botswana"},CAF:{cc:-1.31,n:"Central African Rep."},CAN:{cc:1.63,n:"Canada"},
+  CHE:{cc:2.01,n:"Switzerland"},CHL:{cc:1.11,n:"Chile"},CHN:{cc:0.09,n:"China"},
+  CIV:{cc:-0.29,n:"Côte d'Ivoire"},CMR:{cc:-1.22,n:"Cameroon"},COD:{cc:-1.52,n:"DR Congo"},
+  COG:{cc:-1.42,n:"Rep. of Congo"},COL:{cc:-0.29,n:"Colombia"},CRI:{cc:0.68,n:"Costa Rica"},
+  CUB:{cc:-0.23,n:"Cuba"},CYP:{cc:0.53,n:"Cyprus"},CZE:{cc:0.93,n:"Czech Republic"},
+  DEU:{cc:1.77,n:"Germany"},DJI:{cc:-0.89,n:"Djibouti"},DNK:{cc:2.29,n:"Denmark"},
+  DOM:{cc:-0.27,n:"Dominican Republic"},DZA:{cc:-0.59,n:"Algeria"},ECU:{cc:-0.78,n:"Ecuador"},
+  EGY:{cc:-0.83,n:"Egypt"},ERI:{cc:-1.63,n:"Eritrea"},ESP:{cc:0.71,n:"Spain"},
+  EST:{cc:1.67,n:"Estonia"},ETH:{cc:-0.44,n:"Ethiopia"},FIN:{cc:2.19,n:"Finland"},
+  FJI:{cc:0.56,n:"Fiji"},FRA:{cc:1.22,n:"France"},GAB:{cc:-0.94,n:"Gabon"},
+  GBR:{cc:1.51,n:"United Kingdom"},GEO:{cc:0.38,n:"Georgia"},GHA:{cc:-0.19,n:"Ghana"},
+  GIN:{cc:-1.17,n:"Guinea"},GMB:{cc:-0.33,n:"Gambia"},GNB:{cc:-1.35,n:"Guinea-Bissau"},
+  GNQ:{cc:-1.47,n:"Equatorial Guinea"},GRC:{cc:0.30,n:"Greece"},GTM:{cc:-0.95,n:"Guatemala"},
+  GUY:{cc:-0.35,n:"Guyana"},HKG:{cc:1.57,n:"Hong Kong"},HND:{cc:-1.24,n:"Honduras"},
+  HRV:{cc:0.15,n:"Croatia"},HTI:{cc:-1.54,n:"Haiti"},HUN:{cc:0.04,n:"Hungary"},
+  IDN:{cc:-0.54,n:"Indonesia"},IND:{cc:-0.30,n:"India"},IRL:{cc:1.57,n:"Ireland"},
+  IRN:{cc:-1.15,n:"Iran"},IRQ:{cc:-1.21,n:"Iraq"},ISL:{cc:1.83,n:"Iceland"},
+  ISR:{cc:0.85,n:"Israel"},ITA:{cc:0.55,n:"Italy"},JAM:{cc:-0.10,n:"Jamaica"},
+  JOR:{cc:0.27,n:"Jordan"},JPN:{cc:1.36,n:"Japan"},KAZ:{cc:-0.07,n:"Kazakhstan"},
+  KEN:{cc:-0.80,n:"Kenya"},KGZ:{cc:-1.14,n:"Kyrgyzstan"},KHM:{cc:-1.23,n:"Cambodia"},
+  KOR:{cc:0.85,n:"South Korea"},KWT:{cc:0.22,n:"Kuwait"},LAO:{cc:-0.98,n:"Laos"},
+  LBN:{cc:-1.30,n:"Lebanon"},LBR:{cc:-1.05,n:"Liberia"},LBY:{cc:-1.53,n:"Libya"},
+  LIE:{cc:1.76,n:"Liechtenstein"},LKA:{cc:-0.38,n:"Sri Lanka"},LSO:{cc:-0.30,n:"Lesotho"},
+  LTU:{cc:0.99,n:"Lithuania"},LUX:{cc:2.02,n:"Luxembourg"},LVA:{cc:0.83,n:"Latvia"},
+  MAR:{cc:-0.52,n:"Morocco"},MCO:{cc:1.80,n:"Monaco"},MDA:{cc:-0.29,n:"Moldova"},
+  MDG:{cc:-1.01,n:"Madagascar"},MDV:{cc:-0.34,n:"Maldives"},MEX:{cc:-0.94,n:"Mexico"},
+  MKD:{cc:-0.33,n:"North Macedonia"},MLI:{cc:-0.98,n:"Mali"},MLT:{cc:0.27,n:"Malta"},
+  MMR:{cc:-1.25,n:"Myanmar"},MNE:{cc:-0.06,n:"Montenegro"},MNG:{cc:-0.49,n:"Mongolia"},
+  MOZ:{cc:-1.06,n:"Mozambique"},MRT:{cc:-0.93,n:"Mauritania"},MUS:{cc:0.34,n:"Mauritius"},
+  MWI:{cc:-0.65,n:"Malawi"},MYS:{cc:0.50,n:"Malaysia"},NAM:{cc:0.13,n:"Namibia"},
+  NER:{cc:-0.62,n:"Niger"},NGA:{cc:-1.11,n:"Nigeria"},NIC:{cc:-1.43,n:"Nicaragua"},
+  NLD:{cc:1.91,n:"Netherlands"},NOR:{cc:1.96,n:"Norway"},NPL:{cc:-0.63,n:"Nepal"},
+  NZL:{cc:1.93,n:"New Zealand"},OMN:{cc:0.51,n:"Oman"},PAK:{cc:-1.07,n:"Pakistan"},
+  PAN:{cc:-0.55,n:"Panama"},PER:{cc:-0.72,n:"Peru"},PHL:{cc:-0.58,n:"Philippines"},
+  PNG:{cc:-0.80,n:"Papua New Guinea"},POL:{cc:0.79,n:"Poland"},PRT:{cc:0.82,n:"Portugal"},
+  PRY:{cc:-1.02,n:"Paraguay"},QAT:{cc:0.75,n:"Qatar"},ROU:{cc:0.03,n:"Romania"},
+  RUS:{cc:-0.89,n:"Russia"},RWA:{cc:0.63,n:"Rwanda"},SAU:{cc:0.75,n:"Saudi Arabia"},
+  SDN:{cc:-1.56,n:"Sudan"},SEN:{cc:0.11,n:"Senegal"},SGP:{cc:1.97,n:"Singapore"},
+  SLE:{cc:-0.70,n:"Sierra Leone"},SLV:{cc:-0.58,n:"El Salvador"},SMR:{cc:1.18,n:"San Marino"},
+  SOM:{cc:-1.79,n:"Somalia"},SRB:{cc:-0.56,n:"Serbia"},SSD:{cc:-2.06,n:"South Sudan"},
+  SUR:{cc:-0.38,n:"Suriname"},SVK:{cc:0.11,n:"Slovakia"},SVN:{cc:0.67,n:"Slovenia"},
+  SWE:{cc:1.97,n:"Sweden"},SWZ:{cc:-0.79,n:"Eswatini"},SYR:{cc:-1.70,n:"Syria"},
+  TCD:{cc:-1.39,n:"Chad"},TGO:{cc:-0.66,n:"Togo"},THA:{cc:-0.53,n:"Thailand"},
+  TJK:{cc:-1.22,n:"Tajikistan"},TKM:{cc:-1.30,n:"Turkmenistan"},TLS:{cc:-0.38,n:"Timor-Leste"},
+  TTO:{cc:-0.34,n:"Trinidad & Tobago"},TUN:{cc:-0.22,n:"Tunisia"},TUR:{cc:-0.56,n:"Turkey"},
+  TWN:{cc:1.18,n:"Taiwan"},TZA:{cc:-0.29,n:"Tanzania"},UGA:{cc:-1.12,n:"Uganda"},
+  UKR:{cc:-0.67,n:"Ukraine"},URY:{cc:1.53,n:"Uruguay"},USA:{cc:1.09,n:"United States"},
+  UZB:{cc:-0.75,n:"Uzbekistan"},VEN:{cc:-1.59,n:"Venezuela"},VNM:{cc:-0.25,n:"Vietnam"},
+  XKX:{cc:-0.25,n:"Kosovo"},YEM:{cc:-1.64,n:"Yemen"},ZAF:{cc:-0.19,n:"South Africa"},
+  ZMB:{cc:-0.46,n:"Zambia"},ZWE:{cc:-1.25,n:"Zimbabwe"}
 };
 
-// World Bank Worldwide Governance Indicators — Government Effectiveness,
-// point estimate (GOV_WGI_GE.EST), reference year 2023, approx. -2.5..+2.5.
-// Same provenance warning as WGI/cc above — these need re-sourcing.
+// World Bank Worldwide Governance Indicators, Government Effectiveness,
+// point estimate (GOV_WGI_GE.EST), reference year 2024, approx. -2.5..+2.5.
+// Same DataBank export and provenance as WGI/cc above.
 const GE={
-  AFG:-2.09,AGO:-0.83,ALB:0.29,ARE:1.31,ARG:0.06,ARM:-0.16,AUS:1.78,AUT:1.58,
-  AZE:0.07,BDI:-1.11,BEL:1.16,BEN:-0.22,BFA:-0.86,BGD:-0.56,BGR:0.11,BHR:0.73,
-  BIH:-0.65,BLR:-0.60,BOL:-0.41,BRA:-0.27,BRN:0.99,BTN:0.54,BWA:0.54,CAF:-1.57,
-  CAN:1.75,CHE:2.04,CHL:1.00,CHN:0.78,CIV:-0.32,CMR:-0.78,COD:-1.66,COG:-1.17,
-  COL:-0.04,CRI:0.33,CUB:-0.00,CYP:0.93,CZE:1.24,DEU:1.56,DJI:-0.54,DNK:1.96,
-  DOM:0.05,DZA:-0.36,ECU:-0.16,EGY:-0.04,ERI:-1.38,ESP:1.08,EST:1.27,ETH:-0.69,
-  FIN:1.79,FJI:0.50,FRA:1.35,GAB:-0.58,GBR:1.14,GEO:0.59,GHA:-0.02,GIN:-0.87,
-  GMB:-0.47,GNQ:-1.15,GRC:0.26,GTM:-0.86,GUY:-0.10,HND:-0.66,HRV:0.75,
-  HTI:-2.01,HUN:0.55,IDN:0.27,IND:0.42,IRL:1.66,IRN:-0.74,IRQ:-1.34,ISL:1.64,
-  ISR:1.36,ITA:0.85,JAM:0.17,JOR:0.39,JPN:1.99,KAZ:0.15,KEN:-0.31,KGZ:-1.00,
-  KHM:-0.42,KOR:1.50,KWT:0.31,LAO:-0.75,LBN:-1.17,LBR:-1.22,LBY:-1.45,LKA:-0.28,
-  LSO:-0.75,LTU:0.94,LUX:2.15,LVA:0.64,MAR:-0.02,MDA:-0.03,MDG:-0.95,MDV:-0.22,
-  MEX:-0.07,MKD:0.02,MLI:-1.23,MLT:0.76,MMR:-1.58,MNE:0.28,MNG:-0.36,MOZ:-0.78,
-  MRT:-0.82,MUS:0.82,MWI:-0.77,MYS:0.75,NAM:0.15,NER:-0.61,NGA:-0.87,NIC:-0.94,
-  NLD:1.75,NOR:1.79,NPL:-0.84,NZL:1.73,OMN:0.47,PAK:-0.66,PAN:0.03,PER:-0.20,
-  PHL:0.10,PNG:-1.08,POL:0.63,PRT:0.97,PRY:-0.34,QAT:1.15,ROU:0.13,
-  RUS:-0.21,RWA:0.41,SAU:0.73,SDN:-1.77,SEN:0.15,SGP:2.26,SLE:-0.95,SLV:-0.09,
-  SOM:-1.87,SRB:0.10,SSD:-2.21,SVK:0.58,SVN:1.16,SWE:1.69,SWZ:-0.72,SYR:-1.61,
-  TCD:-1.22,TGO:-0.92,THA:0.31,TJK:-0.77,TKM:-0.49,TLS:-0.85,TTO:0.15,TUN:-0.17,
-  TUR:-0.11,TZA:-0.41,UGA:-0.43,UKR:-0.58,URY:0.85,USA:1.36,UZB:-0.30,VEN:-1.43,
-  VNM:-0.18,YEM:-1.89,ZAF:-0.18,ZMB:-0.56,ZWE:-0.99,
-  SUR:-0.37,LIE:1.69,SMR:0.90,AND:1.16,MCO:1.74,XKX:0.01,TWN:1.52,HKG:1.54,BLZ:-0.06,GNB:-1.45
+  AFG:-1.93,AGO:-0.79,ALB:0.31,AND:1.16,ARE:1.26,ARG:0.18,ARM:-0.36,AUS:1.81,AUT:1.51,
+  AZE:0.17,BDI:-1.01,BEL:1.19,BEN:-0.19,BFA:-0.87,BGD:-0.62,BGR:0.04,BHR:0.60,BIH:-0.64,
+  BLR:-0.70,BLZ:-0.13,BOL:-0.61,BRA:-0.22,BRN:0.84,BTN:0.58,BWA:0.42,CAF:-1.58,CAN:1.76,
+  CHE:1.84,CHL:0.96,CHN:0.90,CIV:-0.32,CMR:-0.80,COD:-1.69,COG:-1.11,COL:-0.11,CRI:0.29,
+  CUB:-0.27,CYP:0.87,CZE:1.18,DEU:1.55,DJI:-0.49,DNK:1.91,DOM:0.07,DZA:-0.25,ECU:-0.22,
+  EGY:-0.10,ERI:-1.46,ESP:1.11,EST:1.30,ETH:-0.65,FIN:1.82,FJI:0.61,FRA:1.20,GAB:-0.57,
+  GBR:1.18,GEO:0.46,GHA:0.06,GIN:-0.89,GMB:-0.54,GNB:-1.37,GNQ:-1.18,GRC:0.19,GTM:-0.91,
+  GUY:-0.10,HKG:1.64,HND:-0.62,HRV:0.71,HTI:-2.02,HUN:0.50,IDN:0.18,IND:0.40,IRL:1.61,
+  IRN:-0.71,IRQ:-1.10,ISL:1.65,ISR:1.17,ITA:0.79,JAM:0.17,JOR:0.22,JPN:2.09,KAZ:0.15,
+  KEN:-0.30,KGZ:-0.89,KHM:-0.29,KOR:1.49,KWT:0.33,LAO:-0.58,LBN:-1.13,LBR:-1.25,LBY:-1.42,
+  LIE:1.69,LKA:-0.27,LSO:-0.65,LTU:1.20,LUX:2.04,LVA:0.74,MAR:0.18,MCO:1.74,MDA:0.26,
+  MDG:-0.86,MDV:-0.22,MEX:-0.22,MKD:-0.03,MLI:-1.29,MLT:0.62,MMR:-1.56,MNE:0.37,MNG:-0.39,
+  MOZ:-0.72,MRT:-0.74,MUS:0.77,MWI:-0.73,MYS:0.91,NAM:0.10,NER:-0.77,NGA:-1.01,NIC:-1.05,
+  NLD:1.75,NOR:1.84,NPL:-0.88,NZL:1.85,OMN:0.57,PAK:-0.60,PAN:0.25,PER:-0.20,PHL:0.14,
+  PNG:-0.90,POL:0.67,PRT:0.95,PRY:-0.35,QAT:1.13,ROU:0.42,RUS:-0.32,RWA:0.35,SAU:0.78,
+  SDN:-1.79,SEN:0.23,SGP:2.28,SLE:-0.97,SLV:-0.18,SMR:0.90,SOM:-1.95,SRB:0.10,SSD:-2.17,
+  SUR:-0.45,SVK:0.66,SVN:1.09,SWE:1.77,SWZ:-0.78,SYR:-1.67,TCD:-1.10,TGO:-0.80,THA:0.25,
+  TJK:-0.60,TKM:-1.06,TLS:-0.90,TTO:0.11,TUN:-0.24,TUR:-0.07,TWN:1.50,TZA:-0.29,UGA:-0.35,
+  UKR:-0.60,URY:0.69,USA:1.36,UZB:-0.14,VEN:-1.47,VNM:-0.09,XKX:-0.06,YEM:-1.87,ZAF:-0.23,
+  ZMB:-0.53,ZWE:-0.99,
 };
 
 const SE={
@@ -1094,8 +1084,8 @@ function showTip(ev,r,name,_numKey){
     const sep=`<div class="tsep"></div>`;
     let rows='';
     rows+='<div class="tgrp-lbl">Institutional</div>';
-    rows+=f('Corruption Control',r.cc,r._n.cc,'',3,'WB WGI 2023');
-    rows+=(r.ge!==undefined)?f('Government Effectiveness',r.ge,r._n.ge,'',3,'WB WGI 2023'):m('Government Effectiveness',3,'WB WGI 2023');
+    rows+=f('Corruption Control',r.cc,r._n.cc,'',3,'WB WGI 2024');
+    rows+=(r.ge!==undefined)?f('Government Effectiveness',r.ge,r._n.ge,'',3,'WB WGI 2024'):m('Government Effectiveness',3,'WB WGI 2024');
     rows+=sep;
     rows+='<div class="tgrp-lbl">Fiscal Compliance</div>';
     rows+=(r.se!==undefined)?f('Shadow Economy',r.se+'%',r._n.se,'',6,'WB Informal Economy 2019'):m('Shadow Economy',6,'WB Informal Economy 2019');
