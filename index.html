@@ -260,8 +260,8 @@
     <button class="rp-tab active" data-mode="top">Top 25</button>
     <button class="rp-tab" data-mode="bottom">Bottom 25</button>
   </div>
-  <label class="rp-lowdata-toggle" title="Countries with fewer than 8 of 13 components">
-    <input type="checkbox" id="rp-lowdata-cb"> Limited data
+  <label class="rp-lowdata-toggle" title="Countries scored on fewer than 8 of the 13 components are withheld from the ranking by default — proportional reweighting flatters them">
+    <input type="checkbox" id="rp-lowdata-cb"> Show withheld
   </label>
   <div class="rp-list" id="rp-list"></div>
 </aside>
@@ -282,7 +282,7 @@
     <input type="text" id="rank-search" placeholder="Filter by country name…" style="background:var(--surface2);border:1px solid var(--border2);color:var(--text);padding:.4rem .7rem;border-radius:4px;font-family:inherit;font-size:.72rem;width:220px;">
     <span style="font-size:.68rem;color:var(--muted)" id="rank-live-count"></span>
     <label class="rp-lowdata-toggle">
-      <input type="checkbox" id="inline-lowdata-cb"> Include limited data
+      <input type="checkbox" id="inline-lowdata-cb"> Show withheld
     </label>
     <div style="margin-left:auto;display:flex;gap:.5rem">
       <button class="rp-tab" id="rank-tab-all" onclick="setRankTab('all')">All</button>
@@ -327,7 +327,7 @@
           <li><strong>Infrastructure is measured narrowly.</strong> The score comes from the World Bank's logistics index, which rates ports, roads, rail and IT as judged by the freight firms that use them. It leaves out electricity and water, which an older, now-retired survey used to capture. The rankings hold; the lens is simply narrower than before.</li>
           <li><strong>Shadow-economy figures are estimates.</strong> The method behind them is disputed among economists. Treat the order of countries as sound and the exact percentages as educated guesses.</li>
           <li><strong>Reported theft is left out, on purpose.</strong> High-trust societies report more of it, not less, because people there bother to report. Gallup's safety questions, which ask people what actually happened to them, get nearer the truth.</li>
-          <li><strong>The micro-states sit too high.</strong> Liechtenstein, Monaco, San Marino and Andorra are measured on only five or six components, and those happen to be the ones that flatter small, rich, stable places. Their rankings are played down accordingly.</li>
+          <li><strong>The micro-states sit too high.</strong> Liechtenstein, Monaco, San Marino and Andorra are measured on only five of the thirteen components — 31% of the weight — and those five happen to be the ones that flatter small, rich, stable places. Proportional reweighting then hands them the whole 100%, so scoring them at all rewards the missing data: strip the two least trustworthy of those five and they rise rather than fall. So the ranking withholds every country scored on fewer than eight components — 15 of the 173 — and the <em>Show withheld</em> toggle puts them back if you want to see them.</li>
         </ul>
       </div>
     </div>

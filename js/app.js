@@ -65,7 +65,7 @@ let rankMode='top';
 function buildRanking(){
   const arr=[];
   for(const [num,r] of Object.entries(byNum)){
-    if(!showLowData && r.nComp<8)continue;
+    if(!showLowData && r.nComp<RANK_MIN_COMP)continue;
     const s=recalcScoreFiltered(r);
     if(s!==null)arr.push({num,r,s});
   }
@@ -74,7 +74,7 @@ function buildRanking(){
   const out=[];
   list.forEach((d,i)=>{
     const rank=rankMode==='top'?i+1:arr.length-i;
-    const lowComp=d.r.nComp<8;
+    const lowComp=d.r.nComp<RANK_MIN_COMP;
     out.push(`<div class="rp-row${lowComp?' low-comp':''}" data-num="${d.num}">
       <span class="rp-rank">${rank}</span>
       <span class="rp-name" title="${lowComp?d.r.nComp+' components only':''}">${d.r.name}</span>
@@ -152,7 +152,7 @@ function buildInlineRankings(){
 
   const arr=[];
   for(const [num,r] of Object.entries(byNum)){
-    if(!showLowData && r.nComp<8)continue;
+    if(!showLowData && r.nComp<RANK_MIN_COMP)continue;
     const s=recalcScoreFiltered(r);
     if(s!==null)arr.push({num,r,s});
   }
@@ -172,11 +172,13 @@ function buildInlineRankings(){
     if(list.length>25){list=list.slice(0,25);truncated=true;}
   }
 
-  if(cnt)cnt.textContent=`${totalFiltered} of ${arr.length} countries`;
+  const withheld=Object.keys(byNum).length-arr.length;
+  if(cnt)cnt.textContent=`${totalFiltered} of ${arr.length} countries`
+    +(withheld?` · ${withheld} withheld — under ${RANK_MIN_COMP} of 13 components`:'');
 
   const rows=list.map((d,i)=>{
     const rank=arr.indexOf(d)+1;
-    const lowComp=d.r.nComp<8;
+    const lowComp=d.r.nComp<RANK_MIN_COMP;
     const desc=DESC[d.r.iso3]||'';
     const flagEmoji=d.r.iso3?flag(d.r.iso3):'';
     return `<div class="rank-row-full${lowComp?' low-comp':''}" data-iso="${d.r.iso3}">

@@ -1418,8 +1418,8 @@ a.hi-src:hover{color:var(--accent);text-decoration:underline;text-underline-offs
     <button class="rp-tab active" data-mode="top">Top 25</button>
     <button class="rp-tab" data-mode="bottom">Bottom 25</button>
   </div>
-  <label class="rp-lowdata-toggle" title="Countries with fewer than 8 of 13 components">
-    <input type="checkbox" id="rp-lowdata-cb"> Limited data
+  <label class="rp-lowdata-toggle" title="Countries scored on fewer than 8 of the 13 components are withheld from the ranking by default — proportional reweighting flatters them">
+    <input type="checkbox" id="rp-lowdata-cb"> Show withheld
   </label>
   <div class="rp-list" id="rp-list"></div>
 </aside>
@@ -1440,7 +1440,7 @@ a.hi-src:hover{color:var(--accent);text-decoration:underline;text-underline-offs
     <input type="text" id="rank-search" placeholder="Filter by country name…" style="background:var(--surface2);border:1px solid var(--border2);color:var(--text);padding:.4rem .7rem;border-radius:4px;font-family:inherit;font-size:.72rem;width:220px;">
     <span style="font-size:.68rem;color:var(--muted)" id="rank-live-count"></span>
     <label class="rp-lowdata-toggle">
-      <input type="checkbox" id="inline-lowdata-cb"> Include limited data
+      <input type="checkbox" id="inline-lowdata-cb"> Show withheld
     </label>
     <div style="margin-left:auto;display:flex;gap:.5rem">
       <button class="rp-tab" id="rank-tab-all" onclick="setRankTab('all')">All</button>
@@ -1485,7 +1485,7 @@ a.hi-src:hover{color:var(--accent);text-decoration:underline;text-underline-offs
           <li><strong>Infrastructure is measured narrowly.</strong> The score comes from the World Bank's logistics index, which rates ports, roads, rail and IT as judged by the freight firms that use them. It leaves out electricity and water, which an older, now-retired survey used to capture. The rankings hold; the lens is simply narrower than before.</li>
           <li><strong>Shadow-economy figures are estimates.</strong> The method behind them is disputed among economists. Treat the order of countries as sound and the exact percentages as educated guesses.</li>
           <li><strong>Reported theft is left out, on purpose.</strong> High-trust societies report more of it, not less, because people there bother to report. Gallup's safety questions, which ask people what actually happened to them, get nearer the truth.</li>
-          <li><strong>The micro-states sit too high.</strong> Liechtenstein, Monaco, San Marino and Andorra are measured on only five or six components, and those happen to be the ones that flatter small, rich, stable places. Their rankings are played down accordingly.</li>
+          <li><strong>The micro-states sit too high.</strong> Liechtenstein, Monaco, San Marino and Andorra are measured on only five of the thirteen components — 31% of the weight — and those five happen to be the ones that flatter small, rich, stable places. Proportional reweighting then hands them the whole 100%, so scoring them at all rewards the missing data: strip the two least trustworthy of those five and they rise rather than fall. So the ranking withholds every country scored on fewer than eight components — 15 of the 173 — and the <em>Show withheld</em> toggle puts them back if you want to see them.</li>
         </ul>
       </div>
     </div>
@@ -2834,6 +2834,14 @@ function nHOM(r){return Math.max(0,100*(1-Math.log(1+r)/Math.log(72)))}
 function nSE(s){return Math.max(0,Math.min(100,100*(1-Math.max(0,s-5)/60)))}
 function nRTR(r){return Math.max(0,100*(1-Math.log(1+r)/Math.log(42)))}
 
+// Countries below this many of the 13 components are withheld from the
+// rankings unless the reader opts in (the 'limited data' toggle). On the
+// current data the rule is identical to a 50% weight-coverage floor:
+// every country with 8+ components covers at least 53% of the weight,
+// and none below 8 reaches 50%. It exists because proportional
+// reweighting collapses the full 100% onto whatever a country does
+// have, which flatters thin-data entries — see CLAUDE.md.
+const RANK_MIN_COMP=8;
 function calcScore(iso3){
   const w=WGI[iso3]; if(!w) return null;
   const avail={},d={name:w.n};
@@ -2853,6 +2861,7 @@ function calcScore(iso3){
   const totalW=Object.keys(avail).reduce((s,k)=>s+WEIGHTS[k],0);
   d.score=Object.entries(avail).reduce((s,[k,v])=>s+(v*WEIGHTS[k]/totalW),0);
   d.nComp=Object.keys(avail).length;
+  d.covW=totalW;                      // % of the 100-point weight actually present
   d._n=avail;
   d.iso3=iso3;
   d._avail=avail;
@@ -2964,7 +2973,9 @@ function showTip(ev,r,name,_numKey){
     rows+='<div class="tgrp-lbl">Public Goods</div>';
     rows+=(r.infN!==undefined)?f('Infrastructure',r.infR.toFixed(1),r.infN,'/5',11,'WB LPI 2023'):m('Infrastructure',11,'WB LPI 2023');
     document.getElementById('trows').innerHTML=rows;
-    document.getElementById('tfoot').textContent=`${r.nComp} of 13 components · proportionally weighted`;
+    document.getElementById('tfoot').textContent=r.nComp>=RANK_MIN_COMP
+      ? `${r.nComp} of 13 components · ${r.covW}% of the weight · proportionally reweighted`
+      : `${r.nComp} of 13 components · ${r.covW}% of the weight · too thin to rank`;
   }else{
     const terrInfo=TERRITORY[numKey||''];
     document.getElementById('tsc').innerHTML='<span style="color:var(--muted)">No index data available</span>';
@@ -3112,7 +3123,7 @@ let rankMode='top';
 function buildRanking(){
   const arr=[];
   for(const [num,r] of Object.entries(byNum)){
-    if(!showLowData && r.nComp<8)continue;
+    if(!showLowData && r.nComp<RANK_MIN_COMP)continue;
     const s=recalcScoreFiltered(r);
     if(s!==null)arr.push({num,r,s});
   }
@@ -3121,7 +3132,7 @@ function buildRanking(){
   const out=[];
   list.forEach((d,i)=>{
     const rank=rankMode==='top'?i+1:arr.length-i;
-    const lowComp=d.r.nComp<8;
+    const lowComp=d.r.nComp<RANK_MIN_COMP;
     out.push(`<div class="rp-row${lowComp?' low-comp':''}" data-num="${d.num}">
       <span class="rp-rank">${rank}</span>
       <span class="rp-name" title="${lowComp?d.r.nComp+' components only':''}">${d.r.name}</span>
@@ -3199,7 +3210,7 @@ function buildInlineRankings(){
 
   const arr=[];
   for(const [num,r] of Object.entries(byNum)){
-    if(!showLowData && r.nComp<8)continue;
+    if(!showLowData && r.nComp<RANK_MIN_COMP)continue;
     const s=recalcScoreFiltered(r);
     if(s!==null)arr.push({num,r,s});
   }
@@ -3219,11 +3230,13 @@ function buildInlineRankings(){
     if(list.length>25){list=list.slice(0,25);truncated=true;}
   }
 
-  if(cnt)cnt.textContent=`${totalFiltered} of ${arr.length} countries`;
+  const withheld=Object.keys(byNum).length-arr.length;
+  if(cnt)cnt.textContent=`${totalFiltered} of ${arr.length} countries`
+    +(withheld?` · ${withheld} withheld — under ${RANK_MIN_COMP} of 13 components`:'');
 
   const rows=list.map((d,i)=>{
     const rank=arr.indexOf(d)+1;
-    const lowComp=d.r.nComp<8;
+    const lowComp=d.r.nComp<RANK_MIN_COMP;
     const desc=DESC[d.r.iso3]||'';
     const flagEmoji=d.r.iso3?flag(d.r.iso3):'';
     return `<div class="rank-row-full${lowComp?' low-comp':''}" data-iso="${d.r.iso3}">

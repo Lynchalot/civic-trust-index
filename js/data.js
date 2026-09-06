@@ -1019,6 +1019,14 @@ function nHOM(r){return Math.max(0,100*(1-Math.log(1+r)/Math.log(72)))}
 function nSE(s){return Math.max(0,Math.min(100,100*(1-Math.max(0,s-5)/60)))}
 function nRTR(r){return Math.max(0,100*(1-Math.log(1+r)/Math.log(42)))}
 
+// Countries below this many of the 13 components are withheld from the
+// rankings unless the reader opts in (the 'limited data' toggle). On the
+// current data the rule is identical to a 50% weight-coverage floor:
+// every country with 8+ components covers at least 53% of the weight,
+// and none below 8 reaches 50%. It exists because proportional
+// reweighting collapses the full 100% onto whatever a country does
+// have, which flatters thin-data entries — see CLAUDE.md.
+const RANK_MIN_COMP=8;
 function calcScore(iso3){
   const w=WGI[iso3]; if(!w) return null;
   const avail={},d={name:w.n};
@@ -1038,6 +1046,7 @@ function calcScore(iso3){
   const totalW=Object.keys(avail).reduce((s,k)=>s+WEIGHTS[k],0);
   d.score=Object.entries(avail).reduce((s,[k,v])=>s+(v*WEIGHTS[k]/totalW),0);
   d.nComp=Object.keys(avail).length;
+  d.covW=totalW;                      // % of the 100-point weight actually present
   d._n=avail;
   d.iso3=iso3;
   d._avail=avail;
@@ -1149,7 +1158,9 @@ function showTip(ev,r,name,_numKey){
     rows+='<div class="tgrp-lbl">Public Goods</div>';
     rows+=(r.infN!==undefined)?f('Infrastructure',r.infR.toFixed(1),r.infN,'/5',11,'WB LPI 2023'):m('Infrastructure',11,'WB LPI 2023');
     document.getElementById('trows').innerHTML=rows;
-    document.getElementById('tfoot').textContent=`${r.nComp} of 13 components · proportionally weighted`;
+    document.getElementById('tfoot').textContent=r.nComp>=RANK_MIN_COMP
+      ? `${r.nComp} of 13 components · ${r.covW}% of the weight · proportionally reweighted`
+      : `${r.nComp} of 13 components · ${r.covW}% of the weight · too thin to rank`;
   }else{
     const terrInfo=TERRITORY[numKey||''];
     document.getElementById('tsc').innerHTML='<span style="color:var(--muted)">No index data available</span>';
