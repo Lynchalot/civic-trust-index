@@ -409,18 +409,38 @@ const SE={
   // Retained from Schneider & Medina (IMF 2018) — not covered by the WB database
   HKG:14.5,TWN:23.5,SRB:28.0,MNE:30.0,UZB:37.8};
 
+// ── World Values Survey Wave 7 (2017-2022): interpersonal trust
+// Percentage answering "most people can be trusted" to Q57, computed
+// from the WVS Cross-National Wave 7 v6.0 microdata (97,220 respondents)
+// and weighted by W_WEIGHT, the national representativeness weight.
+// Wave 7 ran 66 national surveys; 63 of them are countries this index
+// scores. Rounded to 1dp.
+//
+// THE PREVIOUS VALUES WERE NOT WAVE 7. The dict held 107 countries
+// under this label, but against the actual Wave 7 file only 7 of the
+// 58 overlapping entries matched to within half a point, and the
+// median error was 4.1 points (worst: Vietnam 52 against a real 27.7,
+// Myanmar 34 against 15.1, Egypt 22 against 7.4). Several looked like
+// older waves carried forward — Sweden's 60 is the Wave 6 figure, the
+// Netherlands' 66 likewise, Vietnam's 52 is Wave 5 — and 49 entries,
+// including all of Nordic and Western Europe plus a block of African
+// countries, had no Wave 7 survey behind them at all.
+//
+// COVERAGE FELL FROM 107 TO 63 as a result. Europe is the large gap:
+// the European countries are surveyed by the European Values Study,
+// whose EVS 2017 wave joins WVS7 in the Joint EVS/WVS 2017-2022
+// dataset (92 countries). Importing that file would restore them on a
+// consistent 2017-22 vintage; until then those countries lose the
+// component to proportional reweighting. See CLAUDE.md.
 const WVS={
-  TWN:30,HKG:42,NOR:73,SWE:60,DNK:74,FIN:55,EST:42,LVA:22,LTU:24,NLD:66,DEU:45,CHE:45,
-  AUT:38,BEL:30,FRA:19,IRL:47,GBR:34,ESP:24,PRT:20,ITA:24,GRC:15,MLT:30,
-  POL:21,CZE:25,SVK:21,HUN:18,ROU:19,BGR:18,HRV:16,SVN:22,SRB:20,MKD:22,
-  MNE:22,BIH:18,ALB:20,RUS:24,UKR:22,BLR:27,MDA:18,GEO:20,ARM:16,AZE:19,
-  KAZ:30,KGZ:17,TJK:24,UZB:21,MNG:22,USA:37,CAN:52,MEX:13,BRA:7,ARG:16,
-  CHL:14,COL:6,PER:7,ECU:14,BOL:12,VEN:6,NIC:6,GTM:7,URY:22,PRY:16,
-  JPN:34,KOR:27,CHN:64,AUS:48,NZL:55,VNM:52,THA:43,IDN:12,PHL:6,MYS:10,
-  BGD:22,IND:24,PAK:18,NPL:16,LKA:20,MMR:34,KHM:23,IRN:12,IRQ:17,JOR:14,
-  LBN:9,EGY:22,TUN:17,MAR:14,DZA:14,SAU:21,NGA:13,GHA:13,ZAF:20,ETH:21,
-  KEN:12,TZA:20,UGA:17,ZWE:13,RWA:22,MLI:25,SEN:17,MWI:26,CMR:10,BFA:22,
-  MOZ:19,BWA:22,NAM:25,ZMB:18,TUR:14
+  AND:25.6,ARG:20.1,ARM:8.5,AUS:48.9,BGD:12.9,BOL:8.6,BRA:6.7,CAN:46.7,
+  CHL:13.2,CHN:64.0,COL:4.5,CYP:6.8,CZE:37.0,DEU:46.0,ECU:5.9,EGY:7.3,
+  ETH:11.9,GBR:46.1,GRC:8.5,GTM:18.0,HKG:36.6,IDN:4.6,IND:17.1,IRN:14.8,
+  IRQ:11.2,JOR:16.0,JPN:35.6,KAZ:23.9,KEN:9.6,KGZ:12.9,KOR:32.9,LBN:9.9,
+  LBY:9.3,MAR:16.5,MDV:21.3,MEX:10.5,MMR:15.1,MNG:26.1,MYS:19.6,NGA:13.1,
+  NIC:4.2,NLD:61.2,NZL:59.5,PAK:23.5,PER:4.2,PHL:5.3,ROU:11.6,RUS:23.6,
+  SGP:34.6,SRB:16.6,SVK:22.0,THA:30.6,TJK:20.6,TUN:14.2,TUR:14.3,TWN:30.8,
+  UKR:30.9,URY:14.6,USA:37.2,UZB:34.7,VEN:14.2,VNM:27.7,ZWE:2.1
 };
 
 // ── Legatum Prosperity Index 2026: Integrity of Communities
@@ -1139,7 +1159,7 @@ function showTip(ev,r,name,_numKey){
     rows+=(r.se!==undefined)?f('Shadow Economy',r.se+'%',r._n.se,'',6,'WB Informal Economy 2019'):m('Shadow Economy',6,'WB Informal Economy 2019');
     rows+=sep;
     rows+='<div class="tgrp-lbl">Attitudinal Trust</div>';
-    rows+=(r.wvs!==undefined)?f('Interpersonal Trust',r.wvs+'%',r.wvs,'',8,'WVS 2017–22'):m('Interpersonal Trust',8,'WVS 2017–22');
+    rows+=(r.wvs!==undefined)?f('Interpersonal Trust',r.wvs+'%',r.wvs,'',8,'WVS7 2017–23'):m('Interpersonal Trust',8,'WVS7 2017–23');
     rows+=(r.lsc!==undefined)?f('Integrity of Communities',r.lsc.toFixed(1),r.lsc,'',8,'Legatum 2026'):m('Integrity of Communities',8,'Legatum 2026');
     rows+=sep;
     rows+='<div class="tgrp-lbl">Safety &amp; Order</div>';
